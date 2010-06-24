@@ -89,7 +89,7 @@
  *   $db_url = 'mysqli://username:password@localhost/databasename';
  *   $db_url = 'pgsql://username:password@localhost/databasename';
  */
-$db_url = 'mysql://mn:B2GHBfqtnWc2uvhP@localhost/artemia';
+$db_url = 'mysql://artemia:pUefrV7b56U6X8WY@localhost/artemia';
 $db_prefix = '';
 
 /**
