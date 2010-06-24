@@ -1,0 +1,94 @@
+<?php 
+// $Id: l10n_packager.install,v 1.1.2.1.2.1 2010/03/26 09:15:42 goba Exp $
+
+/**
+ * @file
+ *   Localization packager for localization server installer.
+ */
+
+/**
+ * Implementation of hook_schema().
+ */
+function l10n_packager_schema() {
+  $schema['l10n_packager_release'] = array(
+    'description' => 'Information about packaging for each release.',
+    'fields' => array(
+      'rid' => array(
+        'description' => 'Reference to {l10n_server_release}.rid',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ),
+      'status' => array(
+        'description' => 'Packaging status for this release. One of L10N_PACKAGER_DISABLED, L10N_PACKAGER_ACTIVE and L10N_PACKAGER_ERROR.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default value' => 1,
+        'disp-width' => '11'
+      ),
+      'checked' => array(
+        'description' => 'Unix timestamp of last time this release was checked.',
+        'type' => 'int',
+        'not null' => FALSE,
+        'disp-width' => '11'
+      ),
+      'updated' => array(
+        'description' => 'Unix timestamp of last time files for this release were updated.',
+        'type' => 'int',
+        'not null' => FALSE,
+        'disp-width' => '11'
+      ),
+    ),
+    'primary key' => array('rid'),
+  );
+  $schema['l10n_packager_file'] = array(
+    'description' => 'Links releases and languages to files.',
+    'fields' => array(
+      'drid' => array(
+        'description' => 'Internal numeric identifier for a release file.',
+        'type' => 'serial',
+        'not null' => TRUE,
+      ),
+      'rid' => array(
+        'description' => 'Reference to {l10n_server_release}.rid',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ),
+      'language' => array(
+        'description' => 'Reference to the {languages}.language for the translation package.',
+        'type' => 'varchar',
+        'length' => '12',
+        'not null' => TRUE
+      ),
+      'fid' => array(
+        'description' => 'Reference to {files}.fid.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ),
+      'checked' => array(
+        'description' => 'Unix timestamp of last time translation for this language was checked.',
+        'type' => 'int',
+        'not null' => FALSE,
+        'disp-width' => '11'
+      ),
+    ),
+    'primary key' => array('drid'),
+  );
+  return $schema;
+}
+
+/**
+ * Implementation of hook_install()
+ */
+function l10n_packager_install() {
+  drupal_install_schema('l10n_packager');
+}
+
+/**
+ * Implementation of hook_uninstall()
+ */
+function l10n_packager_uninstall() {
+  drupal_uninstall_schema('l10n_packager');
+}

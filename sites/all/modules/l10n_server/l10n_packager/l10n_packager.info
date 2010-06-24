@@ -1,0 +1,13 @@
+; $Id: l10n_packager.info,v 1.1.2.3 2009/11/11 18:21:01 goba Exp $
+name = "Localizacion packager"
+description = "Translation packaging tools for the localization server"
+package = "Localization server"
+dependencies[] = l10n_community
+core = 6.x
+
+; Information added by drupal.org packaging script on 2010-05-05
+version = "6.x-2.0-beta2"
+core = "6.x"
+project = "l10n_server"
+datestamp = "1273073108"
+

@@ -1,0 +1,342 @@
+<?php
+// $Id: l10n_groups.module,v 1.1.2.4.2.10.2.3 2010/03/22 09:28:21 goba Exp $
+
+/**
+ * @file
+ *   Organic groups enabler for localization community.
+ */
+
+// = Core hooks ================================================================
+
+/**
+ * Implementation of hook_menu().
+ */
+function l10n_groups_menu() {
+  $items['translate/languages/%l10n_community_language/broadcast'] = array(
+    'title' => 'Broadcast',
+    'page callback' => 'l10n_groups_broadcast',
+    'page arguments' => array(2),
+    'access callback' => 'l10n_groups_broadcast_access',
+    'access arguments' => array(2),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 200,
+  );
+  return $items;
+}
+
+/**
+ * Implementation of hook_perm().
+ */
+function l10n_groups_perm() {
+  return array(
+    // @todo: administer permission not actually used for anything ATM
+    // used to apply to all the node permissions below, but not anymore
+    'administer localization groups',
+    'create localization group',
+    'delete any localization group',
+    'delete own localization group',
+    'edit any localization group',
+    'edit own localization group',
+  );
+}
+
+/**
+ * Implementation of hook_form_alter().
+ *
+ * Take care of the one translation group per language limitation.
+ *
+ * @todo
+ *   Figure out how to support formal/informal differences, local language versions and so on.
+ *   These might need to maintain a diff, not a full translation, so we need to think about this.
+ */
+function l10n_groups_form_alter(&$form, $form_state, $form_id) {
+  if ($form_id == 'l10n_group_node_form' && empty($form['l10n_group_language']['#value']) && empty($form['l10n_group_language']['#options'])) {
+    drupal_set_message(t("All available languages have groups now. You cannot create another group until a new language is added on the administration interface."), 'error');
+    $form['submit']['#disabled'] = TRUE;
+  }
+}
+
+/**
+ * Implementation of hook_init().
+ *
+ * Tell organic groups we are on a group page if under a group's area
+ * on the translation pages.
+ */
+function l10n_groups_init() {
+  if (user_access('access localization community') && (arg(0) == 'translate') && in_array(arg(1), array('languages', 'details', 'suggestions', 'approve', 'decline')) && ($langcode = arg(2))) {
+    // If under a localization path URL for a language, set context.
+    if (!empty($langcode)) {
+      l10n_groups_set_context($langcode);
+    }
+  }
+  
+  // Avoid using menu_get_item() since that would cripple the cache
+  // for menu access checking.
+  if (($item = og_user_roles_menu_get_item()) && ($item['path'] == 'node/%') && ($item['page_arguments'][0]->type == 'l10n_group')) {
+    // If on node view page for l10n_group nodes, redirect to our more full featured
+    // version of the group with translation tabs and all.
+    drupal_goto('translate/languages/'. $item['page_arguments'][0]->l10n_group_language);
+  }
+}
+
+/**
+ * Set group context to the group determined by $langcode.
+ */
+function l10n_groups_set_context($langcode) {
+  $groups = l10n_groups_get_groups();
+  if (isset($groups[$langcode])) {
+    // Set group context and ask for og details block.
+    $node = node_load($groups[$langcode]);
+    og_set_group_context($node);
+  }
+}
+
+// = Organic groups node type ==================================================
+
+/**
+ * Implementation of hook_node_info().
+ *
+ * We expose one node type to tie into the organic groups system, and maintain a
+ * list of localization community related ones.
+ */
+function l10n_groups_node_info() {
+  return array(
+    'l10n_group' => array(
+      'name' => t('Translation group'),
+      'module' => 'l10n_groups',
+      'description' => t('A language community around Drupal project translations.'),
+    ),
+  );
+}
+
+/**
+ * Implementation of hook_insert().
+ */
+function l10n_groups_insert($node) {
+  db_query("INSERT INTO {l10n_groups_group} (nid, language) VALUES (%d, '%s')", $node->nid, $node->l10n_group_language);
+  l10n_community_cache_clear_all();
+}
+
+/**
+ * Implementation of hook_delete().
+ */
+function l10n_groups_delete(&$node) {
+  db_query('DELETE FROM {l10n_groups_group} WHERE nid = %d', $node->nid);
+  l10n_community_cache_clear_all();
+}
+
+/**
+ * Implementation of hook_update().
+ */
+function l10n_groups_update($node) {
+  if ($nid = db_result(db_query('SELECT nid FROM {l10n_groups_group} WHERE nid = %d', $node->nid))) {
+    db_query("UPDATE {l10n_groups_group} SET language = '%s' WHERE nid = %d", $node->l10n_group_language, $node->nid);
+  }
+  else {
+    l10n_groups_insert($node);
+  }
+}
+
+/**
+ * Implementation of hook_load().
+ */
+function l10n_groups_load($node) {
+  return db_fetch_object(db_query('SELECT language AS l10n_group_language FROM {l10n_groups_group} WHERE nid = %d', $node->nid));
+}
+
+/**
+ * Implementation of hook_access().
+ *
+ * @todo
+ *   Group admins should be able to edit their group nodes. Look into how others do it.
+ */
+function l10n_groups_access($op, $node, $account) {
+  switch ($op) {
+
+    case 'view':
+      // Let everyone see localization groups who can access l10n_community.
+      return user_access('access localization community', $account);
+      break;
+
+    case 'create':
+      return user_access('create localization group', $account);
+      break;
+
+    case 'update':
+      // Update $op to 'edit' so we can reuse in permission name.
+      $op = 'edit';
+      // Intentionally no break.
+
+    case 'delete':
+      return user_access($op .' any localization group', $account) || (user_access($op .' own localization group', $account) && ($account->uid == $node->uid));
+      break;
+  }
+
+  return FALSE;
+}
+
+/**
+ * Implementation of hook_form().
+ */
+function l10n_groups_form($node, $form_state) {
+  $form = array();
+
+  $form['title'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Group name'),
+    '#description' => t('Name of the translation group.'),
+    '#default_value' => isset($node->title) ? $node->title : '',
+    '#weight' => -10,
+    '#required' => TRUE,
+  );
+  $languages = l10n_community_get_languages('name');
+
+  if (!empty($node->l10n_group_language)) {
+    // Already attached to a language, not possible to modify.
+    $form['l10n_group_language_display'] = array(
+      '#type' => 'item',
+      '#title' => t('Language'),
+      '#description' => t('The language managed by this group. This cannot be modified.'),
+      '#value' => $languages[$node->l10n_group_language],
+      '#weight' => -5,
+    );
+    // Store the language value for hook_update.
+    $form['l10n_group_language'] = array(
+      '#type' => 'hidden',
+      '#value' => $node->l10n_group_language,
+    );
+  }
+  else {
+    // Create a list of languages on the site having no translation group.
+    $groups = db_query('SELECT language FROM {l10n_groups_group}');
+    while ($group = db_fetch_object($groups)) {
+      if ($languages[$group->language]) {
+        unset($languages[$group->language]);
+      }
+    }
+    // Not yet attached to a language.
+    $form['l10n_group_language'] = array(
+      '#type' => 'select',
+      '#title' => t('Language'),
+      '#description' => t('The language managed by this group. Languages not shown here are either not active on the site, or already have a translation group.'),
+      '#options' => $languages,
+      '#weight' => -5,
+      '#required' => TRUE,
+    );
+  }
+  $form['body'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Welcome message'),
+    '#description' => t('Welcome message to display on the group homepage.'),
+    '#default_value' => isset($node->body) ? $node->body : '',
+    '#rows' => 5,
+  );
+  $form['format'] = isset($node->format) ? filter_form($node->format) : filter_form();
+  return $form;
+}
+
+/**
+ * Implementation of hook_og_create_links().
+ */
+function l10n_groups_og_create_links($node) {
+  $links = array();
+  if (node_access('update', $node)) {
+    $links['edit_group'] = l(t('Edit group'), 'node/'. $node->nid .'/edit');
+  }
+  return $links;
+}
+
+// = API functions =============================================================
+
+/**
+ * Plugin for l10n_community_block_help().
+ *
+ * Note that help texts link to groups which might not exist yet, therefore
+ * these links might be broken. This is just a transitional problem though,
+ * as once the functionality is set up, translation groups should form.
+ */
+function l10n_groups_block_help($perm, $langcode = NULL) {
+  global $user;
+
+  // Only return anything if we have a language group code.
+  if (!isset($langcode)) {
+    return '';
+  }
+
+  $groups = l10n_groups_get_groups();
+  $permission_help = '';
+
+  if (empty($user->og_groups) || empty($user->og_groups[$groups[$langcode]])) {
+    $permission_help = t('You are not a member of this translation group.') .' '. ($user->uid ? t('<a href="@group">Subscribe to this group</a> if you would like to help out.', array('@group' => url('node/'. $groups[$langcode]))) : t('<a href="@register">Create an account or log in</a> and <a href="@group">subscribe to this group</a> if you would like to help out.', array('@register' => url('user'), '@group' => url('node/'. $groups[$langcode]))));
+  }
+  elseif (!empty($user->og_groups[$groups[$langcode]]['is_admin'])) {
+    $permission_help = t('You are an administrator in this translation group.');
+  }
+
+  return !empty($permission_help) ? '<p>'. $permission_help .'</p>' : '';
+}
+
+/**
+ * Helper function for group listing.
+ *
+ * @return
+ *   List of l10n_group_group objects keyed by language code.
+ */
+function l10n_groups_get_groups() {
+  static $groups = NULL;
+
+  if (!isset($groups)) {
+    $groups = array();
+    $result = db_query('SELECT nid, language FROM {l10n_groups_group}');
+    while ($group = db_fetch_object($result)) {
+      $groups[$group->language] = $group->nid;
+    }
+  }
+
+  return $groups;
+}
+
+/**
+ * List groups a user is a member of to help jump there.
+ */
+function l10n_groups_pick_go() {
+  global $user;
+  
+  if (!empty($user->og_groups)) {
+    $groups = array();
+    foreach ($user->og_groups as $group) {
+      if ($group['type'] == 'l10n_group') {
+        $group = node_load($group['nid']);
+        $groups[$group->l10n_group_language] = l($group->title, 'translate/languages/'. $group->l10n_group_language);
+      }
+    }
+    if (!empty($groups)) {
+      return array(
+        '#type' => 'item',
+        '#title' => count($groups) > 1 ? t('Go to one of your groups') : t('Go to your group'),
+        '#value' => join(', ', $groups),
+        '#l10n_groups' => array_keys($groups),
+      );
+    }
+  }
+}
+
+/**
+ * Menu access callback for broadcast proxy tab.
+ */
+function l10n_groups_broadcast_access($langcode) {
+  $groups = l10n_groups_get_groups();
+  if (isset($groups[$langcode])) {
+    return og_broadcast_access(node_load($groups[$langcode]));
+  }
+  return FALSE;
+}
+
+/**
+ * Menu callback for broadcast proxy tab.
+ */
+function l10n_groups_broadcast($langcode) {
+  $groups = l10n_groups_get_groups();
+  include_once drupal_get_path('module', 'og') .'/og.pages.inc';
+  return drupal_get_form('og_broadcast_form', node_load($groups[$langcode]));
+}

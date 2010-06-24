@@ -1,0 +1,369 @@
+<?php
+// $Id: l10n_community.install,v 1.1.2.11.2.15.2.7 2010/03/31 13:53:00 goba Exp $
+
+/**
+ * @file
+ *   Localization community UI installation, update and uninstallation.
+ */
+
+// -- Drupal 5 updates ---------------------------------------------------------
+
+/**
+ * Add home_link column so we can interlink projects with drupal.org pages.
+ *
+ * The uri is not enough as with local projects, we should not automatically
+ * link to http://drupal.org/project/$uri.
+ */
+function l10n_community_update_5000() {
+  $ret = array();
+  $ret[] = update_sql('ALTER TABLE {l10n_community_project} ADD home_link TEXT NOT NULL AFTER title');
+  return $ret;
+}
+
+/**
+ * Add DEFAULT 0 to integer fields we not always fill in.
+ */
+function l10n_community_update_5001() {
+  $default_to_zero = array('uid_entered', 'uid_approved', 'time_entered', 'time_approved', 'has_suggestion', 'is_suggestion', 'is_active');
+  $ret = array();
+  foreach ($default_to_zero as $column) {
+    $ret[] = update_sql('ALTER TABLE {l10n_community_translation} CHANGE '. $column .' '. $column .' INTEGER NOT NULL DEFAULT 0');
+  }
+  return $ret;
+}
+
+/**
+ * Add type column to lines, so we can track installer and non-installer
+ * string usage separately.
+ */
+function l10n_community_update_5002() {
+  $ret = array();
+  $ret[] = update_sql('ALTER TABLE {l10n_community_line} ADD type INTEGER AFTER lineno');
+  drupal_set_message('An update was executed to support installer string identification in scanned projects. You need to rescan all your prjects to make this work as expected. Delete data from the project, release, file, error and line tables, and rescan all projects. Make sure to leave the source string and translation tables intact. It is always a good idea to make backups!');
+  return $ret;
+}
+
+/**
+ * Clean up starting and trailing spaces and new lines in translations.
+ */
+function l10n_community_update_5003() {
+  $ret = array();
+  // We just search for strings that begin or end with these characters.
+  foreach (array('\n', ' ') as $char) {
+    $result = db_query("SELECT s.sid, s.value, t.tid, t.translation FROM {l10n_community_string} s INNER JOIN {l10n_community_translation} t ON s.sid = t.sid WHERE s.value LIKE '%s%%' OR  s.value LIKE '%%%s' OR t.translation LIKE '%s%%' OR t.translation LIKE '%%%s'", $char, $char, $char, $char);
+    while ($string = db_fetch_object($result)) {
+      if ($string->translation) {
+        $trimmed = l10n_community_trim($string->translation, $string->value);
+        if ($trimmed != $string->translation) {
+          db_query("UPDATE {l10n_community_translation} SET translation = '%s' WHERE tid = %d", $trimmed, $string->tid);
+          drupal_set_message("Fixed string $string->sid: ". check_plain(substr($string->translation, 0, 50)));
+        }
+      }
+    }
+  }
+  return $ret;
+}
+
+// -- Drupal 6 updates ---------------------------------------------------------
+// -- Use schema API from here -------------------------------------------------
+
+/**
+ * Add connector_module column and update existing projects to use the right one.
+ */
+function l10n_community_update_6000() {
+  $ret = array();
+
+  // Add connector_module column for use as a clue for modules to tap onto their projects.
+  db_add_field($ret, 'l10n_community_project', 'connector_module', array('type' => 'varchar', 'length' => '50', 'not null' => TRUE));
+
+  if (!module_exists('l10n_drupalorg') && !module_exists('l10n_localpacks')) {
+    // Inform users if no known connector modules were turned on.
+    drupal_set_message("Neither l10n_drupalorg nor l10n_localpacks modules were turned on, while the updates ran. The newly updated Localization Server requires knowledge of connector modules associated to projects. If you run your own connector module, please update the database with the module's internal name.");
+  }
+  else {
+    // Update existing projects to our best guess on what they use. Give priority
+    // to l10n_localpacks, since l10n_drupalorg is often just used for a test-drive
+    // and possibly left turned on.
+    $connector_module = module_exists('l10n_localpacks') ? 'l10n_localpacks' : 'l10n_drupalorg';
+    $ret[] = update_sql("UPDATE {l10n_community_project} SET connector_module = '". $connector_module ."'");
+    if (module_exists('l10n_drupalorg') && module_exists('l10n_localpacks')) {
+      // Inform users if both modules were turned on.
+      drupal_set_message('Both l10n_drupalorg and l10n_localpacks modules were turned on, while the updates ran. We picked l10n_localpacks as the connector for existing projects. You might need to adjust your database if this was not the right choice.');
+    }
+  }
+
+  // The same URI should not appear with multiple connector modules.
+  db_add_unique_key($ret, 'l10n_community_project', 'l10n_community_project_uri_connector_module', array('uri', 'connector_module'));
+
+  return $ret;
+}
+
+/**
+ * Add support for enabled and disabled projects.
+ *
+ * Disabled projects will not participate in the scanning process.
+ */
+function l10n_community_update_6001() {
+  $ret = array();
+  db_add_field($ret, 'l10n_community_project', 'status', array('type' => 'int', 'not null' => TRUE));
+  // Make all existing projects enabled.
+  $ret[] = update_sql("UPDATE {l10n_community_project} SET status = 1");
+  return $ret;
+}
+
+/**
+ * Add an index to the translations table to improve performance.
+ */
+function l10n_community_update_6002() {
+  $ret = array();
+  db_add_index($ret, 'l10n_community_translation', 'suggestion_active', array('is_suggestion', 'is_active'));
+  return $ret;
+}
+
+/**
+ * Add an index to the translations table to improve performance.
+ */
+function l10n_community_update_6003() {
+  $ret = array();
+  db_add_index($ret, 'l10n_community_translation', 'uid_entered', array('uid_entered'));
+  return $ret;
+}
+
+/**
+ * Add an index to the translations table to improve performance.
+ */
+function l10n_community_update_6004() {
+  $ret = array();
+  db_add_index($ret, 'l10n_community_translation', 'sid_language_suggestion', array('sid', 'language', 'is_suggestion'));
+  return $ret;
+}
+
+/**
+ * Add the context column to the source string table for Drupal 7 support.
+ */
+function l10n_community_update_6005() {
+  $ret = array();
+  db_add_field($ret, 'l10n_community_string', 'context', array('type' => 'varchar', 'length' => 255, 'not null' => TRUE, 'default' => ''));
+  return $ret;
+}
+
+/**
+ * Denormalize data in order to improve performance: Push project ID to file table.
+ */
+function l10n_community_update_6006() {
+  $ret = array();
+
+  db_add_field($ret, 'l10n_community_file', 'pid', array('type' => 'int', 'not null' => FALSE, 'disp-width' => 11));
+
+  $q = db_query("SELECT rid, pid FROM {l10n_community_release}");
+  while ($release = db_fetch_object($q)) {
+    db_query("UPDATE {l10n_community_file} SET pid = %d WHERE rid = %d", $release->pid, $release->rid);
+  }
+  return $ret;
+}
+
+/**
+ * Denormalize data in order to improve performance: Push project and release ID to line table.
+ */
+function l10n_community_update_6007() {
+  $ret = array();
+
+  db_add_field($ret, 'l10n_community_line', 'pid', array('type' => 'int', 'not null' => FALSE, 'disp-width' => 11));
+  db_add_field($ret, 'l10n_community_line', 'rid', array('type' => 'int', 'not null' => FALSE, 'disp-width' => 11));
+  db_add_index($ret, 'l10n_community_line', 'pid', array('pid'));
+  db_add_index($ret, 'l10n_community_line', 'rid', array('rid'));
+
+  $q = db_query("SELECT fid, rid, pid FROM {l10n_community_file}");
+  while ($row = db_fetch_object($q)) {
+    db_query("UPDATE {l10n_community_line} SET pid = %d, rid = %d WHERE fid = %d", $row->pid, $row->rid, $row->fid);
+  }
+  return $ret;
+}
+
+/**
+ * Translations which are submitted right away should have equal approval data.
+ */
+function l10n_community_update_6008() {
+  $ret = array();
+  $ret[] = update_sql('UPDATE {l10n_community_translation} SET uid_approved = uid_entered, time_approved = time_entered WHERE is_suggestion = 0 AND uid_approved = 0');
+  return $ret;
+}
+
+/**
+ * Permission "submit translations and approve suggestions" split in two.
+ *
+ * Became "moderate suggestions from others" and "moderate own suggestions".
+ */
+function l10n_community_update_6009() {
+  $ret = array();
+  $result = db_query("SELECT rid, perm FROM {permission} ORDER BY rid");
+  while ($role = db_fetch_object($result)) {
+    $renamed_permission = preg_replace('/submit translations and approve suggestions/', 'moderate suggestions from others, moderate own suggestions', $role->perm);
+    if ($renamed_permission != $role->perm) {
+      $ret[] = update_sql("UPDATE {permission} SET perm = '$renamed_permission' WHERE rid = $role->rid");
+    }
+  }
+  return $ret;
+}
+
+/**
+ * Add hashkey to speed up source string lookups.
+ */
+function l10n_community_update_6010() {
+  $ret = array();
+
+  db_add_field($ret, 'l10n_community_string', 'hashkey', array('type' => 'char', 'not null' => FALSE, 'length' => 32));
+  $ret[] = update_sql("UPDATE {l10n_community_string} SET hashkey = MD5(CONCAT(value, context))");
+  db_add_unique_key($ret, 'l10n_community_string', 'hashkey', array('hashkey'));
+
+  return $ret;
+}
+
+/**
+ * Separate status flags from translations, so we can do more versatile searches quickly.
+ */
+function l10n_community_update_6011() {
+  $ret = array();
+
+  db_create_table($ret, 'l10n_community_status_flag', array(
+    'fields' => array(
+      'sid' => array(
+        'description' => 'Reference to the {l10n_community_string}.sid which is being translated.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'disp-width' => '11'
+      ),
+      'language' => array(
+        'description' => 'Reference to the {languages}.language to which the string is being translated.',
+        'type' => 'varchar',
+        'length' => '12',
+        'not null' => TRUE
+      ),
+      'has_suggestion' => array(
+        'description' => 'Cached status flag of whether there is at least one row in {l10n_community_translation} where is_suggestion = 1, is_active = 1 and sid and language is the same as this one.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'disp-width' => '11'
+      ),
+      'has_translation' => array(
+        'description' => 'Cached status flag of whether there is at least one row in {l10n_community_translation} where is_suggestion = 0, is_active = 1, translation is not empty and sid and language is the same as this one.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'disp-width' => '11'
+      ),
+    ),
+    'primary key' => array('sid', 'language'),
+    'indexes' => array(
+      'sid_language_has_suggestion' => array('sid', 'language', 'has_suggestion'),
+      'sid_language_has_translation' => array('sid', 'language', 'has_translation'),
+    ),
+  ));
+
+  // Drop all placeholder records, which were only used to hold the has_suggestion flag.
+  $ret[] = update_sql("DELETE FROM {l10n_community_translation} WHERE is_active = 1 AND is_suggestion = 0 AND translation = ''");
+
+  // Initialize status flags with values based on the current data.
+  $ret[] = update_sql("REPLACE INTO {l10n_community_status_flag} SELECT sid, language, MAX(has_suggestion) AS has_suggestion, MAX(has_translation) AS has_translation FROM (SELECT sid, language, (is_suggestion = 1 and is_active = 1) as has_suggestion, (is_suggestion = 0 and is_active = 1) as has_translation FROM {l10n_community_translation} HAVING has_translation = 1 or has_suggestion = 1) t GROUP BY sid, language;");
+  // Drop the has_suggestion field from the translation table.
+  db_drop_field($ret, 'l10n_community_translation', 'has_suggestion');
+
+  return $ret;
+}
+
+/**
+ * Drop 0/0 status flags for people who run the unmodified 6011 update.
+ */
+function l10n_community_update_6012() {
+  $ret = array();
+  $ret[] = update_sql('DELETE FROM {l10n_community_status_flag} WHERE has_suggestion = 0 AND has_translation = 0');
+  return $ret;
+}
+
+/**
+ * Consolidate indexes.
+ */
+function l10n_community_update_6013() {
+  $ret = array();
+  // Drop all but the primary index of the table.
+  db_drop_index($ret, 'l10n_community_translation', 'is_active');
+  db_drop_index($ret, 'l10n_community_translation', 'is_suggestion');
+  db_drop_index($ret, 'l10n_community_translation', 'language');
+  db_drop_index($ret, 'l10n_community_translation', 'suggestion_active');
+  db_drop_index($ret, 'l10n_community_translation', 'sid_language_suggestion');
+  db_drop_index($ret, 'l10n_community_translation', 'sid');
+  // Add two specific indexes.
+  db_add_index($ret, 'l10n_community_translation', 'is_suggestion_is_active_language', array('is_suggestion', 'is_active', 'language'));
+  db_add_index($ret, 'l10n_community_translation', 'sid_language_is_suggestion_is_active', array('sid', 'language', 'is_suggestion', 'is_active'));
+  return $ret;
+}
+
+/**
+ * Permission "administer localization community" renamed.
+ */
+function l10n_community_update_6014() {
+  $ret = array();
+  $result = db_query("SELECT rid, perm FROM {permission} ORDER BY rid");
+  while ($role = db_fetch_object($result)) {
+    $renamed_permission = preg_replace('/administer localization community/', 'administer localization server', $role->perm);
+    if ($renamed_permission != $role->perm) {
+      $ret[] = update_sql("UPDATE {permission} SET perm = '$renamed_permission' WHERE rid = $role->rid");
+    }
+  }
+  return $ret;
+}
+
+/**
+ * Rename tables now owned by l10n_server.
+ */
+function l10n_community_update_6015() {
+  $ret = array();
+  db_rename_table($ret, 'l10n_community_project',     'l10n_server_project');
+  db_rename_table($ret, 'l10n_community_release',     'l10n_server_release');
+  db_rename_table($ret, 'l10n_community_error',       'l10n_server_error');
+  db_rename_table($ret, 'l10n_community_file',        'l10n_server_file');
+  db_rename_table($ret, 'l10n_community_line',        'l10n_server_line');
+  db_rename_table($ret, 'l10n_community_string',      'l10n_server_string');
+  db_rename_table($ret, 'l10n_community_translation', 'l10n_server_translation');
+  db_rename_table($ret, 'l10n_community_status_flag', 'l10n_server_status_flag');
+  return $ret;
+}
+
+/**
+ * Migrate l10n_localpack settings to l10n_drupal settings.
+ */
+function l10n_community_update_6016() {
+  $ret = array();
+
+  $enable = FALSE;
+  if (variable_get('l10n_localpacks_directory', '')) {
+    variable_set('l10n_server_connector_l10n_drupal_files_directory', variable_get('l10n_localpacks_directory', ''));
+    variable_set('l10n_server_connector_l10n_drupal_files_limit', variable_get('l10n_localpacks_limit', 1));
+    variable_set('l10n_server_connector_l10n_drupal_files_cron', variable_get('l10n_localpacks_cron', 0));
+    variable_set('l10n_server_connector_l10n_drupal_files_drupal_home', variable_get('l10n_localpacks_home_link', 0));
+    variable_set('l10n_server_connector_l10n_drupal_files_enabled', 1);
+    variable_del('l10n_localpacks_directory');
+    variable_del('l10n_localpacks_cron');
+    variable_del('l10n_localpacks_limit');
+    variable_del('l10n_localpacks_home_link');
+    $enable = TRUE;
+    db_query("UPDATE {l10n_server_project} SET connector_module = 'l10n_drupal_files' WHERE connector_module = 'l10n_localpacks'");
+  }
+  if (db_result(db_query("SELECT 1 FROM {l10n_server_project} WHERE connector_module = 'l10n_project'"))) {
+    variable_set('l10n_server_connector_l10n_drupal_drupalorg_limit', variable_get('l10n_project_limit', 1));
+    variable_set('l10n_server_connector_l10n_drupal_drupalorg_cron', variable_get('l10n_project_cron', 0));
+    variable_set('l10n_server_connector_l10n_drupal_drupalorg_last_sync', variable_get('l10n_project_last_sync', 0));
+    variable_del('l10n_project_cron');
+    variable_del('l10n_project_limit');
+    variable_del('l10n_project_last_sync');
+    $enable = TRUE;
+    db_query("UPDATE {l10n_server_project} SET connector_module = 'l10n_drupal_drupalorg' WHERE connector_module = 'l10n_project'");
+  }
+  
+  if ($enable) {
+    module_enable('l10n_drupal');
+  }
+
+  return $ret;
+}

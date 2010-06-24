@@ -1,0 +1,81 @@
+<?php
+// $Id: l10n_gettext.module,v 1.1.2.1 2010/05/05 15:08:45 goba Exp $
+
+/**
+ * @file
+ *   Localization server for Gettext files.
+ */
+
+// = Core hooks ================================================================
+
+/**
+ * Implementation of hook_l10n_server_connector_info().
+ */
+function l10n_gettext_l10n_server_connector_info() {
+  $connectors = array(
+    'l10n_gettext' => array(
+      'title' => t('Gettext files'),
+      'sources' => array('uploads'),
+      'upload handler' => 'l10n_gettext_upload_handler',
+    ),
+  );
+  return $connectors;
+}
+
+/**
+ * File submission handler defined in hook_l10n_server_connector_info().
+ */
+function l10n_gettext_upload_handler($form, $form_state) {
+  if ($file = file_save_upload('new_source')) {
+    // Increase time limit for PO parsing if possible.
+    if (!ini_get('safe_mode')) {
+      @set_time_limit(240);
+    }
+    $project = $form_state['values']['project'];
+    $release = $form_state['values']['new_release'];
+
+    // Save file info and mark the file parsed.
+    db_query("INSERT INTO {l10n_server_file} (pid, rid, location, revision) VALUES(%d, %d, '%s', '%s')", $project->pid, $release->rid, $file->filename, '');
+    $fid = db_result(db_query("SELECT fid FROM {l10n_server_file} WHERE rid = %d and location = '%s'", $release->rid, $file->filename));
+    db_query("UPDATE {l10n_server_release} SET last_parsed = %d WHERE rid = %d", time(), $release->rid);
+
+    // Do the actual parsing on the local file.
+    if (l10n_server_parse_po($file, 'l10n_gettext_store_string', array($project->pid, $release->rid, $fid))) {
+      drupal_set_message(format_plural(l10n_gettext_store_string(), 'The source file was successfully imported. One source string was added.', 'The source file was successfully imported. @count source strings were added.'));
+    }
+  }
+  else {
+    drupal_set_message(t('File to import not found. Did you choose a file to upload which was under %maxsize?', array('%maxsize' => format_size(file_upload_max_size()))), 'error');
+  }
+}
+
+/**
+ * Store one source string as being available.
+ */
+function l10n_gettext_store_string($value = NULL, $pid = NULL, $rid = NULL, $fid = NULL) {
+  static $added = 0;
+
+  if (!empty($value['msgid'])) {
+    // Initialize empty context if not speficied.
+    $context = !empty($value['msgctxt']) ? $value['msgctxt'] : '';
+
+    // A \0 separator in the string means we deal with a string with plural variants.
+    // Unlike Drupal core, we store all in the same string, as it is easier
+    // to handle later, and we don't need the individual string parts.
+    $msgid = is_array($value['msgid']) ? join("\0", $value['msgid']) : $value['msgid'];
+
+    if (!$sid = db_result(db_query("SELECT sid FROM {l10n_server_string} WHERE hashkey = MD5('%s')", $msgid . $context))) {
+      // String does not exist.
+      db_query("INSERT INTO {l10n_server_string} (value, context, hashkey) VALUES ('%s', '%s', MD5('%s'))", $msgid, $context, $msgid . $context);
+      $sid = db_result(db_query("SELECT sid FROM {l10n_server_string} WHERE hashkey = MD5('%s')", $msgid . $context));
+    }
+    if (!db_result(db_query("SELECT fid FROM {l10n_server_line} WHERE fid = %d AND sid = %d AND lineno = %d AND type = %d", $fid, $sid, 0, 2 /*POTX_STRING_RUNTIME*/))) {
+      // Location does not exist with this string.
+      db_query("INSERT INTO {l10n_server_line} (pid, rid, fid, sid, lineno, type) VALUES (%d, %d, %d, %d, %d, %d)", $pid, $rid, $fid, $sid, 0, 2 /*POTX_STRING_RUNTIME*/);
+    }
+    $added++;
+  }
+  else {
+    return $added;
+  }
+}

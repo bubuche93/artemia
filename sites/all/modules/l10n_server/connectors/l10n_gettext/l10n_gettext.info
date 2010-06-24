@@ -1,0 +1,13 @@
+; $Id: l10n_gettext.info,v 1.1.2.1 2010/05/05 15:08:45 goba Exp $
+name = "Localization server for Gettext files"
+description = Manages translatable strings with Gettext standard input/output.
+dependencies[] = l10n_server
+package = "Localization server connectors"
+core = 6.x
+
+; Information added by drupal.org packaging script on 2010-05-05
+version = "6.x-2.0-beta2"
+core = "6.x"
+project = "l10n_server"
+datestamp = "1273073108"
+

@@ -1,0 +1,164 @@
+# Hungarian translation of l10n_server (all releases)
+# Copyright (c) 2009 by the Hungarian translation team
+# Generated from files:
+#  l10n_groups.module,v 1.1.2.4.2.1 2008/10/14 22:13:49 goba
+#  l10n_groups.install,v 1.1.2.1.2.2 2008/10/15 15:25:05 goba
+#  l10n_groups.info,v 1.1.2.1.2.1 2008/10/14 22:13:49 goba
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: l10n_server (all releases)\n"
+"POT-Creation-Date: 2009-05-15 22:04+0200\n"
+"PO-Revision-Date: 2008-12-13 18:23+0100\n"
+"Language-Team: Hungarian\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+
+#: l10n_groups/l10n_groups.module:162
+msgid "Welcome message"
+msgstr "Üdvözlőüzenet"
+
+#: l10n_groups/l10n_groups.module:39
+msgid ""
+"All available languages have groups now. You cannot create another "
+"group until a new language is added on the administration interface."
+msgstr ""
+
+#: l10n_groups/l10n_groups.module:55
+msgid "Translation group"
+msgstr "Fordítási csoport"
+
+#: l10n_groups/l10n_groups.module:57
+msgid "A language community around Drupal project translations."
+msgstr ""
+
+#: l10n_groups/l10n_groups.module:122
+msgid "Group name"
+msgstr "Csoport neve"
+
+#: l10n_groups/l10n_groups.module:123
+msgid "Name of the translation group."
+msgstr "A fordítási csoport neve."
+
+#: l10n_groups/l10n_groups.module:133
+msgid "The language managed by this group. This cannot be modified."
+msgstr "A nyelvet ez a csoport kezeli. Ez nem módosítható."
+
+#: l10n_groups/l10n_groups.module:143
+msgid ""
+"The language managed by this group. Languages not shown here are "
+"either not active on the site, or already have a translation group."
+msgstr ""
+
+#: l10n_groups/l10n_groups.module:151
+msgid "Permission model"
+msgstr "Jogosultsági modell"
+
+#: l10n_groups/l10n_groups.module:152
+msgid "Whether different types of group members have different permissions."
+msgstr "Amikor a csoport egyes tagjai eltérő jogosultságokkal rendelkeznek."
+
+#: l10n_groups/l10n_groups.module:155
+msgid ""
+"Open. Everybody is equal, all members can suggest and approve "
+"translations."
+msgstr ""
+"Nyitott. Mindenki egyenlő, az összes tag javasolhat és elfogadhat "
+"fordításokat."
+
+#: l10n_groups/l10n_groups.module:156
+msgid ""
+"Controlled. Members can only suggest translations, group "
+"administrators can approve them."
+msgstr ""
+"Szabályzott. A tagok kifejezéseket javasolhatnak, de csak a csoport "
+"adminisztrátorai fogadhatják el ezeket."
+
+#: l10n_groups/l10n_groups.module:163
+msgid "Welcome message to display on the group homepage."
+msgstr ""
+
+#: l10n_groups/l10n_groups.module:193
+msgid ""
+"You are not a member of this translation group, but you can still view "
+"the existing translations and export templates or translations for "
+"your own use."
+msgstr ""
+
+#: l10n_groups/l10n_groups.module:193
+msgid ""
+"<a href=\"@group\">Subscribe to this group</a> if you would like to "
+"help out."
+msgstr ""
+"A segítségnyújtáshoz <a href=\"@group\">jelentkezni kell ebbe a "
+"csoportba</a>."
+
+#: l10n_groups/l10n_groups.module:193
+msgid ""
+"<a href=\"@register\">Create an account or log in</a> and <a "
+"href=\"@group\">subscribe to this group</a> if you would like to help "
+"out."
+msgstr ""
+"<a href=\"@register\">A regisztráció/bejelentkezés</a> majd a <a "
+"href=\"@group\">csoporthoz történő csatlakozást</a> követően "
+"nyílik mód a fordításra."
+
+#: l10n_groups/l10n_groups.module:196
+msgid ""
+"You are a member of this translation group, so you can suggest "
+"translations or import complete Gettext translation files to suggest "
+"multiple translations at once. Administrators of this group either "
+"accept or decline suggestions provided by members of the group. To "
+"work offline, export a translation template, which contains the "
+"current state of the translation."
+msgstr ""
+
+#: l10n_groups/l10n_groups.module:199
+msgid ""
+"As a member of this translation group, you can suggest translations as "
+"well as approve translations suggested by other members of the group. "
+"Export/import of Gettext translation files is also possible."
+msgstr ""
+
+#: l10n_groups/l10n_groups.module:25
+msgid "administer localization groups"
+msgstr ""
+
+#: l10n_groups/l10n_groups.module:0
+msgid "l10n_groups"
+msgstr ""
+
+#: l10n_groups/l10n_groups.install:35
+msgid ""
+"Organic groups mapper for the localization server. Each language team "
+"is a group."
+msgstr ""
+
+#: l10n_groups/l10n_groups.install:38
+msgid ""
+"References {node}.nid, pointing to the organic group node for this "
+"translation group."
+msgstr ""
+
+#: l10n_groups/l10n_groups.install:44
+msgid ""
+"References {language}.language, pointing to the language of this "
+"translation group."
+msgstr ""
+
+#: l10n_groups/l10n_groups.install:50
+msgid ""
+"Permission model for this translation group. Can be L10N_MODEL_OPEN or "
+"L10N_MODEL_CONTROLLED."
+msgstr ""
+
+#: l10n_groups/l10n_groups.info:0
+msgid "Localization groups"
+msgstr "Fordítási csoportok"
+
+#: l10n_groups/l10n_groups.info:0
+msgid "Organic groups mapping for localization server"
+msgstr ""
+

@@ -1,0 +1,1084 @@
+<?php
+// $Id: l10n_community.module,v 1.1.2.23.2.66.2.14 2010/03/31 13:53:00 goba Exp $
+
+/**
+ * @file
+ *   A community web interface for Drupal project translation.
+ *
+ *   Builds on a connector (eg. l10n_localpacks) and optionaly l10n_groups
+ *   to provide a convinient web interface for translators to collaborate
+ *   on Drupal project translations.
+ */
+
+/**
+ * Strings with any status.
+ */
+define('L10N_STATUS_ALL', 0);
+
+/**
+ * Untranslated strings only.
+ */
+define('L10N_STATUS_UNTRANSLATED', 1);
+
+/**
+ * Translated (and approved) strings only.
+ */
+define('L10N_STATUS_TRANSLATED', 2);
+
+/**
+ * Has no outstanding suggested translations.
+ */
+define('L10N_STATUS_NO_SUGGESTION', 4);
+
+/**
+ * Has outstanding suggested translations.
+ */
+define('L10N_STATUS_HAS_SUGGESTION', 8);
+
+/**
+ * Is a translation.
+ */
+define('L10N_STATUS_IS_TRANSLATION', 16);
+
+/**
+ * Is a suggestion.
+ */
+define('L10N_STATUS_IS_SUGGESTION', 32);
+
+/**
+ * Used to mark counting duplicates.
+ */
+define('L10N_COUNT_DUPLICATE', 'duplicate');
+
+/**
+ * Used to mark counting unchanged strings.
+ */
+define('L10N_COUNT_UNCHANGED', 'unchanged');
+
+/**
+ * Used to mark counting ignored strings.
+ */
+define('L10N_COUNT_IGNORED', 'ignored');
+
+/**
+ * Used to mark counting suggested strings.
+ */
+define('L10N_COUNT_SUGGESTED', 'suggested');
+
+/**
+ * Used to mark counting added strings.
+ */
+define('L10N_COUNT_ADDED', 'added');
+
+/**
+ * Used to mark counting updated strings.
+ */
+define('L10N_COUNT_UPDATED', 'updated');
+
+/**
+ * Used to mark counting declined strings.
+ */
+define('L10N_COUNT_DECLINED', 'declined');
+
+/**
+ * Used to mark counting declined suggestions.
+ */
+define('L10N_COUNT_SUGGESTION_DECLINED', 'suggestion_declined');
+
+/**
+ * Used to mark counting approved suggestions.
+ */
+define('L10N_COUNT_APPROVED', 'approved');
+
+// = Core hooks ================================================================
+
+/**
+ * Implementation of hook_menu().
+ *
+ * Note that all menu items are accessible to anyone, because
+ * all functionality can be presented in a view-only form, which
+ * anonymous users should be able to browse.
+ */
+function l10n_community_menu() {
+  $items = array();
+
+  // Settings for the community UI.
+  $items['admin/l10n_server/l10n_community'] = array(
+    'title' => 'User interface',
+    'description' => 'Set up general settings for the localization community UI.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('l10n_community_settings_form'),
+    'access arguments' => array('administer localization server'),
+    'file' => 'l10n_community.admin.inc',
+    'weight' => -5,
+  );
+
+  // Main menu items.
+  $items['translate'] = array(
+    'title' => 'Translate',
+    'page callback' => 'l10n_community_welcome_page',
+    'file' => 'welcome.inc',
+    'access arguments' => array('access localization community'),
+  );
+  $items['translate/languages'] = array(
+    'title' => 'Explore languages',
+    'description' => 'Overview of languages and their translation status.',
+    'page callback' => 'l10n_community_explore_languages',
+    'file' => 'pages.inc',
+    'access arguments' => array('access localization community'),
+    'weight' => -10,
+  );
+  $items['translate/projects'] = array(
+    'title' => 'Explore projects',
+    'description' => 'Overview of projects and their translation status.',
+    'page callback' => 'l10n_community_explore_projects',
+    'file' => 'pages.inc',
+    'access arguments' => array('access localization community'),
+    'weight' => -5,
+  );
+  // Unique path to avoid clashing with other items.
+  $items['translate/project-autocomplete'] = array(
+    'title' => 'Project autocomplete',
+    'page callback' => 'l10n_community_projects_autocomplete',
+    'access arguments' => array('access localization community'),
+    'type' => MENU_CALLBACK
+  );
+  // Serve a list of releases for a given project.
+  $items['translate/releases-ahah'] = array(
+    'title' => 'AHAH release picker callback',
+    'page callback' => 'l10n_community_ahah_releases',
+    'access arguments' => array('access localization community'),
+    'type' => MENU_CALLBACK
+  );
+
+
+  // AJAX callbacks for easy translation management. These are expected to be
+  // used only onsite (not as remote API endpoints), so they have no versioning.
+  $items['translate/details/%l10n_community_language/%'] = array(
+    'title' => 'Source string usage details',
+    'page callback' => 'l10n_community_string_details',
+    'page arguments' => array(2, 3),
+    'file' => 'translate.inc',
+    'access arguments' => array('browse translations'),
+    'type' => MENU_CALLBACK,
+  );
+
+  // As soon as we have a language code, we can translate.
+  $items['translate/languages/%l10n_community_language'] = array(
+    'title' => 'Translate',
+    'page callback' => 'l10n_community_overview_language',
+    'page arguments' => array(2),
+    'file' => 'pages.inc',
+    'access arguments' => array('access localization community'),
+  );
+  // Language overview.
+  $items['translate/languages/%l10n_community_language/overview'] = array(
+    'title' => 'Overview',
+    'access arguments' => array('access localization community'),
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -20,
+  );
+  // Tabs to translate, import and export projects.
+  $items['translate/languages/%l10n_community_language/translate'] = array(
+    'title' => 'Translate',
+    'page callback' => 'l10n_community_translate_page',
+    'page arguments' => array(2),
+    'file' => 'translate.inc',
+    'access callback' => 'user_access',
+    'access arguments' => array('browse translations'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => -10,
+  );
+  $items['translate/languages/%l10n_community_language/import'] = array(
+    'title' => 'Import',
+    'page callback' => 'l10n_community_import_page',
+    'page arguments' => array(2),
+    'file' => 'import.inc',
+    'access callback' => 'user_access',
+    'access arguments' => array('import gettext files'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => -5,
+  );
+  $items['translate/languages/%l10n_community_language/export'] = array(
+    'title' => 'Export',
+    'page callback' => 'l10n_community_export_page',
+    'page arguments' => array(NULL, 2),
+    'file' => 'export.inc',
+    'access callback' => 'user_access',
+    'access arguments' => array('export gettext templates and translations'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 0,
+  );
+
+  // We have a valid project name from the web address.
+  $items['translate/projects/%l10n_community_project'] = array(
+    'title callback' => 'l10n_community_page_title_project',
+    'title arguments' => array(2),
+    'page callback' => 'l10n_community_overview_project',
+    'page arguments' => array(2),
+    'file' => 'pages.inc',
+    'access arguments' => array('access localization community'),
+    'type' => MENU_CALLBACK,
+  );
+  $items['translate/projects/%l10n_community_project/view'] = array(
+    'title' => 'Overview',
+    'access arguments' => array('access localization community'),
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -10,
+  );
+  $items['translate/projects/%l10n_community_project/export'] = array(
+    'title' => 'Export template',
+    'page callback' => 'l10n_community_export_page',
+    'page arguments' => array(2),
+    'access callback' => 'user_access',
+    'access arguments' => array('export gettext templates and translations'),
+    'file' => 'export.inc',
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 0,
+  );
+  $items['translate/projects/%l10n_community_project/warnings'] = array(
+    'title' => 'Source code warnings',
+    'page callback' => 'l10n_community_project_warnings',
+    'page arguments' => array(2),
+    'access callback' => 'l10n_community_access_warnings',
+    'access arguments' => array(2),
+    'file' => 'pages.inc',
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 10,
+  );
+
+  return $items;
+}
+
+/**
+ * Menu loader function for %l10n_community_language to validate language code.
+ */
+function l10n_community_language_load($langcode) {
+  if (($languages = l10n_community_get_languages()) && isset($languages[$langcode]) && !empty($languages[$langcode]->plurals)) {
+    return $langcode;
+  }
+  return FALSE;
+}
+
+/**
+ * Menu loader function for %l10n_community_project to validate project URI.
+ */
+function l10n_community_project_load($uri) {
+  if (($projects = l10n_server_get_projects()) && isset($projects[$uri])) {
+    return $uri;
+  }
+  return FALSE;
+}
+
+/**
+ * Title callback for project pages.
+ */
+function l10n_community_page_title_project($uri) {
+  if (($projects = l10n_server_get_projects()) && isset($projects[$uri])) {
+    return $projects[$uri]->title;
+  }
+  return t('Translate');
+}
+
+/**
+ * Menu access callback for project warnings.
+ */
+function l10n_community_access_warnings($uri) {
+  $project = l10n_server_get_projects(array('uri' => $uri));
+  $connectors = l10n_server_get_connectors();
+  $connector_name = substr($project->connector_module, 0, strrpos($project->connector_module, '_'));
+  if (!empty($connectors[$connector_name]) && !empty($connectors[$connector_name]['warnings'])) {
+    // If this connector supports collecting warnings, display the tab.
+    // Otherwise, this is only going to be misleading, so do not do that.
+    return user_access('access localization community');
+  }
+  return FALSE;
+}
+
+/**
+ * Implementation of hook_init().
+ *
+ * Add stylesheets and block search engines from web application pages.
+ */
+function l10n_community_init() {
+  if (arg(0) == 'translate') {
+    drupal_add_css(drupal_get_path('module', 'l10n_community') .'/l10n_community.css', 'module');
+    // For the translation overview pages. This is used to present admin page like panels.
+    drupal_add_css(drupal_get_path('module', 'system') .'/admin.css', 'module');
+    // Tell them that robots are not welcome here. This is a web app, not content.
+    drupal_set_html_head('<meta name="robots" content="noindex, nofollow" />');
+  }
+}
+
+/**
+ * Implementation of hook_perm().
+ */
+function l10n_community_perm() {
+  return array(
+    'access localization community',
+    'browse translations',
+    'export gettext templates and translations',
+    'import gettext files',
+    'submit suggestions',
+    'moderate suggestions from others',
+    'moderate own suggestions',
+  );
+}
+
+/**
+ * Implementation of hook_block().
+ */
+function l10n_community_block($op = 'list', $delta = 0, $edit = array()) {
+  switch ($op) {
+    case 'list':
+      $blocks = array(
+        'help' => array(
+          'info' => t('Translation help'),
+          'weight' => 2,
+          'enabled' => 1,
+          'region' => 'left'
+        ),
+        'stats' => array(
+          'info' => t('Quick statistics'),
+          'weight' => 3,
+          'enabled' => 1,
+          'region' => 'left'
+        ),
+      );
+      return $blocks;
+
+    case 'view':
+      switch ($delta) {
+        case 'help':
+          if (user_access('browse translations')) {
+            return l10n_community_block_help();
+          }
+          return;
+        case 'stats':
+          if (user_access('access localization community')) {
+            return l10n_community_block_stats();
+          }
+          return;
+      }
+  }
+}
+
+/**
+ * Help block.
+ */
+function l10n_community_block_help() {
+  global $user, $theme_key;
+
+  $block = array(
+    'subject' => t('Translation help'),
+    'content' => '',
+  );
+
+  if ($_GET['q'] == 'translate') {
+    $customizable = db_result(db_query("SELECT custom FROM {blocks} WHERE theme = '%s' AND module = 'l10n_community' AND delta = 'help'", $theme_key));
+    $block['content'] = '<p>'. t('Welcome to the translation server. This block will show you tips and advice throughout the application.') . (($user->uid && $customizable) ? ' '. t('Once you are familiar with the system, feel free to disable help in <a href="@user-page">your user settings</a>.', array('@user-page' => url('user/'. $user->uid .'/edit'))) : '') .'</p>';
+    return $block;
+  }
+
+  // Match actual translation editing or review pages with the two different path models they could have.
+  if (preg_match('!translate/languages/(?P<langcode>[^/]+)(/(?P<action>translate|import|export))?$!', $_GET['q'], $args) ||
+      preg_match('!translate/projects/(?P<uri>[^/]+)(/(?P<action>|export))??$!', $_GET['q'], $args)) {
+    $permission_help = $permission_notes = array();
+    if (module_exists('l10n_groups')) {
+      // We are dealing with a groups based permission model.
+      $permission_help[] = l10n_groups_block_help($perm, isset($args['langcode']) ? $args['langcode'] : NULL);
+    }
+    if (user_access('submit suggestions')) {
+      $permission_notes[] = t('You can suggest translations to be reviewed by moderators of the team.');
+    }
+    if (user_access('moderate suggestions from others')) {
+      $permission_notes[] = t('Moderation of suggestions submitted by others is possible.');
+    }
+    if (user_access('moderate own suggestions')) {
+      $permission_notes[] = t('You are empowered to directly submit translations.');
+    }
+    if (user_access('import gettext files')) {
+      $permission_notes[] = t('Import complete Gettext translation files to suggest multiple translations at once.');
+    }
+    if (user_access('export gettext templates and translations')) {
+      $permission_notes[] = t('To work offline, export a translation template, which contains the current state of the translation.');
+    }
+    if (!empty($permission_notes)) {
+      $permission_help[] = '<p><ul><li>'. join('</li><li>', $permission_notes) .'</li></ul></p>';
+    }
+    $permission_help = join(' ', $permission_help);
+
+    // Now construct the actual help text depending on whether we have project or language values from the address.
+    if (isset($args['action'])) {
+      // We have an import or export action.
+      switch ($args['action']) {
+
+        case 'import':
+          $block['content'] = '<p>'. t('Because all project translations are shared, an imported file might provide translations for strings used in any project.') .'</p>'. $permission_help;
+          return $block;
+
+        case 'export':
+          $block['content'] = '<p>'. t('The GNU Gettext Portable Object (Template) format is used for exports, which is understood by Drupal and desktop translation editing tools.') .'</p>'. $permission_help;
+          return $block;
+
+        case 'translate':
+          // Language code and project both present.
+          $items = array();
+          $items[] = t('Remember to include a line break in the same positions in the translation where they appear in the source string. Beginning and ending line breaks are saved properly, even if you forget to include them.');
+          $items[] = t('Variables are designated with !, @ and % (like %example, !example or @example), and should be kept in the translated text as-is.');
+          $languages = l10n_community_get_languages();
+          $formula = join(' ', preg_split('!(&&|\\|\\||%|<=|>=|==|\\!=|\\?|:)!', $languages[$args['langcode']]->formula, -1, PREG_SPLIT_DELIM_CAPTURE));
+          $items[] = t('The plural formula in use with this language is %formula.', array('%formula' => str_replace('$n', 'n', $formula)));
+
+          $block['content'] = $permission_help . theme('item_list', $items);
+          return $block;
+      }
+    }
+    else {
+      // We are on some overview page.
+      if (!isset($args['uri'])) {
+        // Only language code is present => translation listing is shown.
+        $block['content'] = $permission_help;
+        return $block;
+      }
+      elseif (!isset($args['langcode'])) {
+        // Only project code is present => language list is shown.
+        $block['content'] = '<p>'. t('This page shows a list of all languages and their overall translation status (accumulated for all releases). Exporting translation works for all languages. Importing your translations is only possible to languages where you have sufficient privileges to do so.') .'</p>';
+        return $block;
+      }
+    }
+  }
+}
+
+/**
+ * Stats block, also reused on welcome.inc.
+ */
+function l10n_community_block_stats() {
+  $stats = array();
+  $stats_numbers = l10n_community_get_stats();
+  if (isset($stats_numbers['groups'])) {
+    $stats = array(
+      format_plural($stats_numbers['groups'], '1 translation group', '@count translation groups'),
+    );
+  }
+
+  $block = array(
+    'subject' => t('Quick community statistics'),
+    'content' => theme('item_list', array_merge($stats, array(
+      format_plural($stats_numbers['users'], '1 contributor', '@count contributors'),
+      format_plural($stats_numbers['projects'], '1 project managed', '@count projects managed'),
+      format_plural($stats_numbers['releases_parsed'], '1 release parsed', '@count releases parsed') .' ('. format_plural($stats_numbers['releases_queue'], '1 in queue', '@count in queue') .')',
+      format_plural($stats_numbers['files'], '1 file scanned', '@count files scanned'),
+      format_plural($stats_numbers['strings'], '1 string to translate', '@count strings to translate'),
+      format_plural($stats_numbers['translations'], '1 translation recorded', '@count translations recorded'),
+      format_plural($stats_numbers['suggestions'], '1 suggestion awaiting approval', '@count suggestions awaiting approval'),
+    ))),
+  );
+  return $block;
+}
+
+/**
+ * Implementation of hook_user().
+ */
+function l10n_community_user($op, &$edit, &$account, $category = NULL) {
+  if ($op == 'view' && user_access('access localization community')) {
+    $languages = l10n_community_get_languages('name');
+    $result = db_query("SELECT COUNT(*) AS sum, language FROM {l10n_server_translation} t WHERE t.uid_entered = %d AND t.is_suggestion = 0 AND t.is_active = 1 GROUP by t.language", $account->uid);
+    $items = array();
+    while ($row = db_fetch_object($result)) {
+      $items[] = array('#type' => 'user_profile_item', '#title' => l(t($languages[$row->language]), 'translate/languages/'. $row->language), '#value' => format_plural($row->sum, '1 approved translation', '@count approved translations'));
+    }
+    if ($items) {
+      $account->content['l10n_server_contributions'] = array(
+        '#type' => 'user_profile_category',
+        '#title' => t('Localization contributions'),
+      );
+      $account->content['l10n_server_contributions'] += $items;
+    }
+  }
+}
+
+// = API functions =============================================================
+
+/**
+ * Helper function for language listing.
+ *
+ * @param $key
+ *   Key name to restrict return value to.
+ * @return
+ *   If null, a list of language objects is returned, keyed by language code.
+ *   Otherwise values referenced by $key are returned, keyed by language code.
+ */
+function l10n_community_get_languages($key = NULL) {
+  static $languages = NULL;
+
+  if (!isset($languages)) {
+    $result = db_query("SELECT * FROM {languages} WHERE language <> 'en' ORDER BY name ASC");
+    $languages = array();
+    while ($language = db_fetch_object($result)) {
+      $languages[$language->language] = $language;
+    }
+  }
+
+  if (isset($key)) {
+    // Build list of values with the specific key, if asked.
+    $result = array();
+    foreach ($languages as $language) {
+      $result[$language->language] = $language->$key;
+    }
+    return $result;
+  }
+  else {
+    // Return full object list otherwise.
+    return $languages;
+  }
+}
+
+/**
+ * Returns a language object for a specific language.
+ *
+ * @param $langcode
+ *   Language code, for example 'hu', 'pt-br', 'de' or 'it'.
+ * @return
+ *   A populated language object.
+ */
+function l10n_community_get_language($langcode) {
+  $languages = l10n_community_get_languages();
+  return $languages[$langcode];
+}
+
+/**
+ * Check whether the user has either review permissions.
+ */
+function l10n_community_review_access() {
+  return user_access('moderate suggestions from others') || user_access('moderate own suggestions');
+}
+
+/**
+ * Get all source code warnings for a project grouped by release.
+ *
+ * @param $uri
+ *   Project code to look up warnings for.
+ * @return
+ *   Array of array lists of warnings. The outer array is indexed by release id.
+ */
+function l10n_community_get_warnings($uri) {
+  $warnings = array();
+  // Inner JOIN used, so if no warnings are found, no rows are returned.
+  $result = db_query("SELECT e.rid, e.value FROM {l10n_server_project} p LEFT JOIN {l10n_server_release} r ON p.pid = r.pid INNER JOIN {l10n_server_error} e ON r.rid = e.rid WHERE p.uri = '%s'", $uri);
+  while ($warning = db_fetch_object($result)) {
+    $warnings[$warning->rid][] = $warning->value;
+  }
+  return $warnings;
+}
+
+/**
+ * Get all contexts from the database.
+ *
+ * @return
+ *   Array of context values.
+ */
+function l10n_community_get_contexts() {
+  $contexts = array();
+  $query = "SELECT DISTINCT context FROM {l10n_server_string} ORDER BY context";
+  $result = db_query($query);
+  while ($context = db_fetch_object($result)) {
+    $contexts[empty($context->context) ? 'none' : $context->context] = empty($context->context) ? t('No context') : $context->context;
+  }
+  return $contexts;
+}
+
+/**
+ * Make spacing and newlines the same in translation as in the source.
+ *
+ * @param $translation
+ *   Translation string.
+ * @param $source
+ *   Source string.
+ * @return
+ *   Translation string with the right beginning and ending chars.
+ */
+function l10n_community_trim($translation, $source) {
+  if (is_string($translation) && is_string($source)) {
+    $matches = array();
+    preg_match("/^(\s*).*\S(\s*)\$/s", $source, $matches);
+    return $matches[1] . trim($translation) . $matches[2];
+  }
+  return $translation;
+}
+
+/**
+ * Stores counters for status messages when modifying translations.
+ *
+ * @param $field
+ *   The field to increment. Can be one of L10N_COUNT_*.
+ *   If not specified, the counters are returned and reset afterwards.
+ * @param $increment
+ *   Optional increment for the counter. Defaults to 1.
+ */
+function l10n_community_counter($field = NULL, $increment = 1) {
+  static $counters = array();
+
+  if (isset($field)) {
+    if (!isset($counters[$field])) {
+      $counters[$field] = 0;
+    }
+    $counters[$field] += $increment;
+  }
+  else {
+    $return = $counters;
+    $counters = array();
+    return $return;
+  }
+}
+
+/**
+ * Set a message based on the number of translations changed.
+ *
+ * Used by both the save and import process.
+ */
+function l10n_community_update_message() {
+  $counters = l10n_community_counter();
+  $messages = array();
+
+  if (!empty($counters[L10N_COUNT_DECLINED])) {
+    $messages[] = format_plural($counters[L10N_COUNT_DECLINED], '1 translation declined', '@count translations declined');
+  }
+  if (!empty($counters[L10N_COUNT_SUGGESTION_DECLINED])) {
+    $messages[] = format_plural($counters[L10N_COUNT_SUGGESTION_DECLINED], '1 suggestion declined', '@count suggestions declined');
+  }
+  if (!empty($counters[L10N_COUNT_APPROVED])) {
+    $messages[] = format_plural($counters[L10N_COUNT_APPROVED], '1 translation approved', '@count translations approved');
+  }
+  if (!empty($counters[L10N_COUNT_ADDED])) {
+    $messages[] = format_plural($counters[L10N_COUNT_ADDED], '1 translation added', '@count translations added');
+  }
+  if (!empty($counters[L10N_COUNT_SUGGESTED])) {
+    $messages[] = format_plural($counters[L10N_COUNT_SUGGESTED], '1 suggestion added', '@count suggestions added');
+  }
+  if (!empty($counters[L10N_COUNT_UPDATED])) {
+    $messages[] = format_plural($counters[L10N_COUNT_UPDATED], '1 translation updated', '@count translations updated');
+  }
+  if (!empty($counters[L10N_COUNT_DUPLICATE])) {
+    $messages[] = format_plural($counters[L10N_COUNT_DUPLICATE], '1 duplicate translation not saved', '@count duplicate translations not saved');
+  }
+  if (!empty($counters[L10N_COUNT_IGNORED])) {
+    $messages[] = format_plural($counters[L10N_COUNT_IGNORED], '1 source string not found; its translation was ignored', '@count source strings not found; their translations were ignored');
+  }
+  if (!empty($counters[L10N_COUNT_UNCHANGED])) {
+    $messages[] = format_plural($counters[L10N_COUNT_UNCHANGED], '1 translation unchanged', '@count translations unchanged');
+  }
+
+  if ($messages) {
+    drupal_set_message(implode(', ', $messages));
+  }
+}
+
+/**
+ * Retrieve a pipe delimited string of autocomplete suggestions for projects.
+ */
+function l10n_community_projects_autocomplete($string = '') {
+  $matches = array();
+  if ($string) {
+    $result = db_query_range("SELECT title FROM {l10n_server_project} WHERE LOWER(title) LIKE LOWER('%s%%') AND status = 1 ORDER BY title", $string, 0, 100);
+    while ($project = db_fetch_object($result)) {
+      $matches[$project->title] = check_plain($project->title);
+    }
+  }
+  print drupal_to_js($matches);
+  exit();
+}
+
+/**
+ * Companion to autocomplete lookup to return uri by title.
+ */
+function l10n_community_project_uri_by_title($title) {
+  return db_result(db_query("SELECT uri FROM {l10n_server_project} WHERE title = '%s'", $title));
+}
+
+// = Theme functions ===========================================================
+
+/**
+ * Implementation of hook_theme().
+ */
+function l10n_community_theme($existing, $type, $theme, $path) {
+  return array(
+    // pages.inc
+    'l10n_community_progress_columns' => array(
+      'arguments' => array('sum' => NULL, 'translated' => NULL, 'has_suggestion' => NULL),
+    ),
+    'l10n_community_progress_headers' => array(
+      'arguments' => array('mainhead' => NULL),
+    ),
+    'l10n_community_table' => array(
+      'arguments' => array('header' => NULL, 'table' => NULL),
+    ),
+    // translate.inc
+    'l10n_community_filter_form' => array(
+      'arguments' => array('form' => NULL),
+    ),
+    'l10n_community_translate_translation' => array(
+      'arguments' => array('element' => NULL),
+    ),
+    'l10n_community_translate_actions' => array(
+      'arguments' => array('element' => NULL),
+    ),
+    'l10n_community_in_context' => array(
+      'arguments' => array('source' => NULL),
+    ),
+    'l10n_community_translate_radio' => array(
+      'arguments' => array('element' => NULL),
+    ),
+    'l10n_community_translate_source' => array(
+      'arguments' => array('element' => NULL),
+    ),
+    'l10n_community_translate_translation_list' => array(
+      'arguments' => array('element' => NULL),
+    ),
+    'l10n_community_translate_table' => array(
+      'arguments' => array('element' => NULL),
+    ),
+  );
+}
+
+/**
+ * Compute language community stats.
+ *
+ * @param $langcode
+ *   Compute statistics for this language.
+ */
+function l10n_community_get_stats($langcode = NULL) {
+  if (!empty($langcode)) {
+    // Compute based on langcode.
+    if ($stats = cache_get('l10n:stats:'. $langcode, 'cache')) {
+      return $stats->data;
+    }
+    else {
+      $stats = array();
+      $stats['strings'] = db_result(db_query('SELECT COUNT(*) FROM {l10n_server_string}'));
+      $stats['translations'] = db_result(db_query("SELECT COUNT(*) FROM {l10n_server_status_flag} WHERE has_translation = 1 AND language = '%s'", $langcode));
+      $stats['suggestions'] = db_result(db_query("SELECT COUNT(*) FROM {l10n_server_translation} WHERE is_suggestion = 1 AND is_active = 1 AND language = '%s'", $langcode));
+      $stats['users'] = db_result(db_query("SELECT COUNT(DISTINCT uid_entered) FROM {l10n_server_translation} WHERE is_suggestion = 0 AND is_active = 1 AND language = '%s'", $langcode));
+
+      // Cache results for next time. Not setting a timestamp as cache validity
+      // time, we would like to retain control of recalculating these values.
+      cache_set('l10n:stats:'. $langcode, $stats, 'cache', CACHE_PERMANENT);
+      return $stats;
+    }
+  }
+  else {
+    // General community statistics.
+    if ($stats = cache_get('l10n:stats', 'cache')) {
+      return $stats->data;
+    }
+    else {
+      $stats = array();
+      $stats['users'] = (int) db_result(db_query("SELECT COUNT(DISTINCT uid_entered) FROM {l10n_server_translation}"));
+      $stats['projects'] = db_result(db_query('SELECT COUNT(*) FROM {l10n_server_project} WHERE status = 1'));
+      $stats['releases_parsed'] = db_result(db_query('SELECT COUNT(*) FROM {l10n_server_release} WHERE last_parsed != 0'));
+      $stats['releases_queue'] = db_result(db_query('SELECT COUNT(*) FROM {l10n_server_release} r INNER JOIN {l10n_server_project} p ON r.pid = p.pid WHERE p.status = 1 AND r.last_parsed = 0'));
+      $stats['files'] = db_result(db_query('SELECT COUNT(*) FROM {l10n_server_file}'));
+      $stats['strings'] = db_result(db_query('SELECT COUNT(*) FROM {l10n_server_string}'));
+      $stats['translations'] = db_result(db_query('SELECT COUNT(*) FROM {l10n_server_status_flag} WHERE has_translation = 1'));
+      $stats['suggestions'] = db_result(db_query('SELECT COUNT(*) FROM {l10n_server_translation} WHERE is_suggestion = 1 AND is_active = 1'));
+
+      if (module_exists('l10n_groups')) {
+        $stats['groups'] = db_result(db_query('SELECT COUNT(*) FROM {l10n_groups_group}'));
+      }
+
+      // Cache results for next time. Not setting a timestamp as cache validity
+      // time, we would like to retain control of recalculating these values.
+      cache_set('l10n:stats', $stats, 'cache', CACHE_PERMANENT);
+      return $stats;
+    }
+  }
+}
+
+/**
+ * Implementation of hook_cron().
+ *
+ * Clear project and language stats every hour.
+ */
+function l10n_community_cron() {
+  $lastrun = variable_get('l10n_cron_stats', 1);
+  if (($_SERVER['REQUEST_TIME'] - $lastrun) > 3600) {
+    l10n_community_cache_clear_all();
+    l10n_communiy_rebuild_stats();
+    variable_set('l10n_cron_stats', $_SERVER['REQUEST_TIME']);
+  }
+}
+
+/**
+ * Clear all l10n_community caches.
+ */
+function l10n_community_cache_clear_all() {
+  cache_clear_all('l10n:stats', 'cache', TRUE);
+  cache_clear_all('l10n:count', 'cache', TRUE);
+}
+
+/**
+ * Rebuild the most important stats for the site.
+ */
+function l10n_communiy_rebuild_stats() {
+  l10n_community_get_stats();
+  include_once drupal_get_path('module', 'l10n_community') .'/pages.inc';
+  l10n_community_get_string_count('languages');
+  l10n_community_get_string_count('projects');
+  if ($project = l10n_community_get_highlighted_project()) {
+    l10n_community_get_string_count('languages', $project->pid);
+  }
+}
+
+/**
+ * Load and return the highlighted project if set and found.
+ */
+function l10n_community_get_highlighted_project() {
+  if ($highlight_project = variable_get('l10n_community_highlighted_project', '')) {
+    if ($project = db_fetch_object(db_query("SELECT * FROM {l10n_server_project} WHERE title = '%s'", $highlight_project))) {
+      return $project;
+    }
+  }
+  return NULL;
+}
+
+// == Filter handling ==========================================================
+
+/**
+ * Check and sanitize arguments and build filter array.
+ *
+ * @param $params
+ *   Associative array with unsanitized values.
+ */
+function l10n_community_build_filter_values($params) {
+  $project = $release = NULL;
+
+  // Convert array representation of flags to one integer.
+  if (isset($params['status']) && is_array($params['status'])) {
+    if (isset($params['status']['suggestion'])) {
+      $params['status'] = ((int) $params['status']['translation']) | ((int) $params['status']['suggestion']);
+    }
+    else {
+      $params['status'] = (int) $params['status']['translation'];
+    }
+  }
+
+  $filter = array(
+    'project' => NULL,
+    'status' => isset($params['status']) ? (int) $params['status'] : L10N_STATUS_ALL,
+    'release' => 'all',
+    'search' => !empty($params['search']) ? (string) $params['search'] : '',
+    'author' => !empty($params['author']) && ($account = user_load(array('name' => $params['author']))) ? $account : NULL,
+    // Dropdown, validated by form API.
+    'context' => isset($params['context']) ? (string) $params['context'] : 'all',
+    'limit' => (isset($params['limit']) && in_array($params['limit'], array(5, 10, 20, 30))) ? (int) $params['limit'] : 10,
+  );
+
+  // The project can be a dropdown or text field depending on number of
+  // projects. So we need to sanitize its value.
+  if (isset($params['project'])) {
+    // Try to load project by uri or title, but give URI priority. URI is used
+    // to shorten the URL and have simple redirects. Title is used if the
+    // filter form was submitted, but that one is simplified to the URI on
+    // redirect to make the URL shorter.
+    $project = l10n_server_get_projects(array('uri' => $params['project']));
+    if (empty($project)) {
+      $project = db_fetch_object(db_query("SELECT * FROM {l10n_server_project} WHERE title = '%s'", $params['project']));
+    }
+    if (!empty($project)) {
+      $filter['project'] = $project;
+      if (isset($params['release']) && ($releases = l10n_server_get_releases($project->uri)) && isset($releases[$params['release']])) {
+        // Allow to select this release, if belongs to current project only.
+        $filter['release'] = $params['release'];
+      }
+    }
+  }
+  return $filter;
+}
+
+/**
+ * Replace complex data filters (objects or arrays) with string representations.
+ *
+ * @param $filters
+ *   Associative array with filters passed.
+ * @return
+ *   The modified filter array only containing string and number values.
+ */
+function l10n_community_flat_filters($filters) {
+  foreach (array('project' => 'uri', 'author' => 'name') as $name => $key) {
+    if (!empty($filters[$name])) {
+      $filters[$name] = $filters[$name]->$key;
+    }
+  }
+  return $filters;
+}
+
+/**
+ * Generate and add JS for URL replacements. These ensure we keep filter values.
+ */
+function l10n_community_add_url_modifiers($langcode, $filters) {
+  $filters = l10n_community_flat_filters($filters);
+  $urls = array(
+    'translate/languages/'. $langcode .'/translate',
+    'translate/languages/'. $langcode .'/export'
+  );
+  $replacements = array();
+  foreach ($urls as $url) {
+    $replacements[url($url)] = url($url, array('query' => $filters));
+  }
+  drupal_add_js(array('l10nServerURLs' => $replacements), 'setting');
+}
+
+// = AHAH callbacks ============================================================
+
+/**
+ * AHAH callback to serve an updated list of releases on project changes.
+ *
+ * This callback is used on the filter forms for translation pages and the
+ * export form, so need to accommodate for small differences of the two.
+ */
+function l10n_community_ahah_releases() {
+  // AHAH copy-paste from http://drupal.org/node/331941
+  $form_state = array('storage' => NULL, 'submitted' => FALSE, 'rebuild' => TRUE);
+  $form_build_id = $_POST['form_build_id'];
+  $form = form_get_cache($form_build_id, $form_state);
+  $args = $form['#parameters'];
+  $form_id = array_shift($args);
+  // AHAH copy-paste cut.
+
+  // Include the right file based on the form being used.
+  $file = ($form_id == 'l10n_community_export_form') ? 'export.inc' : 'translate.inc';
+  include_once drupal_get_path('module', 'l10n_community') .'/'. $file;
+
+  // AHAH copy-paste from http://drupal.org/node/331941 continued
+  $form_state['post'] = $form['#post'] = $_POST;
+  $form['#programmed'] = $form['#redirect'] = FALSE;
+  drupal_process_form($form_id, $form, $form_state);
+  $form = drupal_rebuild_form($form_id, $form_state, $args, $form_build_id);
+  // End of AHAH copy paste.
+
+  // Pick and render our changed element for output.
+  $changed_element = ($form_id == 'l10n_community_export_form') ? $form['data']['release'] : $form['release'];
+  // Prevent duplicate wrappers.
+  unset($changed_element['#prefix'], $changed_element['#suffix']);
+
+  if ($form_id == 'l10n_community_filter_form') {
+    // Prevent duplicate titles (due to how we render the elements).
+    unset($changed_element['#title']);
+  }
+
+  drupal_json(
+    array(
+      'status' => TRUE,
+      'data'   => theme('status_messages') . drupal_render($changed_element),
+    )
+  );
+}
+
+// = API functions to save / update translations ===============================
+
+/**
+ * Adds a suggestion to a language/string.
+ *
+ * @param $sid
+ *   The string ID for which a new translation should be added.
+ * @param $translation
+ *   String representing the new translation.
+ * @param $langcode
+ *   The language of the new translation.
+ * @param $uid
+ *  User ID to use to save the string.
+ */
+function l10n_community_add_suggestion($sid, $translation, $langcode, $uid) {
+
+  // Load source string and adjust translation whitespace based on source.
+  $source_string = db_result(db_query('SELECT value FROM {l10n_server_string} WHERE sid = %d', $sid));
+  $translation = l10n_community_trim($translation, $source_string);
+
+  // Don't store empty translations.
+  if ($translation === '') {
+    return NULL;
+  }
+
+  // Look for an existing active translation, if any.
+  // Use BINARY matching to avoid marking case-corrections as duplicate.
+  $existing = db_fetch_object(db_query("SELECT tid, is_active, is_suggestion FROM {l10n_server_translation} WHERE sid = %d AND language = '%s' AND translation = BINARY '%s'", $sid, $langcode, $translation));
+  if (!empty($existing)) {
+    if ($existing->is_active == 0) {
+      // If the existing item is not active, make it an active suggestion and clean up its possible previous approval information.
+      db_query("UPDATE {l10n_server_translation} SET is_suggestion = 1, is_active = 1, uid_approved = 0, time_approved = 0 WHERE tid = %d", $existing->tid);
+      $tid = $existing->tid;
+    }
+    else {
+      return FALSE;
+    }
+  }
+  else {
+    // Insert the new suggestion.
+    db_query("INSERT INTO {l10n_server_translation} (sid, translation, language, uid_entered, time_entered, is_suggestion, is_active) VALUES (%d, '%s', '%s', %d, %d, 1, 1)", $sid, $translation, $langcode, $uid, time());
+    $tid = db_last_insert_id('l10n_community_translation', 'tid');
+  }
+
+  // Mark the existing or mock translation as having suggestions.
+  l10n_community_update_string_status($langcode, $sid);
+
+  return $tid;
+}
+
+/**
+ * Marks a translation as declined.
+ *
+ * @param $langcode
+ *   The language of the declined translation.
+ * @param $sid
+ *   The string ID the translation belongs to.
+ * @param $tid
+ *   The translation ID of the translation.
+ */
+function l10n_community_decline_string($langcode, $sid, $tid) {
+  db_query("UPDATE {l10n_server_translation} SET is_active = 0 WHERE tid = %d", $tid);
+  l10n_community_update_string_status($langcode, $sid);
+}
+
+/**
+ * Updates the status flags for the given source string.
+ *
+ * @param $langcode
+ *   The language of the string.
+ * @param $sid
+ *   The string ID that should be updated.
+ */
+function l10n_community_update_string_status($langcode, $sid) {
+  // Let's see if we have any suggestions remaining in this language.
+  $has_suggestion = db_result(db_query("SELECT 1 FROM {l10n_server_translation} WHERE sid = %d AND is_suggestion = 1 AND is_active = 1 AND language = '%s'", $sid, $langcode));
+  $has_translation = db_result(db_query("SELECT 1 FROM {l10n_server_translation} WHERE sid = %d AND is_suggestion = 0 AND is_active = 1 AND language = '%s'", $sid, $langcode));
+
+  if ($has_suggestion || $has_translation) {
+    // Update the status according to the number of suggestions.
+    db_query("REPLACE INTO {l10n_server_status_flag} (has_suggestion, has_translation, sid, language) VALUES (%d, %d, %d, '%s')", (int) $has_suggestion, (int) $has_translation, $sid, $langcode);
+  }
+  else {
+    // Drop database entry, not required anymore.
+    db_query("DELETE FROM {l10n_server_status_flag} WHERE sid = %d AND language = '%s'", $sid, $langcode);
+  }
+}
+
+/**
+ * Mark a translation as approved.
+ *
+ * @param $langcode
+ *   The language of the approved translation.
+ * @param $sid
+ *   The string ID the translation belongs to.
+ * @param $tid
+ *   The translation ID of the translation.
+ */
+function l10n_community_approve_string($langcode, $sid, $tid) {
+  global $user;
+
+  // Make the existing approved string a suggestion (if applicable).
+  db_query("UPDATE {l10n_server_translation} SET is_suggestion = 1 WHERE sid = %d AND language = '%s' AND is_suggestion = 0 AND is_active = 1", $sid, $langcode);
+
+  // Mark this exact suggestion as active translation, and set approval time.
+  db_query("UPDATE {l10n_server_translation} SET time_approved = %d, uid_approved = %d, is_suggestion = 0, is_active = 1 WHERE tid = %d;", time(), $user->uid, $tid);
+  l10n_community_update_string_status($langcode, $sid);
+}

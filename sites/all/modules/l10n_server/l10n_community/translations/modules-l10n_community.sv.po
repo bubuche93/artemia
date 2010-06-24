@@ -1,0 +1,953 @@
+# $Id: modules-l10n_community.sv.po,v 1.1.2.1 2009/05/29 00:50:50 seals Exp $
+#
+# Swedish translation of Drupal (modules-l10_community)
+# Generated from files:
+#  ajax.inc,v 1.1.2.8 2007/12/28 16:40:12 goba
+#  export.inc,v 1.1.2.9 2008/01/17 21:11:06 goba
+#  import.inc,v 1.1.2.5 2007/12/23 22:51:53 goba
+#  pages.inc,v 1.1.2.19 2007/12/28 16:40:12 goba
+#  translate.inc,v 1.1.2.5 2007/12/28 16:40:12 goba
+#  l10n_community.module,v 1.1.2.15 2008/01/02 23:14:12 goba
+#  welcome.inc,v 1.1.2.6 2007/12/28 16:40:12 goba
+#  extractor.inc,v 1.1.2.11 2008/01/17 01:24:37 goba
+#  l10n_community.info,v 1.1.2.4 2007/10/03 19:57:24 goba
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Localization Server - Community 6.x\n"
+"POT-Creation-Date: 2008-02-01 20:54+0100\n"
+"PO-Revision-Date: 2009-05-29 02:25+0100\n"
+"Last-Translator: Magnus Gunnarsson <seals@passagen.se>\n"
+"Language-Team: drupalsverige.se\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+"X-Poedit-Language: Swedish\n"
+"X-Poedit-Country: SWEDEN\n"
+"X-Poedit-SourceCharset: utf-8\n"
+
+#: ajax.inc:45
+msgid "Used in:"
+msgstr "Används i:"
+
+#: ajax.inc:52
+msgid "<strong>Translated by:</strong><br /> %username at %date"
+msgstr "<strong>Översatt av:</strong><br /> %username - %date"
+
+#: ajax.inc:62
+msgid "Approve suggestion."
+msgstr "Godkänn förslag."
+
+#: ajax.inc:64
+msgid "Decline suggestion."
+msgstr "Neka förslag."
+
+#: ajax.inc:66
+msgid "Copy suggestion text to the edit field."
+msgstr "Kopiera föreslagen text till redigeringsfälet."
+
+#: ajax.inc:75
+msgid "Outstanding suggestions:"
+msgstr "Utstående förslag:"
+
+#: export.inc:14
+#: import.inc:23
+#: pages.inc:100;196
+#: translate.inc:25
+msgid "Home"
+msgstr "Hem"
+
+#: export.inc:15
+#: pages.inc:101;197
+#: translate.inc:26
+#: l10n_community.module:83;165
+msgid "Translate"
+msgstr "Översätt"
+
+#: export.inc:22
+msgid "Export @language translations"
+msgstr "Exportera @language översättningar"
+
+#: export.inc:23
+#: pages.inc:102
+#: l10n_community.module:97
+msgid "Explore languages"
+msgstr "Utforska språk"
+
+#: export.inc:27
+msgid "Export @project translation templates"
+msgstr "Exportera @project översättningsmallar"
+
+#: export.inc:28
+#: pages.inc:198
+#: l10n_community.module:107
+msgid "Explore projects"
+msgstr "Exportera projekt"
+
+#: export.inc:56
+msgid "Source data"
+msgstr "Källdata"
+
+#: export.inc:66
+msgid "Choose a project"
+msgstr "Välj ett projekt"
+
+#: export.inc:90
+#: translate.inc:86;114;130
+#: welcome.inc:107;117
+msgid "All"
+msgstr "Alla"
+
+#: export.inc:95
+#: translate.inc:135
+msgid "Release"
+msgstr "Utgåva"
+
+#: export.inc:99
+msgid "Exporting with all releases is useful for translators, but is not optimal to use for end users because unused data would clutter up their database, when files get imported. Export for all releases if you would like to provide a complete translation, and you work with a desktop tool."
+msgstr "Exportering av alla utgåvor är användbart för översättare, men är inte optimalt för slutanvändare eftersom oanvänd data kommer att belamra deras databas när filer importeras. Exportera alla utgåvor om du vill tillhandahålla en komplett översättning och du arbetar med ett skrivbordsverktyg."
+
+#: export.inc:110
+msgid "Format"
+msgstr "Format"
+
+#: export.inc:115
+msgid "Type of export"
+msgstr "Typ av export"
+
+#: export.inc:117
+#: translate.inc:404
+msgid "Translation"
+msgstr "Översättning"
+
+#: export.inc:117
+msgid "Translation template"
+msgstr "Översättningsmall"
+
+#: export.inc:119
+msgid "Templates only contain the source (English) strings, translations are represented by empty placeholders."
+msgstr "Mallar som enbart innehåller källsträngen (engelska), översättningar representeras av tomma platshållare."
+
+#: export.inc:122
+msgid "Format used"
+msgstr "Använt format"
+
+#: export.inc:124
+msgid "Drupal 6 package format"
+msgstr "Format för projekt av typen Drupal 6"
+
+#: export.inc:124
+msgid "Drupal 5 package format for autolocale module"
+msgstr "Format för projekt av typen Drupal 5 för modulen Autolocale"
+
+#: export.inc:124
+msgid "Flat package for CVS commit"
+msgstr "Platt paket för inläggning i CVS"
+
+#: export.inc:124
+msgid "All in one file"
+msgstr "Alla i en fil"
+
+#: export.inc:126
+msgid "Drupal 5's autolocale module and Drupal 6 use different conventions for directory naming in packages. Temporarily, as long as you need to use CVS to distribute translations the flat package helps you generate a package for committing to Drupal.org. Additionally, for testing, spell checking and smaller modules, you can also export in one file without packaging as well. It is not advised to use big .po files for importing in Drupal though, as it might lead to incomplete imports. Use packages for usage with Drupal importing."
+msgstr "Drupal 5:s modul Autolocale och Drupal 6 använder olika uppgörelser för namngivning av kataloger i paket. Temporärt, så länge som du behöver använda CVS för att distribuera översättningen så hjälper dig det platta paketet dig att generera ett paket att lägga till Drupal.org. Dessutom, för testning, rättstavning och små moduler så kan du också också exportera till en fil utan paketering. Det är inte tillrått att använda en stor .po-fil för att importera till Drupal däremot eftersom det kan leda till inkompletta importer. Använd paket för användning med import i Drupal."
+
+#: export.inc:131
+#: l10n_community.module:209
+msgid "Export"
+msgstr "Exportera"
+
+#: export.inc:131
+msgid "Choose project"
+msgstr "Välj projekt"
+
+#: export.inc:141
+msgid "You should choose a project, submit the form and choose a release."
+msgstr "Du måste välja ett projekt, skicka formuläret och välja en utgåva."
+
+#: export.inc:144
+msgid "Invalid project chosen."
+msgstr "Ogiltig projekt valt."
+
+#: export.inc:159
+msgid "You should choose a release."
+msgstr "Du måste välja en utgåva."
+
+#: export.inc:165
+msgid "Invalid release chosen."
+msgstr "Ogiltig utgåva vald."
+
+#: extractor.inc:42
+msgid "Package to parse (%file) does not exist."
+msgstr "Paket att analysera (%file) existerar inte."
+
+#: extractor.inc:45
+msgid "Temporary directory %path already exists."
+msgstr "Temporära katalogen %path existerar redan."
+
+#: extractor.inc:52
+#, fuzzy
+msgid "Error on untaring %filename file."
+msgstr "Fel vid uppackning av filen %filename."
+
+#: extractor.inc:70
+msgid "Contents of %filename have been scanned."
+msgstr "Innehåll för %filename har avsökts."
+
+#: extractor.inc:96;100
+#: l10n_community.module:0
+msgid "l10n_community"
+msgstr "l10n_community"
+
+#: import.inc:15
+msgid "Import translations to @language"
+msgstr "Importera översättningar till @language"
+
+#: import.inc:18
+msgid "Import suggestions to @language"
+msgstr "Importera förslag till @language"
+
+#: import.inc:24
+msgid "Translate projects"
+msgstr "Översättningsprojekt"
+
+#: import.inc:42
+msgid "Translation file"
+msgstr "Översättningsfil"
+
+#: import.inc:44
+msgid "A Gettext Portable Object (.po) file to upload."
+msgstr "Fil av typen Gettext Portable Object (.po) att ladda upp."
+
+#: import.inc:47
+msgid "Store as suggestions"
+msgstr "Lagra som förslag"
+
+#: import.inc:49
+msgid "Check if the translations you import need discussion. If checked, all translations in the imported file will be saved as suggestions."
+msgstr "Kontrollera om översättningen du importerade behöver en diskussion. Om ikryssad så kommer alla översättningar i den importerade filen att sparas som förslag."
+
+#: import.inc:59
+#: l10n_community.module:200
+msgid "Import"
+msgstr "Importera"
+
+#: import.inc:80
+msgid "The translation was successfully imported."
+msgstr "Översättningen importerades utan problem."
+
+#: import.inc:85
+msgid "File to import not found."
+msgstr "Fil att importera hittades inte."
+
+#: (duplicate) import.inc:110
+msgid "The translation import failed, because the file %filename could not be read."
+msgstr "Import av översättningen misslyckades efter filen %filename inte kunde läsas."
+
+#: (duplicate) import.inc:135
+msgid "The translation file %filename contains an error: \"msgstr\" was expected but not found on line %line."
+msgstr "Översättningsfilen %filename innehåller ett fel: \"msgstr\" förväntades, men hittades inte på rad %line."
+
+#: (duplicate) import.inc:141
+msgid "The translation file %filename contains an error: \"msgid_plural\" was expected but not found on line %line."
+msgstr "Översättningsfilen %filename innehåller ett fel: \"msgid_plural\" förväntades, men hittades inte på rad %line."
+
+#: (duplicate) import.inc:147
+#: ;165 ;177 ;185 ;199 ;208
+msgid "The translation file %filename contains a syntax error on line %line."
+msgstr "Översättningsfilen %filename innehåller ett satsfel på rad %line."
+
+#: (duplicate) import.inc:159
+msgid "The translation file %filename contains an error: \"msgid\" is unexpected on line %line."
+msgstr "Översättningsfilen %filename innehåller ett fel: \"msgid\" är inte väntad på rad %line."
+
+#: (duplicate) import.inc:173
+msgid "The translation file %filename contains an error: \"msgstr[]\" is unexpected on line %line."
+msgstr "Översättningsfilen %filename innehåller ett fel: \"msgstr[]\" är inte väntad på rad %line."
+
+#: (duplicate) import.inc:193
+msgid "The translation file %filename contains an error: \"msgstr\" is unexpected on line %line."
+msgstr "Översättningsfilen %filename innehåller ett fel: \"msgstr\" är inte väntad på rad %line."
+
+#: (duplicate) import.inc:221
+msgid "The translation file %filename contains an error: there is an unexpected string on line %line."
+msgstr "Översättningsfilen %filename innehåller ett fel: det finns en oväntad sträng på rad %line."
+
+#: (duplicate) import.inc:232
+msgid "The translation file %filename ended unexpectedly at line %line."
+msgstr "Översättningsfilen %filename avslutades oväntat på rad %line."
+
+#: pages.inc:18;209
+msgid "No languages to list."
+msgstr "Inga språk att visa."
+
+#: pages.inc:22
+msgid "No strings to translate."
+msgstr "Inga strängar att översätta."
+
+#: pages.inc:43;235
+msgid "Language"
+msgstr "Språk"
+
+#: pages.inc:58
+msgid "No projects found."
+msgstr "Inga projekt funna."
+
+#: pages.inc:82
+#: translate.inc:108
+msgid "Project"
+msgstr "Projekt"
+
+#: pages.inc:107
+msgid "No language selected."
+msgstr "Inga språk valda."
+
+#: pages.inc:112
+msgid "@language overview"
+msgstr "Översikt av @language"
+
+#: pages.inc:127
+msgid "There are currently no posts set for display here. Mark posts to display here with the %tagname tag, using the taxonomy module."
+msgstr "Det finns för närvarande inga inlägg angivna för visning här. Markera inlägg att visa här med märkningen %tagname genom att använda modulen taxonomi."
+
+#: pages.inc:136
+msgid "The <a href=\"@group\">%language group</a> pages might provide you with more information, translation suggestions and guidelines."
+msgstr "Sidorna för <a href=\"@group\">%language gruppen</a> kan kanske tillhandahålla dig med mer information, översättningsförslag och riktlinjer."
+
+#: pages.inc:139;244
+#: welcome.inc:67
+msgid "Contribute"
+msgstr "Bidra"
+
+#: pages.inc:140
+msgid "Review, translate, import"
+msgstr "inspektera, översätt, importera"
+
+#: pages.inc:141
+msgid "Different tabs allow you to view existing translations, suggest new ones, import translations completed offline or export translations for import to Drupal or offline work."
+msgstr "Olika fliker låter dig visa existerande översättningar, föreslå nya, importera översättningar som avslutats nedkopplat eller exportera översättningar för import till Drupal, eller arbeta nedkopplat."
+
+#: pages.inc:150
+msgid "Progress status"
+msgstr "Statusrapport"
+
+#: pages.inc:151
+msgid "Status overview"
+msgstr "Översikt på status"
+
+#: pages.inc:163
+msgid "Top contributors"
+msgstr "Bästa bidragarna"
+
+#: pages.inc:164
+msgid "People with most approved translations"
+msgstr "Folk med flest godkända översättningar"
+
+#: pages.inc:175
+msgid "Nobody contributed to this translation yet."
+msgstr "Ingen har bidragit till denna översättning ännu."
+
+#: pages.inc:203;286
+msgid "No project selected."
+msgstr "Inget projekt valt."
+
+#: pages.inc:206
+msgid "@project project translations"
+msgstr "Översättningar för projekt @project"
+
+#: pages.inc:216
+msgid "Translations overview"
+msgstr "Översikt av översättningar"
+
+#: pages.inc:217
+msgid "Overall status of translations"
+msgstr "Övergripande status för översättningar"
+
+#: pages.inc:245
+msgid "Export, translate, review"
+msgstr "Exportera, översätt, inspektera"
+
+#: pages.inc:246
+msgid "Select a language from the overview to review translations and contribute to the translation efforts. The export tab allows exporting of translation templates, but translations can also be exported on the language pages."
+msgstr "Välj ett språk från översikten för inspektera översättningar och bidra till översättningsarbetet. Fliken för exportering låter dig exportera översättningsmallar, men översättningar kan också exporteras på språksidan."
+
+#: pages.inc:263
+msgid "@project summary"
+msgstr "Sammanfattning för @project"
+
+#: pages.inc:264
+msgid "Some details we know about this project"
+msgstr "Några detaljer som vi vet om detta projekt"
+
+#: pages.inc:266
+#, fuzzy
+msgid "Project home"
+msgstr "Hem för projekt"
+
+#: pages.inc:266
+msgid "Not available"
+msgstr "Inte tillgänglig"
+
+#: pages.inc:270
+#, fuzzy
+msgid "No marker error found"
+msgstr "Inga markeringsfel funna"
+
+#: pages.inc:289
+msgid "@project project errors"
+msgstr "Fel för projekt @project"
+
+#: pages.inc:292
+#, fuzzy
+msgid "No marker errors found in any of the parsed releases of this project."
+msgstr "Inga markeringsfel funna i någon av de analyserade utgåvorna för detta projekt."
+
+#: pages.inc:301
+msgid "No errors found in this release."
+msgstr "Inga fel funna för denna utgåva."
+
+#: pages.inc:333
+msgid "n/a"
+msgstr "inte tillgänglig"
+
+#: pages.inc:334
+msgid "No data available."
+msgstr "Ingen data tillgänglig."
+
+#: pages.inc:341
+msgid "!percent translated"
+msgstr "!percent översatt"
+
+#: pages.inc:342
+msgid "!percent untranslated"
+msgstr "!percent ej översatt"
+
+#: pages.inc:371
+msgid "Overall status"
+msgstr "Översiktsstatus"
+
+#: pages.inc:372
+msgid "Untranslated."
+msgstr "Ej översatt."
+
+#: pages.inc:373
+msgid "Have suggestions."
+msgstr "Har förslag."
+
+#: pages.inc:153
+#: welcome.inc:47
+msgid "1 contributor"
+msgid_plural "@count contributors"
+msgstr[0] "1 bidagare"
+msgstr[1] "@count bidragare"
+
+#: pages.inc:154
+#: welcome.inc:50
+msgid "1 string to translate"
+msgid_plural "@count strings to translate"
+msgstr[0] "1 sträng att översätta"
+msgstr[1] "@count strängar att översätta"
+
+#: pages.inc:155
+#: welcome.inc:51
+msgid "1 translation recorded"
+msgid_plural "@count translations recorded"
+msgstr[0] "1 översättning registrerad"
+msgstr[1] "@count översättningar registrerade"
+
+#: pages.inc:156
+#: welcome.inc:52
+msgid "1 suggestion awaiting approval"
+msgid_plural "@count suggestions awaiting approval"
+msgstr[0] "1 förslag väntar på godkännande"
+msgstr[1] "@count förslag väntar på godkännande"
+
+#: pages.inc:169
+msgid "!name - 1 translation"
+msgid_plural "!name - @count translations"
+msgstr[0] "!name - 1 översättning"
+msgstr[1] "!name - @count översättningar"
+
+#: pages.inc:267
+msgid "1 release in total"
+msgid_plural "@count releases in total"
+msgstr[0] "1 utgåva av totalt"
+msgstr[1] "@count utgåvor av totalt"
+
+#: pages.inc:268
+msgid "1 release parsed"
+msgid_plural "@count releases parsed"
+msgstr[0] "1 utgåva avsökt"
+msgstr[1] "@count utgåvor avsökta"
+
+#: pages.inc:269
+msgid "1 source string in total"
+msgid_plural "@count source strings in total"
+msgstr[0] "1 källsträng totalt"
+msgstr[1] "@count källsträngar totalt"
+
+#: pages.inc:270
+msgid "1 marker error found"
+msgid_plural "@count marker errors found"
+msgstr[0] "1 markeringsfel funnet"
+msgstr[1] "@count markeringsfel funna"
+
+#: translate.inc:61
+msgid "No strings found with this filter. Try adjusting the filter options."
+msgstr "Inga stränga funna med denna filtrering. Försök att ändra dina filtreringsalternativ."
+
+#: translate.inc:65
+msgid "@language translations"
+msgstr "Översättningar för @language"
+
+#: translate.inc:71
+msgid "Translate to @language"
+msgstr "Översätt till @language"
+
+#: translate.inc:87
+msgid "Untranslated"
+msgstr "Ej översatta"
+
+#: translate.inc:88
+msgid "Has suggestion"
+msgstr "Har förslag"
+
+#: translate.inc:89
+msgid "Translated"
+msgstr "Översatta"
+
+#: translate.inc:92
+msgid "Show only strings where"
+msgstr "Visa enbart stränga där"
+
+#: translate.inc:104
+msgid "Link to this page"
+msgstr "Länka till denna sida"
+
+#: translate.inc:143
+msgid "Status"
+msgstr "Status"
+
+#: translate.inc:149
+msgid "Contains"
+msgstr "Innehåller"
+
+#: translate.inc:155;180
+msgid "Filter"
+msgstr "Filtrera"
+
+#: translate.inc:160
+msgid "Reset"
+msgstr "Återställ"
+
+#: translate.inc:197
+msgid "No project found with name %name. Reverted to filter to all projects."
+msgstr "Inga projekt funna med namn %name. Återställde att filtrera till alla projekt."
+
+#: translate.inc:310
+msgid "Has suggestions."
+msgstr "Har förslag."
+
+#: translate.inc:310
+msgid "Has no suggestions."
+msgstr "Har inga förslag."
+
+#: translate.inc:372
+msgid "New suggestion for variant #%d"
+msgstr "Nytt förslag för variant #%d"
+
+#: translate.inc:372
+msgid "New translation for variant #%d"
+msgstr "Ny översättning för variant #%d"
+
+#: translate.inc:376
+msgid "Suggestion for variant #%d"
+msgstr "Förslag för variant #%d"
+
+#: translate.inc:376
+msgid "Translation for variant #%d"
+msgstr "Översättning för variant #%d"
+
+#: translate.inc:404
+msgid "New suggestion"
+msgstr "Nytt förslag"
+
+#: translate.inc:404
+msgid "New translation"
+msgstr "Ny översättning"
+
+#: translate.inc:404
+msgid "Suggestion"
+msgstr "Förslag"
+
+#: translate.inc:420
+msgid "Flag as suggestion for later discussion"
+msgstr "Märk som förslag för senare diskussion"
+
+#: translate.inc:439
+msgid "Show detailed information."
+msgstr "Visa detaljerad information."
+
+#: translate.inc:440
+msgid "There was an error approving this suggestion. You might not have permission or the suggestion id was invalid."
+msgstr "Det uppstod ett fel vid godkännande av detta förslag. Du kanske inte har rättighet, eller så är förslaget ID ogiltigt."
+
+#: translate.inc:441
+msgid "!icon Suggestion approved."
+msgstr "!icon Förslag godkänt."
+
+#: translate.inc:443
+msgid "There was an error declining this suggestion. You might not have permission or the suggestion id was invalid."
+msgstr "Det uppstod ett fel vid nekande av detta förslag. Du kanske inte har rättighet, eller så är förslaget ID ogiltigt."
+
+#: translate.inc:444
+msgid "Suggestion declined."
+msgstr "Förslag nekat."
+
+#: translate.inc:456
+msgid "Save suggestions"
+msgstr "Spara förslag"
+
+#: translate.inc:456
+msgid "Save translations"
+msgstr "Spara översättningar"
+
+#: translate.inc:521
+msgid "line break"
+msgstr "radbrytning"
+
+#: welcome.inc:24
+msgid "About this interface"
+msgstr "Om detta gränssnitt"
+
+#: welcome.inc:25
+msgid "Community for Drupal translations"
+msgstr "Community för översättningar åt Drupal"
+
+#: welcome.inc:26
+msgid "This interface serves as a community hub for translating Drupal projects, so translators only need to use a browser to contribute. Our system knows about Drupal projects, such as modules, themes and install profiles; with their respective releases. This means that all text added to these packages are translatable. New projects and releases are scanned regularly. Languages are maintained by translation groups. Every group has a community space, where members can share information, discuss specific questions and document best practices. Finally, translations are packaged on drupal.org for each project release."
+msgstr "Gränssnittet fungerar som en nav för ett community för översättning av projekt för Drupal, så översättare behöver bara en webbläsare för att bidra. Våra system vet om Drupals projekt, såsom moduler, teman och profiler för installation, med deras respektive utgåvor. Med detta menas att all text som läggs till dessa paket är översättningsbara. Nya projekt och utgåvor avsöks regelbundet. Språk hanteras av översättningsgrupper. Varje grupp har ett communityområde där medlemmar kan dela information, diskutera specifika frågor och dokumentera bästa användandet. Slutligen, översättningar förpackas på drupal.org för varje projekts utgåva."
+
+#: welcome.inc:44
+msgid "Quick stats"
+msgstr "Snabba fakta"
+
+#: welcome.inc:45
+msgid "Some facts about this community"
+msgstr "Några fakta om detta community"
+
+#: welcome.inc:61
+msgid "You can view the work being done here, but to participate, first you need to <a href=\"@register\">create an account and/or log in</a>"
+msgstr "Du kan visa arbetet som gjort här, men för att delta måste du först <a href=\"@register\">skapa ett konto och/eller logga in</a>"
+
+#: welcome.inc:68
+msgid "Suggest, translate, review"
+msgstr "Föreslå, översätt, granska"
+
+#: welcome.inc:74
+msgid "Translator's guide"
+msgstr "Guide för översättare"
+
+#: welcome.inc:74
+msgid "Documentation for translators on drupal.org."
+msgstr "Dokumentation för översättare på drupal.org"
+
+#: welcome.inc:75
+msgid "Translations group"
+msgstr "Grupp för översättningar"
+
+#: welcome.inc:75
+msgid "Translations group at groups.drupal.org."
+msgstr "Grupp för översättningar på groups.drupal.org"
+
+#: welcome.inc:76
+msgid "Mailing list"
+msgstr "E-postlistor"
+
+#: welcome.inc:76
+msgid "Translators mailing list hosted at drupal.org."
+msgstr "Översättares e-postlistor driftade på drupal.org"
+
+#: welcome.inc:84
+msgid "Handy links"
+msgstr "Praktiska länkar"
+
+#: welcome.inc:85
+msgid "Documentation, discussion spaces"
+msgstr "Dokumentering, diskussionsområde"
+
+#: welcome.inc:99
+msgid "No languages defined or no projects scanned yet."
+msgstr "Inga språk definierade eller inga projekt avsökta ännu."
+
+#: welcome.inc:106
+msgid "Pick a language"
+msgstr "Välj ett språk"
+
+#: welcome.inc:108
+msgid "Alternatively you can <a href=\"@explore\">explore languages</a>."
+msgstr "Alternativt så kan du <a href=\"@explore\">utforska språk</a>."
+
+#: welcome.inc:111
+msgid "And/or pick a project"
+msgstr "Och/eller välja ett projekt"
+
+#: welcome.inc:112
+msgid "Alternatively you can <a href=\"@explore\">explore projects</a>."
+msgstr "Alternativt så kan du <a href=\"@explore\">utforska projekt</a>."
+
+#: welcome.inc:135
+msgid "Choose"
+msgstr "Välj"
+
+#: welcome.inc:143
+msgid "Select a language and/or a project."
+msgstr "Välj ett språk och/eller ett projekt."
+
+#: welcome.inc:34
+msgid "1 translation group"
+msgid_plural "@count translation groups"
+msgstr[0] "1 översättningsgrupp"
+msgstr[1] "@count översättningsgrupper"
+
+#: welcome.inc:48
+msgid "1 project managed"
+msgid_plural "@count projects managed"
+msgstr[0] "1 hanterat projekt"
+msgstr[1] "@count hanterade projekt"
+
+#: welcome.inc:49
+msgid "1 file scanned"
+msgid_plural "@count files scanned"
+msgstr[0] "1 fil avsökt"
+msgstr[1] "@count filer avsökta"
+
+#: l10n_community.module:63
+#: l10n_community.info:0
+msgid "Localization server"
+msgstr "Server för lokalisering"
+
+#: l10n_community.module:64
+msgid "Configuration options for the localization server."
+msgstr "Konfigureringsalternativ för lokaliseringsservern."
+
+#: l10n_community.module:71
+msgid "Translation interface"
+msgstr "Gränssnitt för översättning"
+
+#: l10n_community.module:73
+msgid "Control the display of the translation interface."
+msgstr "Kontrollerar visningen av översättningen gränssnitt."
+
+#: l10n_community.module:90;174;231
+msgid "Overview"
+msgstr "Översikt"
+
+#: l10n_community.module:98
+msgid "Overview of languages and their translation status."
+msgstr "Översikt för språk och dess översättningsstatus"
+
+#: l10n_community.module:108
+msgid "Overview of projects and their translation status."
+msgstr "Översikt för projekt och dess översättningsstatus."
+
+#: l10n_community.module:118
+msgid "Project autocomplete"
+msgstr "Autokomplettering av projekt"
+
+#: l10n_community.module:130
+msgid "String details"
+msgstr "Detaljer för sträng"
+
+#: l10n_community.module:138
+msgid "Approve suggestion"
+msgstr "Godkänn förslag"
+
+#: l10n_community.module:146
+msgid "Decline suggestion"
+msgstr "Neka förslag"
+
+#: l10n_community.module:182
+msgid "View"
+msgstr "Visa"
+
+#: l10n_community.module:191
+msgid "Edit"
+msgstr "Redigera"
+
+#: l10n_community.module:238
+msgid "Export template"
+msgstr "Exportera mall"
+
+#: l10n_community.module:246
+msgid "Marker errors"
+msgstr "Markeringsfel"
+
+#: l10n_community.module:274;303
+msgid "Translation help"
+msgstr "Hjälp för översättning"
+
+#: l10n_community.module:280
+msgid "Bookmarked filters"
+msgstr "Bokmärkta filtreringar"
+
+#: l10n_community.module:309
+msgid "Welcome to the translation server. This block will show you tips and advice throughout the application."
+msgstr "Välkommen till översättningsservern. Detta block kommer att visa dig tips och förslag som genomgående för applikationen."
+
+#: l10n_community.module:309
+msgid "Once you are familiar with the system, feel free to disable help in <a href=\"@user-page\">your user settings</a>."
+msgstr "Så fort du känner dig hemma med systemet, så kan du när som helst inaktivera hjälpen i <a href\"@user-page\">inställningar för din användare</a>."
+
+#: l10n_community.module:314
+msgid "Choose a language to dive in to suggest translations, approve suggestions, import and export."
+msgstr "Välj ett språk att dyka in i och föreslå översättningar till, godkänna förslag, importera och exportera."
+
+#: l10n_community.module:319
+msgid "Choose a project to explore."
+msgstr "Välj ett projekt att exportera."
+
+#: l10n_community.module:339
+msgid "You can suggest translations or import complete Gettext translation files to suggest multiple translations at once. People with permission to approve suggestions may either accept or decline your suggestions. To work offline, export a translation template, which contains the current state of the translation."
+msgstr "Du kan föreslå översättningar eller importera fullständiga översättningar av filer typen Gettext för att föreslå flera översättningar på en gång. Folk med rättigheten att godkänna översättningar kan antingen acceptera eller neka dina förslag. För att arbeta nedkopplad, exportera en översättningsmall som innehåller det nuvarande läget för en översättning."
+
+#: l10n_community.module:342
+msgid "As a fully empowered user, you can suggest translations as well as approve translations suggested by others. Export/import of Gettext translation files is also possible."
+msgstr "Som en fullständigt berättigad användare, så kan du föreslå översättningar såväl som godkänna översättningar föreslagna av andra. Export/import av filer av typen Gettext är också möjligt."
+
+#: l10n_community.module:353
+msgid "Because all project translations are shared, an imported file might provide translations for strings used in any project."
+msgstr "Eftersom alla översättningsprojekt delas, så kan en importerad fil tillhandahålla översättningar för strängar som används i vilket projekt som helst."
+
+#: l10n_community.module:356
+msgid "You have two different options to export. You can either export a template package for a project, or a package containing the existing translations for a given project release. Both types will use the GNU Gettext Portable Object (Template) format, which is understood by Drupal and desktop translation editing tools."
+msgstr "Du har två olika alternativ att exportera. Du kan antingen exportera en paketmall för ett projekt, eller ett paket som innehåller existerande översättningar för en given utgåva för ett projekt. Båda typer kommer att använda formatet GNU Gettext Portable Object (Mall), som förstås av Drupal och skrivbordsverktyg för redigering av översättningar."
+
+#: l10n_community.module:362
+msgid "!newline_image represents a line break. Remember to include a line break in the same position in the translation. Beginning and ending line breaks are saved properly, even if you forget to include them."
+msgstr "!newline_image repressenterar en radbrytning. Kom ihåg att inkludera en radbrytning på samma ställe i översättningen. Inledande och avslutande radbrytningar sparas på rätt sätt, även om du glömmer att inkludera dem."
+
+#: l10n_community.module:362
+msgid "Newline marker"
+msgstr "Markering för ny rad"
+
+#: l10n_community.module:363
+msgid "Variables are designated with !, @ and % (like %example, !example or @example), and should be kept in the translated text as-is."
+msgstr "Variabler betecknades som !, @ och % (såsom %exempel, !exempel eller @exempel), och skall sparas i översättningen i befintligt skick."
+
+#: l10n_community.module:366
+msgid "The plural formula in use with this language is %formula."
+msgstr "Pluralform som används med detta språk är %formula."
+
+#: l10n_community.module:381
+msgid "This page shows a list of all languages and their overall translation status (accumulated for all releases). Exporting translation works for all languages. Importing your translations is only possible to languages where you have sufficient privileges to do so."
+msgstr "Denna sida visar en lista på alla språk och deras översiktsstatus för översättning (hopsamlad för alla utgåvor). Exportering av översättningar fungerar för alla språk. Importering av dina översättningar fungerar enbart för språk där du har tillräckliga rättigheter att göra så."
+
+#: l10n_community.module:400
+msgid "Localization contributions"
+msgstr "Bidrag till lokalisering"
+
+#: l10n_community.module:423
+msgid "Number of projects to display per page"
+msgstr "Antal projekt att visa per sida"
+
+#: l10n_community.module:424
+msgid "Number of projects displayed per page in overviews. It is not advised to change this setting on live sites, as it changes what is displayed on each page, so links will break to existing project listings."
+msgstr "Antal projekt som visas per sida i översikten. Det är inte rekommenderat att ändra denna inställning på webbplatser som är igång eftersom det ändrar vad som visas på varje sida, så länkar kommer att brytas till existerande listor för projekt."
+
+#: l10n_community.module:805
+msgid "edit"
+msgstr "redigera"
+
+#: l10n_community.module:397
+msgid "1 approved translation"
+msgid_plural "@count approved translations"
+msgstr[0] "1 godkänd översättning"
+msgstr[1] "@count godkända översättningar"
+
+#: l10n_community.module:714
+msgid "1 new translation added"
+msgid_plural "@count new translations added"
+msgstr[0] "1 ny översättning tillagd"
+msgstr[1] "@count nya översättningar tillagda"
+
+#: l10n_community.module:717
+msgid "1 new suggestion added"
+msgid_plural "@count new suggestions added"
+msgstr[0] "1 nytt förslag tillagt"
+msgstr[1] "@count nya förslag tillagda"
+
+#: l10n_community.module:720
+msgid "1 translation updated"
+msgid_plural "@count translations updated"
+msgstr[0] "1 översättning uppdaterad"
+msgstr[1] "@count översättningar uppdaterade"
+
+#: l10n_community.module:723
+msgid "1 translation unchanged"
+msgid_plural "@count translations unchanged"
+msgstr[0] "1 översättning oförändrad"
+msgstr[1] "@count översättningar oförändrade"
+
+#: l10n_community.module:263
+msgid "access localization community"
+msgstr "åtkomst till communityts lokalisering"
+
+#: l10n_community.module:263
+msgid "submit suggestions"
+msgstr "skicka förslag"
+
+#: l10n_community.module:263
+msgid "submit translations and approve suggestions"
+msgstr "skicka översättningar och godkänn förslag"
+
+#: l10n_community.module:263
+msgid "administer localization community"
+msgstr "administrera community för lokalisering"
+
+#: l10n_community.info:0
+msgid "Localization community"
+msgstr "Community för lokalisering"
+
+#: l10n_community.info:0
+msgid "A community interface for string translation"
+msgstr "Ett communitys gränssnitt för översättningar av strängar"
+
+#: (duplicate) import.inc:110
+msgid "The translation import failed, because the file %filename could not be read."
+msgstr "Import av översättningsfilen misslyckades eftersom filen %filename inte kunde läsas."
+
+#: (duplicate) import.inc:135
+msgid "The translation file %filename contains an error: \"msgstr\" was expected but not found on line %line."
+msgstr "Översättningsfilen %filename innehåller ett fel: \"msgstr\" förväntades, men hittades inte på rad %line."
+
+#: (duplicate) import.inc:141
+msgid "The translation file %filename contains an error: \"msgid_plural\" was expected but not found on line %line."
+msgstr "Översättningsfilen %filename innehåller ett fel: \"msgid_plural\" förväntades, men hittades inte på rad %line."
+
+#: (duplicate) import.inc:147
+#: ;165 ;177 ;185 ;199 ;208
+msgid "The translation file %filename contains a syntax error on line %line."
+msgstr "Översättningsfilen %filename innehåller ett satsfel på rad %line."
+
+#: (duplicate) import.inc:159
+msgid "The translation file %filename contains an error: \"msgid\" is unexpected on line %line."
+msgstr "Översättningsfilen %filename innehåller ett fel: \"msgid\" är inte väntad på rad %line."
+
+#: (duplicate) import.inc:173
+msgid "The translation file %filename contains an error: \"msgstr[]\" is unexpected on line %line."
+msgstr "Översättningsfilen %filename innehåller ett fel: \"msgstr[] är inte väntad på rad %line."
+
+#: (duplicate) import.inc:193
+msgid "The translation file %filename contains an error: \"msgstr\" is unexpected on line %line."
+msgstr "Översättningsfilen %filename innehåller ett fel: \"msgstr\" är inte väntad på rad %line."
+
+#: (duplicate) import.inc:221
+msgid "The translation file %filename contains an error: there is an unexpected string on line %line."
+msgstr "Översättningsfilen %filename innehåller ett fel: det finns en oväntad sträng på rad %line."
+
+#: (duplicate) import.inc:232
+msgid "The translation file %filename ended unexpectedly at line %line."
+msgstr "Översättningsfilen %filename avslutades oväntat på rad %line."
+

@@ -1,0 +1,93 @@
+; $Id: page.tpl.php,v 1.15.4.1 2008/08/27 04:47:37 m3avrck Exp $
+name = Artemia
+description = Artemia theme built with Blueprint CSS framework.
+
+core = 6.x
+engine = phptemplate
+
+base theme = blueprint
+
+; Theme CSS ==========================================================
+
+stylesheets[screen,projection][] = css/style.css
+
+; Theme Scripts ======================================================
+
+scripts[] = scripts/jquery.easing.1.3.js
+
+; Theme Regions ======================================================
+
+regions[header] = "Header"
+regions[logo] = "Logo header"
+regions[search] = "Page search"
+regions[center] = "Center Content"
+regions[left] = "Left sidebar"
+regions[right] = "Right sidebar"
+regions[content] = "Content"
+
+; Theme features =====================================================
+
+features[] = name
+features[] = slogan
+features[] = mission
+features[] = node_user_picture
+features[] = comment_user_picture
+features[] = search
+features[] = favicon
+
+; Theme Context Layout ===============================================
+
+; Layout: Homepage
+layouts[homepage][name] = "Homepage"
+layouts[homepage][description] = "Standard homepage."
+layouts[homepage][template] = "homepage"
+layouts[homepage][regions][] = "header"
+layouts[homepage][regions][] = "logo"
+layouts[homepage][regions][] = "search"
+layouts[homepage][regions][] = "center"
+
+; Layout: Single sidebar left
+layouts[sidebar-left][name] = "Single sidebar left"
+layouts[sidebar-left][description] = "Page with left sidebar."
+layouts[sidebar-left][template] = "layout-sidebar-left"
+layouts[sidebar-left][regions][] = "header"
+layouts[sidebar-left][regions][] = "logo"
+layouts[sidebar-left][regions][] = "search"
+layouts[sidebar-left][regions][] = "left"
+layouts[sidebar-left][regions][] = "content"
+
+; Layout: Single sidebar right
+layouts[sidebar-right][name] = "Single sidebar right"
+layouts[sidebar-right][description] = "Page with right sidebar."
+layouts[sidebar-right][template] = "layout-sidebar-right"
+layouts[sidebar-right][regions][] = "header"
+layouts[sidebar-right][regions][] = "logo"
+layouts[sidebar-right][regions][] = "search"
+layouts[sidebar-right][regions][] = "right"
+layouts[sidebar-right][regions][] = "content"
+
+; Layout: Two sidebar
+layouts[sidebar-both][name] = "Two sidebar"
+layouts[sidebar-both][description] = "Page with both sidebar."
+layouts[sidebar-both][template] = "layout-sidebar-both"
+layouts[sidebar-both][regions][] = "header"
+layouts[sidebar-both][regions][] = "logo"
+layouts[sidebar-both][regions][] = "search"
+layouts[sidebar-both][regions][] = "right"
+layouts[sidebar-both][regions][] = "left"
+layouts[sidebar-both][regions][] = "content"
+
+; Layout: Login
+layouts[login][name] = "Login"
+layouts[login][description] = "Thin one column login page."
+layouts[login][template] = "layout-login"
+layouts[login][regions][] = "header"
+layouts[login][regions][] = "logo"
+layouts[login][regions][] = "center"
+
+; Information added by drupal.org packaging script on 2010-05-07
+version = "6.x-1.7"
+core = "6.x"
+project = "artemia"
+datestamp = "1273194008"
+

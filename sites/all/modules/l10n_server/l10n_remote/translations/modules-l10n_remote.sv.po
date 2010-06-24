@@ -1,0 +1,86 @@
+# $Id: modules-l10n_remote.sv.po,v 1.1.2.1 2009/09/26 10:38:52 hass Exp $
+#
+# Swedish translation of Drupal (l10n_remote)
+# Generated from files:
+#  l10n_remote.module,v 1.1.2.1 2008/10/20 22:29:52 goba
+#  l10n_remote.info,v 1.1.2.1 2008/10/20 22:29:52 goba
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Localization Server - Remote 6.x\n"
+"POT-Creation-Date: 2009-05-15 22:04+0200\n"
+"PO-Revision-Date: 2009-05-29 02:44+0100\n"
+"Language-Team: drupalsverige.se\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+"Last-Translator: Magnus Gunnarsson <seals@passagen.se>\n"
+"X-Poedit-Language: Swedish\n"
+"X-Poedit-Country: SWEDEN\n"
+"X-Poedit-SourceCharset: utf-8\n"
+
+#: l10n_remote/l10n_remote.module:47
+msgid "Please log in first to generate your Localization Server API key."
+msgstr "Var vänlig logga in först för att generera din nyckel för lokaliseringsserverns API."
+
+#: l10n_remote/l10n_remote.module:51
+msgid "You don't have the required permissions to use remote submission on this Localization Server."
+msgstr "Du har inte nödvändiga rättigheter för att använda fjärråtkomst för förslag till denna lokaliseringsserver."
+
+#: l10n_remote/l10n_remote.module:57
+msgid "Your Localization Server API key"
+msgstr "Nyckel för din lokaliseringsservers API"
+
+#: l10n_remote/l10n_remote.module:59
+msgid "Copy and paste this API key into your user account on the client host."
+msgstr "Kopiera och klistra in denna nyckel för API i ditt användarkonto på klientens värd."
+
+#: l10n_remote/l10n_remote.module:82
+msgid "Test support for a specific API version."
+msgstr "Testsupport för en specifik version av API."
+
+#: l10n_remote/l10n_remote.module:88
+msgid "Handle remote string submissions."
+msgstr "Hantera fjärrmanövrerade strängförslag."
+
+#: l10n_remote/l10n_remote.module:122
+msgid "Submitted translation from client."
+msgstr "Skickade översättning från klient."
+
+#: l10n_remote/l10n_remote.module:127
+msgid "Language not allowed for remote submission."
+msgstr "Språk inte tillåtet att skicka in via fjärråtkomst."
+
+#: l10n_remote/l10n_remote.module:131
+msgid "Not allowed to submit translations in this language remotely."
+msgstr "Ej tillåten att via fjärråtkomst skicka in översättningar till detta språk."
+
+#: l10n_remote/l10n_remote.module:143
+msgid "Unauthorized or blocked user attempted submission."
+msgstr "Obehörig eller blockerad användare försökte skicka in."
+
+#: l10n_remote/l10n_remote.module:148
+msgid "Submitted translation with wrong parameters or signature."
+msgstr "Inskickad översättning med felaktig parametrar eller signatur."
+
+#: l10n_remote/l10n_remote.module:37
+msgid "submit suggestions remotely"
+msgstr "skicka förslag via fjärråtkomst"
+
+#: l10n_remote/l10n_remote.module:23
+msgid "Get API key"
+msgstr "Erhåll nyckel för API"
+
+#: l10n_remote/l10n_remote.module:0
+msgid "l10n_remote"
+msgstr "l10n_remote"
+
+#: l10n_remote/l10n_remote.info:0
+msgid "Localization remote API"
+msgstr "API för lokaliseringens fjärråtkomst"
+
+#: l10n_remote/l10n_remote.info:0
+msgid "Provides an XML-RPC server interface to handle remote translation submissions."
+msgstr "Tillhandahåller ett servergränssnitt för XML-RPC för att via fjärråtkomst hantera förslag på översättningar."
+

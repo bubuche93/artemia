@@ -1,0 +1,19 @@
+/**
+ * Layout: Single sidebar
+ */
+body.layout-sidebar #main {
+  float:none;
+  width:auto;
+  }
+
+/**
+ * Layout: Two column
+ */
+body.layout-twocolumn #canvas {
+  width:100%;
+  }
+
+  body.layout-twocolumn #main,
+  body.layout-twocolumn #right {
+    width:50%;
+    }

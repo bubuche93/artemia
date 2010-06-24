@@ -1,0 +1,133 @@
+<?php
+// $Id: l10n_groups.install,v 1.1.2.1.2.4.2.1 2010/03/24 11:40:43 goba Exp $
+/**
+ * @file
+ *   Localization groups installation, update and uninstallation.
+ */
+
+/**
+ * Implementation of hook_install().
+ */
+function l10n_groups_install() {
+  drupal_install_schema('l10n_groups');
+  // Designate our node type as an OG group node type.
+  variable_set('og_content_type_usage_l10n_group', 'group');
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function l10n_groups_uninstall() {
+  drupal_uninstall_schema('l10n_groups');
+}
+
+/**
+ * Implementation of hook_schema().
+ *
+ * With this module, the translations are maintained by communities,
+ * who share a common space based on organic groups. We need to store
+ * their language association.
+ */
+function l10n_groups_schema() {
+  $schema = array();
+  $schema['l10n_groups_group'] = array(
+    'description' => 'Organic groups mapper for the localization server. Each language team is a group.',
+    'fields' => array(
+      'nid' => array(
+        'description' => 'References {node}.nid, pointing to the organic group node for this translation group.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'disp-width' => '11',
+      ),
+      'language' => array(
+        'description' => 'References {language}.language, pointing to the language of this translation group.',
+        'type' => 'varchar',
+        'length' => '12',
+        'not null' => TRUE,
+      ),
+    ),
+    'indexes' => array(
+      'l10n_groups_group_nid' => array('nid'),
+    ),
+  );
+  return $schema;
+}
+
+// -- Drupal 6 updates ---------------------------------------------------------
+
+/**
+ * Migrate user permissions to og_user_roles.
+ */
+function l10n_groups_update_6000() {
+  $ret = array();
+
+  /*
+    Permissions table.
+
+    'access localization community',             -- expected to be given to authenticated users
+    'browse translations',                       -- see prev.
+    'administer localization community',         -- expected to be given to admins
+
+    'export gettext templates and translations', -- given to "translation team mamber"
+    'import gettext files',                      -- given to "translation team member"
+    'submit suggestions',                        -- given to "translation team member"
+
+    'moderate suggestions from others',          -- given to "translation community moderator"
+
+    'moderate own suggestions',                  -- given to "translation self-moderator"
+
+    'configure member roles',                    -- given to "translation community manager"
+  */
+
+  // Remove permissions which are to be granted via og_user_roles from now on.
+  $result = db_query("SELECT rid, perm FROM {permission} ORDER BY rid");
+  while ($role = db_fetch_object($result)) {
+    $existing_perms = explode(', ', $role->perm);
+    $new_perms = array_diff($existing_perms, array('export gettext templates and translations', 'import gettext files', 'submit suggestions', 'moderate suggestions from others', 'moderate own suggestions'));
+    db_query("UPDATE {permission} SET perm = '%s' WHERE rid = %d", implode(', ', $new_perms), $role->rid);
+  }
+
+  // Create four new roles to be used with og_user_roles.
+  db_query("INSERT INTO {role} (name) VALUES ('%s')", 'translation team member');
+  $role_team = db_result(db_query_range("SELECT rid FROM {role} WHERE name ='translation team member'", 0, 1));
+  db_query("INSERT INTO {role} (name) VALUES ('%s')", 'translation self-moderator');
+  $role_self = db_result(db_query_range("SELECT rid FROM {role} WHERE name ='translation self-moderator'", 0, 1));
+  db_query("INSERT INTO {role} (name) VALUES ('%s')", 'translation community moderator');
+  $role_community = db_result(db_query_range("SELECT rid FROM {role} WHERE name ='translation community moderator'", 0, 1));
+  db_query("INSERT INTO {role} (name) VALUES ('%s')", 'translation community manager');
+  $role_manager = db_result(db_query_range("SELECT rid FROM {role} WHERE name ='translation community manager'", 0, 1));
+
+  // Grant basic team permissions.
+  $perms = array('export gettext templates and translations', 'import gettext files', 'submit suggestions');
+  db_query("INSERT INTO {permission} (rid, perm) VALUES (%d, '%s')", $role_team, implode(', ', $perms));
+
+  // Grant self-moderation permission.
+  $perms = array('moderate own suggestions');
+  db_query("INSERT INTO {permission} (rid, perm) VALUES (%d, '%s')", $role_self, implode(', ', $perms));
+
+  // Grant community moderation permission.
+  $perms = array('moderate suggestions from others');
+  db_query("INSERT INTO {permission} (rid, perm) VALUES (%d, '%s')", $role_community, implode(', ', $perms));
+
+  // Grant community manager permission.
+  $perms = array('configure member roles');
+  db_query("INSERT INTO {permission} (rid, perm) VALUES (%d, '%s')", $role_manager, implode(', ', $perms));
+
+  // Grant base team permissions to team members, moderation permissions to admins.
+  db_query('INSERT INTO {og_users_roles} (gid, uid, rid) SELECT nid, uid, %d FROM {og_uid}', $role_team);
+  db_query('INSERT INTO {og_users_roles} (gid, uid, rid) SELECT nid, uid, %d FROM {og_uid} WHERE is_admin = 1', $role_community);
+  db_query('INSERT INTO {og_users_roles} (gid, uid, rid) SELECT nid, uid, %d FROM {og_uid} WHERE is_admin = 1', $role_manager);
+
+  // Make these roles available for setting as og user roles.
+  variable_set('og_user_roles_roles_l10n_group', array($role_team => $role_team, $role_self => $role_self, $role_community => $role_community, $role_manager => $role_manager));
+  variable_set('og_user_roles_default_admin_role', $role_community);
+  variable_set('og_user_roles_default_role', $role_team);
+
+  // Update weight of this module to be before og_user_roles.
+  db_query("UPDATE {system} SET weight = -2 WHERE type = 'module' AND name = 'l10n_groups'");
+
+  // Finally, drop the model column, which we do not need anymore.
+  db_drop_field($ret, 'l10n_groups_group', 'model');
+
+  return $ret;
+}

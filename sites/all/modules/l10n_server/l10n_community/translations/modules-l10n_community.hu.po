@@ -1,0 +1,1296 @@
+# Hungarian translation of l10n_server (all releases)
+# Copyright (c) 2009 by the Hungarian translation team
+# Generated from files:
+#  l10n_community.admin.inc,v 1.1.2.2 2008/10/15 23:56:38 goba
+#  pages.inc,v 1.1.2.20.2.1 2008/10/14 22:13:49 goba
+#  import.inc,v 1.1.2.5.2.1 2008/10/14 22:13:49 goba
+#  l10n_community.module,v 1.1.2.23.2.4 2008/10/17 16:08:28 goba
+#  translate.inc,v 1.1.2.7.2.2 2008/10/22 20:28:18 goba
+#  ajax.inc,v 1.1.2.18.2.2 2008/10/22 20:28:18 goba
+#  export.inc,v 1.1.2.15.2.3 2008/10/15 00:09:30 goba
+#  extractor.inc,v 1.1.2.13.2.2 2008/10/15 00:09:30 goba
+#  welcome.inc,v 1.1.2.7.2.1 2008/10/14 22:13:49 goba
+#  l10n_community.install,v 1.1.2.11.2.6 2008/10/15 18:40:48 goba
+#  l10n_community.info,v 1.1.2.4.2.1 2008/10/14 22:13:49 goba
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: l10n_server (all releases)\n"
+"POT-Creation-Date: 2009-05-15 22:04+0200\n"
+"PO-Revision-Date: 2009-05-15 22:00+0200\n"
+"Language-Team: Hungarian\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+
+#: l10n_community/l10n_community.admin.inc:115
+msgid "Operations"
+msgstr "Műveletek"
+
+#: l10n_community/l10n_community.admin.inc:84
+msgid "Delete"
+msgstr "Törlés"
+
+#: l10n_community/pages.inc:338
+msgid "n/a"
+msgstr "-"
+
+#: l10n_community/import.inc:85
+msgid "File to import not found."
+msgstr "Az importálandó fájl nem található."
+
+#: l10n_community/l10n_community.module:273
+msgid "Export template"
+msgstr "Sablon exportálása"
+
+#: l10n_community/translate.inc:459
+msgid "Save translations"
+msgstr "Fordítások mentése"
+
+#: l10n_community/import.inc:110
+msgid ""
+"The translation import failed, because the file %filename could not be "
+"read."
+msgstr "„%filename” nem olvasható, importálása sikertelen."
+
+#: l10n_community/import.inc:135
+msgid ""
+"The translation file %filename contains an error: \"msgstr\" was "
+"expected but not found on line %line."
+msgstr ""
+"„%filename” hibás: a várt „msgstr” nem található - %line. "
+"sor"
+
+#: l10n_community/import.inc:141
+msgid ""
+"The translation file %filename contains an error: \"msgid_plural\" was "
+"expected but not found on line %line."
+msgstr ""
+"„%filename” hibás: a várt „msgid_plural” nem található - "
+"%line. sor"
+
+#: l10n_community/import.inc:147,165,177,185,199,208
+msgid "The translation file %filename contains a syntax error on line %line."
+msgstr "„%filename” hibás - %line. sor"
+
+#: l10n_community/import.inc:159
+msgid ""
+"The translation file %filename contains an error: \"msgid\" is "
+"unexpected on line %line."
+msgstr "„%filename” hibás: nem várt „msgid” - %line. sor"
+
+#: l10n_community/import.inc:173
+msgid ""
+"The translation file %filename contains an error: \"msgstr[]\" is "
+"unexpected on line %line."
+msgstr "„%filename” hibás: nem várt „msgstr[]” - %line. sor"
+
+#: l10n_community/import.inc:193
+msgid ""
+"The translation file %filename contains an error: \"msgstr\" is "
+"unexpected on line %line."
+msgstr "„%filename” hibás: nem várt „msgstr” - %line. sor"
+
+#: l10n_community/import.inc:221
+msgid ""
+"The translation file %filename contains an error: there is an "
+"unexpected string on line %line."
+msgstr "„%filename” hibás: váratlan karaktersorozat - %line. sor"
+
+#: l10n_community/import.inc:232
+msgid "The translation file %filename ended unexpectedly at line %line."
+msgstr "„%filename” hibás: váratlan fájl vége - %line. sor"
+
+#: l10n_community/ajax.inc:76
+msgid "Anonymous"
+msgstr "Anonymous"
+
+#: l10n_community/l10n_community.module:924
+msgid "Save"
+msgstr "Mentés"
+
+#: l10n_community/l10n_community.module:218
+msgid "View"
+msgstr "Megtekintés"
+
+#: l10n_community/translate.inc:134
+msgid "Status"
+msgstr "Állapot"
+
+#: l10n_community/translate.inc:145,174
+msgid "Filter"
+msgstr "Szűrő"
+
+#: l10n_community/translate.inc:149
+msgid "Reset"
+msgstr "Alaphelyzet"
+
+#: l10n_community/l10n_community.module:906,227
+msgid "Edit"
+msgstr "Szerkesztés"
+
+#: l10n_community/l10n_community.module:78,125,211,267
+msgid "Overview"
+msgstr "Áttekintés"
+
+#: l10n_community/ajax.inc:44
+msgid "Used in:"
+msgstr "Itt használják:"
+
+#: l10n_community/ajax.inc:51
+msgid "<strong>Translated by:</strong><br /> %username at %date"
+msgstr "<strong>Fordította:</strong><br /> %username (%date)"
+
+#: l10n_community/ajax.inc:67
+msgid "Approve suggestion."
+msgstr "Javaslat elfogadása."
+
+#: l10n_community/ajax.inc:68
+msgid "Decline suggestion."
+msgstr "Javaslat elutasítása"
+
+#: l10n_community/ajax.inc:76
+msgid "by %user at %date"
+msgstr "%user %date napon"
+
+#: l10n_community/ajax.inc:80
+msgid "Outstanding suggestions:"
+msgstr "Beküldött javaslatok:"
+
+#: l10n_community/ajax.inc:83
+msgid "No suggestions found."
+msgstr "Nincs javaslat."
+
+#: l10n_community/export.inc:22
+msgid "Export @language translations"
+msgstr "@language fordítások exportálása"
+
+#: l10n_community/export.inc:27
+msgid "Export @project translation templates"
+msgstr "@projekt fordítási sablonjainak exportálása"
+
+#: l10n_community/export.inc:56
+msgid "Source data"
+msgstr "Forrás adat"
+
+#: l10n_community/export.inc:66
+msgid "Choose a project"
+msgstr "Projekt választás"
+
+#: l10n_community/export.inc:99
+msgid ""
+"Exporting with all releases is useful for translators, but is not "
+"optimal to use for end users because unused data would clutter up "
+"their database, when files get imported. Export for all releases if "
+"you would like to provide a complete translation, and you work with a "
+"desktop tool."
+msgstr ""
+
+#: l10n_community/export.inc:110
+msgid "Format"
+msgstr "Formátum"
+
+#: l10n_community/export.inc:115
+msgid "Type of export"
+msgstr "Export típus"
+
+#: l10n_community/export.inc:117
+msgid "Translation"
+msgstr "Fordítás"
+
+#: l10n_community/export.inc:117
+msgid "Translation template"
+msgstr "Fordítási sablon"
+
+#: l10n_community/export.inc:119
+msgid ""
+"Templates only contain the source (English) strings, translations are "
+"represented by empty placeholders."
+msgstr ""
+"A sablonok csak az angol nyelvű forrásszöveget tartalmazzák, a "
+"fordítás helyei üresen maradnak."
+
+#: l10n_community/export.inc:122
+msgid "Format used"
+msgstr "Alkalmazott formátum"
+
+#: l10n_community/export.inc:124
+msgid "Drupal 6 package format"
+msgstr "Drupal 6 csomag"
+
+#: l10n_community/export.inc:124
+msgid "Drupal 5 package format for autolocale module"
+msgstr "Drupal 5 csomag az Autolocale modulhoz"
+
+#: l10n_community/export.inc:124
+msgid "Flat package for CVS commit"
+msgstr "Csomag CVS commithoz"
+
+#: l10n_community/export.inc:124
+msgid "All in one file"
+msgstr "Mindent egy fájlba"
+
+#: l10n_community/export.inc:126
+msgid ""
+"Drupal 5's autolocale module and Drupal 6 use different conventions "
+"for directory naming in packages. Temporarily, as long as you need to "
+"use CVS to distribute translations the flat package helps you generate "
+"a package for committing to Drupal.org. Additionally, for testing, "
+"spell checking and smaller modules, you can also export in one file "
+"without packaging as well. It is not advised to use big .po files for "
+"importing in Drupal though, as it might lead to incomplete imports. "
+"Use packages for usage with Drupal importing."
+msgstr ""
+
+#: l10n_community/export.inc:131
+msgid "Choose project"
+msgstr "Projekt kiválasztása"
+
+#: l10n_community/export.inc:141
+msgid "You should choose a project, submit the form and choose a release."
+msgstr ""
+
+#: l10n_community/export.inc:144
+msgid "Invalid project chosen."
+msgstr "Érvénytelen projekt lett kiválasztva."
+
+#: l10n_community/export.inc:159
+msgid "You should choose a release."
+msgstr "Ki kell választani egy kiadást."
+
+#: l10n_community/export.inc:165
+msgid "Invalid release chosen."
+msgstr "Érvénytelen kiadás lett kiválasztva."
+
+#: l10n_community/export.inc:412
+msgid "There are no strings in the %release release of %project to export."
+msgstr ""
+
+#: l10n_community/export.inc:415
+msgid "There are no strings in any releases of %project to export."
+msgstr ""
+
+#: l10n_community/extractor.inc:45
+msgid "Package to parse (%file) does not exist."
+msgstr ""
+
+#: l10n_community/extractor.inc:48
+msgid "Temporary directory %path already exists."
+msgstr "%path útvonalon már létezik egy könyvtár"
+
+#: l10n_community/extractor.inc:55
+msgid "Error on untaring %filename file."
+msgstr "%filename kicsomagolása során hiba történt."
+
+#: l10n_community/extractor.inc:73
+msgid "Contents of %filename have been scanned."
+msgstr "%filename tartalma fel lett dolgozva."
+
+#: l10n_community/import.inc:15
+msgid "Import translations to @language"
+msgstr "@language nyelvű fordítás importálása"
+
+#: l10n_community/import.inc:18
+msgid "Import suggestions to @language"
+msgstr "@language nyelvű fordítási javaslatok importálása"
+
+#: l10n_community/import.inc:24
+msgid "Translate projects"
+msgstr "Projektek fordítása"
+
+#: l10n_community/import.inc:42
+msgid "Translation file"
+msgstr "Fordításfájl"
+
+#: l10n_community/import.inc:44
+msgid "A Gettext Portable Object (.po) file to upload."
+msgstr "A feltöltendő Gettext Portable Object (.po) fájl."
+
+#: l10n_community/import.inc:47
+msgid "Store as suggestions"
+msgstr "Tárolás javaslatként"
+
+#: l10n_community/import.inc:49
+msgid ""
+"Check if the translations you import need discussion. If checked, all "
+"translations in the imported file will be saved as suggestions."
+msgstr ""
+
+#: l10n_community/import.inc:80
+msgid "The translation was successfully imported."
+msgstr "A fordítás sikeresen importálva lett."
+
+#: l10n_community/l10n_community.admin.inc:32
+msgid "Number of projects to display per page"
+msgstr "Az oldalanként megjelenő projektek száma"
+
+#: l10n_community/l10n_community.admin.inc:33
+msgid ""
+"Number of projects displayed per page in overviews. It is not advised "
+"to change this setting on live sites, as it changes what is displayed "
+"on each page, so links will break to existing project listings."
+msgstr ""
+
+#: l10n_community/l10n_community.admin.inc:74
+msgid "No link available"
+msgstr "Nincs elérhető hivatkozás."
+
+#: l10n_community/l10n_community.admin.inc:81
+msgid "Start over"
+msgstr "Újrakezdés"
+
+#: l10n_community/l10n_community.admin.inc:90
+msgid "Save changes"
+msgstr "Változások mentése"
+
+#: l10n_community/l10n_community.admin.inc:121
+msgid ""
+"Deleting projects will not be available until you <a "
+"href=\"@cleanup\">clean up the database</a> or rescan projects (within "
+"connectors you use) if you have started over with some of them."
+msgstr ""
+
+#: l10n_community/l10n_community.admin.inc:134
+msgid "Localization Server project changes saved."
+msgstr "A Honosító Kiszolgáló projekt változásai el lettek mentve."
+
+#: l10n_community/l10n_community.admin.inc:150
+msgid ""
+"Are you sure you would like to delete project %project from the "
+"Localization Server?"
+msgstr ""
+
+#: l10n_community/l10n_community.admin.inc:150
+msgid ""
+"This would remove all data associated with the project, including "
+"releases, files, parsing errors, and all source strings and "
+"translations which are not applicable to remaining projects. Always "
+"make database backups. This action cannot be undone."
+msgstr ""
+
+#: l10n_community/l10n_community.admin.inc:158
+msgid "The %project was deleted from the Localization Server."
+msgstr ""
+
+#: l10n_community/l10n_community.admin.inc:175
+msgid ""
+"Are you sure you would like to start over with the project %project "
+"from the Localization Server?"
+msgstr ""
+
+#: l10n_community/l10n_community.admin.inc:175
+msgid ""
+"This would remove almost all data associated with the project: "
+"releases, files, line and parsing error information. Source strings "
+"found within this project and translations for them are temporarily "
+"kept. If you clean up the database before this project is parsed "
+"again, source strings and translations will be lost. Always make "
+"database backups. This action cannot be undone."
+msgstr ""
+
+#: l10n_community/l10n_community.admin.inc:183
+msgid ""
+"Project data for %project was deleted from the Localization Server. "
+"Make sure to parse this project again before deleting a project or "
+"cleaning up the database, or you will loose existing translation data."
+msgstr ""
+
+#: l10n_community/l10n_community.admin.inc:193
+msgid "You have no orphan source strings in your database to clean up."
+msgstr ""
+
+#: l10n_community/l10n_community.admin.inc:201
+msgid ""
+"There is at least one orphan source string in your database. Orphan "
+"source strings are not tied to any release of a project managed on "
+"your Localization Server. It might be safe to remove these if you are "
+"not in the middle of rescanning some projects. Always make database "
+"backups. This action cannot be undone."
+msgstr ""
+
+#: l10n_community/l10n_community.admin.inc:209
+msgid "Orphan strings and their translations were removed."
+msgstr ""
+
+#: l10n_community/l10n_community.admin.inc:121
+msgid "There is @count source string orphaned."
+msgid_plural "There are @count source strings orphaned."
+msgstr[0] ""
+msgstr[1] ""
+
+#: l10n_community/l10n_community.admin.inc:201
+msgid "Are you sure you would like to clean up @count orphan?"
+msgid_plural "Are you sure you would like to clean up @count orphans?"
+msgstr[0] ""
+msgstr[1] ""
+
+#: l10n_community/pages.inc:18,209
+msgid "No languages to list."
+msgstr ""
+
+#: l10n_community/pages.inc:22
+msgid "No strings to translate."
+msgstr "Nincs fordításra váró kifejezés"
+
+#: l10n_community/pages.inc:107
+msgid "No language selected."
+msgstr "Nincs nyelv kiválasztva."
+
+#: l10n_community/pages.inc:112
+msgid "@language overview"
+msgstr "@language áttekintés"
+
+#: l10n_community/pages.inc:125
+msgid ""
+"There are currently no posts set for display here. Mark posts to "
+"display here with the %tagname tag, using the taxonomy module."
+msgstr ""
+
+#: l10n_community/pages.inc:135
+msgid ""
+"The <a href=\"@group\">%language group</a> pages might provide you "
+"with more information, translation suggestions and guidelines."
+msgstr ""
+
+#: l10n_community/pages.inc:140
+msgid "Review, translate, import"
+msgstr "Áttekintés, fordítás, import"
+
+#: l10n_community/pages.inc:141
+msgid ""
+"Different tabs allow you to view existing translations, suggest new "
+"ones, import translations completed offline or export translations for "
+"import to Drupal or offline work."
+msgstr ""
+
+#: l10n_community/pages.inc:150
+msgid "Progress status"
+msgstr "Haladás állapota"
+
+#: l10n_community/pages.inc:151
+msgid "Status overview"
+msgstr "Állapot áttekintése"
+
+#: l10n_community/pages.inc:163
+msgid "Top contributors"
+msgstr "Legaktívabb résztvevők"
+
+#: l10n_community/pages.inc:164
+msgid "People with most approved translations"
+msgstr ""
+"Azoknak a listája, akik a legtöbb elfogadott fordítással "
+"rendelkeznek"
+
+#: l10n_community/pages.inc:175
+msgid "Nobody contributed to this translation yet."
+msgstr "Senki sem kezdett még neki a fordításnak."
+
+#: l10n_community/pages.inc:203,291
+msgid "No project selected."
+msgstr "Nincs projekt kiválasztva."
+
+#: l10n_community/pages.inc:206
+msgid "@project project translations"
+msgstr ""
+
+#: l10n_community/pages.inc:216
+msgid "Translations overview"
+msgstr "Fordítások áttekintése"
+
+#: l10n_community/pages.inc:217
+msgid "Overall status of translations"
+msgstr "A fordítások általános állapota"
+
+#: l10n_community/pages.inc:250
+msgid "Export, translate, review"
+msgstr "Export, fordítás, áttekintés"
+
+#: l10n_community/pages.inc:251
+msgid ""
+"Select a language from the overview to review translations and "
+"contribute to the translation efforts. The export tab allows exporting "
+"of translation templates, but translations can also be exported on the "
+"language pages."
+msgstr ""
+
+#: l10n_community/pages.inc:268
+msgid "@project summary"
+msgstr "@project összefoglaló"
+
+#: l10n_community/pages.inc:269
+msgid "Some details we know about this project"
+msgstr "Néhány elérhető adat erről a projektről"
+
+#: l10n_community/pages.inc:271
+msgid "Project home"
+msgstr "A projekt kezdőlapja"
+
+#: l10n_community/pages.inc:275
+msgid "No marker error found"
+msgstr ""
+
+#: l10n_community/pages.inc:294
+msgid "@project project errors"
+msgstr "@projekt hibái"
+
+#: l10n_community/pages.inc:297
+msgid "No marker errors found in any of the parsed releases of this project."
+msgstr ""
+
+#: l10n_community/pages.inc:306
+msgid "No errors found in this release."
+msgstr "Nincs hiba ebben a kiadásban."
+
+#: l10n_community/pages.inc:339
+msgid "No data available."
+msgstr "Nincs elérhető adat."
+
+#: l10n_community/pages.inc:346
+msgid "!percent translated"
+msgstr "!percent van lefordítva"
+
+#: l10n_community/pages.inc:347
+msgid "!percent untranslated"
+msgstr "!percent fordítatlan"
+
+#: l10n_community/pages.inc:376
+msgid "Overall status"
+msgstr "Általános állapot"
+
+#: l10n_community/pages.inc:169
+msgid "!name - 1 translation"
+msgid_plural "!name - @count translations"
+msgstr[0] "!name - 1 lefordított kifejezés"
+msgstr[1] "!name - @count lefordított kifejezés"
+
+#: l10n_community/pages.inc:272
+msgid "1 release in total"
+msgid_plural "@count releases in total"
+msgstr[0] "1 kiadás összesen"
+msgstr[1] "@count kiadás összesen"
+
+#: l10n_community/pages.inc:273
+msgid "1 release parsed"
+msgid_plural "@count releases parsed"
+msgstr[0] ""
+msgstr[1] ""
+
+#: l10n_community/pages.inc:274
+msgid "1 source string in total"
+msgid_plural "@count source strings in total"
+msgstr[0] ""
+msgstr[1] ""
+
+#: l10n_community/pages.inc:275
+msgid "1 marker error found"
+msgid_plural "@count marker errors found"
+msgstr[0] ""
+msgstr[1] ""
+
+#: l10n_community/translate.inc:61
+msgid "No strings found with this filter. Try adjusting the filter options."
+msgstr ""
+"Nincs elérhető kifejezés ezzel a szűrővel. Módosítani kell a "
+"szűrőn."
+
+#: l10n_community/translate.inc:65
+msgid "@language translations"
+msgstr "@language fordítások"
+
+#: l10n_community/translate.inc:71
+msgid "Translate to @language"
+msgstr "Fordítás @language nyelvre"
+
+#: l10n_community/translate.inc:88
+msgid "Has suggestion"
+msgstr "Van hozzá javaslat"
+
+#: l10n_community/translate.inc:89
+msgid "Translated"
+msgstr "Fordított"
+
+#: l10n_community/translate.inc:140
+msgid "Contains"
+msgstr "Tartalmazza"
+
+#: l10n_community/translate.inc:154
+msgid "Link to this page"
+msgstr "Hivatkozás erre az oldalra"
+
+#: l10n_community/translate.inc:191
+msgid "No project found with name %name. Reverted to filter to all projects."
+msgstr ""
+
+#: l10n_community/translate.inc:253,572
+msgid "Source Text"
+msgstr "Forrás szöveg"
+
+#: l10n_community/translate.inc:253,572
+msgid "Translations"
+msgstr "Fordítások"
+
+#: l10n_community/translate.inc:361
+msgid "New suggestion for variant #%d"
+msgstr "Új javaslatok erre a változatra: #%d"
+
+#: l10n_community/translate.inc:361
+msgid "New translation for variant #%d"
+msgstr "Új fordítások erre a változatra: #%d"
+
+#: l10n_community/translate.inc:365
+msgid "Suggestion for variant #%d"
+msgstr "Javaslat a változatra: #%d"
+
+#: l10n_community/translate.inc:365
+msgid "Translation for variant #%d"
+msgstr ""
+
+#: l10n_community/translate.inc:390
+msgid "Add a new suggestion"
+msgstr "Új javaslat hozzáadása."
+
+#: l10n_community/translate.inc:390
+msgid "Add a new translation"
+msgstr "Új fordítás hozzáadása"
+
+#: l10n_community/translate.inc:390
+msgid "Suggestion"
+msgstr "Javaslat"
+
+#: l10n_community/translate.inc:425
+msgid "Suggestion for discussion"
+msgstr "Javaslatként"
+
+#: l10n_community/translate.inc:440
+msgid "Show detailed information."
+msgstr "Részletes információk mutatása."
+
+#: l10n_community/translate.inc:441
+msgid ""
+"There was an error approving this suggestion. You might not have "
+"permission or the suggestion id was invalid."
+msgstr ""
+
+#: l10n_community/translate.inc:442
+msgid "!icon Suggestion approved."
+msgstr "!icon Javaslat elfogadva."
+
+#: l10n_community/translate.inc:444
+msgid ""
+"There was an error declining this suggestion. You might not have "
+"permission or the suggestion id was invalid."
+msgstr ""
+
+#: l10n_community/translate.inc:445
+msgid "Suggestion declined."
+msgstr "Javaslat elutasítva."
+
+#: l10n_community/translate.inc:459
+msgid "Save suggestions"
+msgstr "Javaslatok mentése"
+
+#: l10n_community/welcome.inc:24
+msgid "About this interface"
+msgstr "Erről a felületről"
+
+#: l10n_community/welcome.inc:25
+msgid "Community for Drupal translations"
+msgstr "Drupal fordítók közössége"
+
+#: l10n_community/welcome.inc:26
+msgid ""
+"This interface serves as a community hub for translating Drupal "
+"projects, so translators only need to use a browser to contribute. Our "
+"system knows about Drupal projects, such as modules, themes and "
+"install profiles; with their respective releases. This means that all "
+"text added to these packages are translatable. New projects and "
+"releases are scanned regularly. Languages are maintained by "
+"translation groups. Every group has a community space, where members "
+"can share information, discuss specific questions and document best "
+"practices. Finally, translations are packaged on drupal.org for each "
+"project release."
+msgstr ""
+
+#: l10n_community/welcome.inc:44
+msgid "Quick stats"
+msgstr "Villámstatisztika"
+
+#: l10n_community/welcome.inc:45
+msgid "Some facts about this community"
+msgstr "Néhány adat erről a közösségről"
+
+#: l10n_community/welcome.inc:61
+msgid ""
+"You can view the work being done here, but to participate, first you "
+"need to <a href=\"@register\">create an account and/or log in</a>"
+msgstr ""
+"Az eddig elkészült munkák bárki számára megtekinthetőek, de a "
+"részvételhez előszőr <a href=\"@register\">létre kell hozni egy "
+"azonosítót</a>, majd be kell lépni vele."
+
+#: l10n_community/welcome.inc:68
+msgid "Suggest, translate, review"
+msgstr "Javaslás, fordítás, áttekintés"
+
+#: l10n_community/welcome.inc:74
+msgid "Translator's guide"
+msgstr "Fordítási irányelvek"
+
+#: l10n_community/welcome.inc:74
+msgid "Documentation for translators on drupal.org."
+msgstr "Leírás fordítóknak a drupal.org-on"
+
+#: l10n_community/welcome.inc:75
+msgid "Translations group"
+msgstr "Fordítók csoportja"
+
+#: l10n_community/welcome.inc:75
+msgid "Translations group at groups.drupal.org."
+msgstr "Fordítók csoportja a groups.drupal.org-on."
+
+#: l10n_community/welcome.inc:76
+msgid "Mailing list"
+msgstr "Levelezési lista"
+
+#: l10n_community/welcome.inc:76
+msgid "Translators mailing list hosted at drupal.org."
+msgstr "A fordítók levelezési listája a drupal.org-on."
+
+#: l10n_community/welcome.inc:84
+msgid "Handy links"
+msgstr "Hasznos linkek"
+
+#: l10n_community/welcome.inc:85
+msgid "Documentation, discussion spaces"
+msgstr "Leírások, fórumok"
+
+#: l10n_community/welcome.inc:99
+msgid "No languages defined or no projects scanned yet."
+msgstr "Nem lett még nyelv hozzáadva vagy egy projekt sem lett feldolgozva."
+
+#: l10n_community/welcome.inc:108
+msgid "Pick a language"
+msgstr "Nyelv kiválasztása"
+
+#: l10n_community/welcome.inc:110
+msgid "Alternatively you can <a href=\"@explore\">explore languages</a>."
+msgstr "Választható a <a href=\"@explore\">nyelvek böngészése</a> is."
+
+#: l10n_community/welcome.inc:122
+msgid "And/or pick a project"
+msgstr "És/vagy egy projekt kiválasztása"
+
+#: l10n_community/welcome.inc:122
+msgid "Pick a project for @language translation"
+msgstr "Projekt fordítása @language nyelvre"
+
+#: l10n_community/welcome.inc:123
+msgid "Alternatively you can <a href=\"@explore\">explore projects</a>."
+msgstr ""
+
+#: l10n_community/welcome.inc:146
+msgid "Choose"
+msgstr "Választás"
+
+#: l10n_community/welcome.inc:154
+msgid "Select a language and/or a project."
+msgstr "Nyelv és/vagy projekt kiválasztása."
+
+#: l10n_community/welcome.inc:34
+msgid "1 translation group"
+msgid_plural "@count translation groups"
+msgstr[0] "1 fordítási csoport"
+msgstr[1] "@count fordítási csoport"
+
+#: l10n_community/welcome.inc:48
+msgid "1 project managed"
+msgid_plural "@count projects managed"
+msgstr[0] "1 projekt lett módosítva"
+msgstr[1] "@count projekt lett módosítva"
+
+#: l10n_community/welcome.inc:49
+msgid "1 file scanned"
+msgid_plural "@count files scanned"
+msgstr[0] "1 fájl lett feldolgozva"
+msgstr[1] "@count fájl lett feldolgozva"
+
+#: l10n_community/l10n_community.module:359,388
+msgid "Translation help"
+msgstr "Fordítás súgó"
+
+#: l10n_community/l10n_community.module:365
+msgid "Bookmarked filters"
+msgstr ""
+
+#: l10n_community/l10n_community.module:394
+msgid ""
+"Welcome to the translation server. This block will show you tips and "
+"advice throughout the application."
+msgstr ""
+
+#: l10n_community/l10n_community.module:394
+msgid ""
+"Once you are familiar with the system, feel free to disable help in <a "
+"href=\"@user-page\">your user settings</a>."
+msgstr ""
+
+#: l10n_community/l10n_community.module:399
+msgid ""
+"Choose a language to dive in to suggest translations, approve "
+"suggestions, import and export."
+msgstr ""
+
+#: l10n_community/l10n_community.module:404
+msgid "Choose a project to explore."
+msgstr "Projekt kiválasztása böngészésre"
+
+#: l10n_community/l10n_community.module:424
+msgid ""
+"You can suggest translations or import complete Gettext translation "
+"files to suggest multiple translations at once. People with permission "
+"to approve suggestions may either accept or decline your suggestions. "
+"To work offline, export a translation template, which contains the "
+"current state of the translation."
+msgstr ""
+
+#: l10n_community/l10n_community.module:427
+msgid ""
+"As a fully empowered user, you can suggest translations as well as "
+"approve translations suggested by others. Export/import of Gettext "
+"translation files is also possible."
+msgstr ""
+
+#: l10n_community/l10n_community.module:438
+msgid ""
+"Because all project translations are shared, an imported file might "
+"provide translations for strings used in any project."
+msgstr ""
+
+#: l10n_community/l10n_community.module:441
+msgid ""
+"You have two different options to export. You can either export a "
+"template package for a project, or a package containing the existing "
+"translations for a given project release. Both types will use the GNU "
+"Gettext Portable Object (Template) format, which is understood by "
+"Drupal and desktop translation editing tools."
+msgstr ""
+
+#: l10n_community/l10n_community.module:447
+msgid ""
+"!newline_image represents a line break. Remember to include a line "
+"break in the same position in the translation. Beginning and ending "
+"line breaks are saved properly, even if you forget to include them."
+msgstr ""
+
+#: l10n_community/l10n_community.module:447
+msgid "Newline marker"
+msgstr ""
+
+#: l10n_community/l10n_community.module:448
+msgid ""
+"Variables are designated with !, @ and % (like %example, !example or "
+"@example), and should be kept in the translated text as-is."
+msgstr ""
+
+#: l10n_community/l10n_community.module:451
+msgid "The plural formula in use with this language is %formula."
+msgstr "A többesszám képlete ehhez a nyelvhez: %formula"
+
+#: l10n_community/l10n_community.module:466
+msgid ""
+"This page shows a list of all languages and their overall translation "
+"status (accumulated for all releases). Exporting translation works for "
+"all languages. Importing your translations is only possible to "
+"languages where you have sufficient privileges to do so."
+msgstr ""
+
+#: l10n_community/l10n_community.module:485
+msgid "Localization contributions"
+msgstr "A fordításban közreműködtek"
+
+#: l10n_community/l10n_community.module:902
+msgid "Information"
+msgstr "Információ"
+
+#: l10n_community/l10n_community.module:916
+msgid "Approve"
+msgstr "Elfogadás"
+
+#: l10n_community/l10n_community.module:920
+msgid "Decline"
+msgstr "Elutasítás"
+
+#: l10n_community/l10n_community.module:928
+msgid "Clear"
+msgstr "Törlés"
+
+#: l10n_community/l10n_community.module:973
+msgid "line break"
+msgstr "sortörés"
+
+#: l10n_community/l10n_community.module:482
+msgid "1 approved translation"
+msgid_plural "@count approved translations"
+msgstr[0] "1 elfogadott fordítás"
+msgstr[1] "@count elfogadott fordítás"
+
+#: l10n_community/l10n_community.module:769
+msgid "1 new translation added"
+msgid_plural "@count new translations added"
+msgstr[0] "1 új kifejezés fordítása hozzá lett adva"
+msgstr[1] "@count új kifejezés fordítása hozzá lett adva"
+
+#: l10n_community/l10n_community.module:772
+msgid "1 new suggestion added"
+msgid_plural "@count new suggestions added"
+msgstr[0] "1 új javaslat hozzá lett adva"
+msgstr[1] "@count új javaslat hozzá lett adva"
+
+#: l10n_community/l10n_community.module:775
+msgid "1 translation updated"
+msgid_plural "@count translations updated"
+msgstr[0] "1 kifejezés fordítása frissítve lett"
+msgstr[1] "@count kifejezés fordítása frissítve lett"
+
+#: l10n_community/l10n_community.module:778
+msgid "1 translation unchanged"
+msgid_plural "@count translations unchanged"
+msgstr[0] "1 kifejezés fordítása nem módosult"
+msgstr[1] "@count kifejezés fordítása nem módosult"
+
+#: l10n_community/l10n_community.module:348
+msgid "access localization community"
+msgstr "fordítási közösség elérése"
+
+#: l10n_community/l10n_community.module:348
+msgid "submit suggestions"
+msgstr "javaslatok beküldése"
+
+#: l10n_community/l10n_community.module:348
+msgid "submit translations and approve suggestions"
+msgstr "fordítások beküldése és javaslatok elfogadása"
+
+#: l10n_community/l10n_community.module:348
+msgid "administer localization community"
+msgstr "a fordítói közössék kezelése"
+
+#: l10n_community/l10n_community.module:63
+msgid "Configuration options for the localization server."
+msgstr "A fordítási kiszolgáló beállításai."
+
+#: l10n_community/l10n_community.module:71
+msgid "Projects and releases"
+msgstr "Projektek és kiadások"
+
+#: l10n_community/l10n_community.module:72
+msgid "Manage projects and releases handled by the server."
+msgstr ""
+
+#: l10n_community/l10n_community.module:84
+msgid "Clean up"
+msgstr "Tisztítás"
+
+#: l10n_community/l10n_community.module:92
+msgid "Delete project"
+msgstr "Projekt törlése"
+
+#: l10n_community/l10n_community.module:100
+msgid "Enable project"
+msgstr "Projekt engedélyezése"
+
+#: l10n_community/l10n_community.module:108
+msgid "Translation interface"
+msgstr "Fordítási felület"
+
+#: l10n_community/l10n_community.module:109
+msgid "Control the display of the translation interface."
+msgstr ""
+
+#: l10n_community/l10n_community.module:132
+msgid "Overview of languages and their translation status."
+msgstr ""
+"Áttekintés a nyelvekről és azok fordítottságának "
+"állapotáról."
+
+#: l10n_community/l10n_community.module:141
+msgid "Overview of projects and their translation status."
+msgstr "Áttekintés a projektekről és azok fordítási állapotáról."
+
+#: l10n_community/l10n_community.module:149
+msgid "Project autocomplete"
+msgstr "Projekt automatikus kiegészítése"
+
+#: l10n_community/l10n_community.module:158
+msgid "String details"
+msgstr "Kifejezés részletei"
+
+#: l10n_community/l10n_community.module:165
+msgid "String suggestions"
+msgstr "Javaslatok"
+
+#: l10n_community/l10n_community.module:172
+msgid "Approve suggestion"
+msgstr "Javaslat elfogadása"
+
+#: l10n_community/l10n_community.module:179
+msgid "Decline suggestion"
+msgstr "Javaslat elutasítása"
+
+#: l10n_community/l10n_community.module:193
+msgid "Remote translation submission"
+msgstr "Távoli fordítás beküldés"
+
+#: l10n_community/l10n_community.module:281
+msgid "Marker errors"
+msgstr ""
+
+#: l10n_community/l10n_community.install:30
+msgid "Projects for which translation is running on the server."
+msgstr ""
+
+#: l10n_community/l10n_community.install:33
+msgid "Internal numeric identifier for a project."
+msgstr "Egy projekt belső azonosítója."
+
+#: l10n_community/l10n_community.install:39
+msgid "A unique short name to identify the project nicely in paths."
+msgstr ""
+
+#: l10n_community/l10n_community.install:45
+msgid "Human readable name for project used on the interface."
+msgstr ""
+
+#: l10n_community/l10n_community.install:51
+msgid "Link to project home page."
+msgstr ""
+
+#: l10n_community/l10n_community.install:56
+msgid "Unix timestamp of last time project was parsed."
+msgstr ""
+
+#: l10n_community/l10n_community.install:62
+msgid ""
+"Connector module for this project, such as l10n_localpacks or "
+"l10n_drupalorg."
+msgstr ""
+
+#: l10n_community/l10n_community.install:68
+msgid ""
+"Status flag. 1 if new project releases should be looked for, 0 if new "
+"scanning and parsing is disabled."
+msgstr ""
+
+#: l10n_community/l10n_community.install:83
+msgid "The releases we handle for each project."
+msgstr ""
+
+#: l10n_community/l10n_community.install:86
+msgid "Internal numeric identifier for a release."
+msgstr ""
+
+#: l10n_community/l10n_community.install:92
+msgid "Reference to the {l10n_community_project}.pid of the parent project."
+msgstr ""
+
+#: l10n_community/l10n_community.install:98
+msgid "Human readable name for release used on the interface."
+msgstr ""
+
+#: l10n_community/l10n_community.install:104
+msgid "Link to download this release."
+msgstr ""
+
+#: l10n_community/l10n_community.install:109
+msgid "Unix timestamp with release file date. Used to identify file changes."
+msgstr ""
+
+#: l10n_community/l10n_community.install:115
+msgid "Hash of file for easy identification of changed files."
+msgstr ""
+
+#: l10n_community/l10n_community.install:121
+msgid "Unix timestamp of last parsing time for this release package."
+msgstr ""
+
+#: l10n_community/l10n_community.install:134
+msgid ""
+"Errors found while parsing release packages. Although we find errors "
+"in the release files, we store error notes on a release level, to make "
+"them easily accessible without the need for extraneous detail."
+msgstr ""
+
+#: l10n_community/l10n_community.install:137
+msgid "Internal numeric identifier for an error."
+msgstr ""
+
+#: l10n_community/l10n_community.install:142
+msgid "Reference to the {l10n_community_release}.rid of the affected release."
+msgstr ""
+
+#: l10n_community/l10n_community.install:147
+msgid "Text of the error message."
+msgstr ""
+
+#: l10n_community/l10n_community.install:159
+msgid "Information on files found and parsed in a release."
+msgstr ""
+
+#: l10n_community/l10n_community.install:162
+msgid "Internal numeric identifier for a file."
+msgstr "Egy fájl belső azonosítója."
+
+#: l10n_community/l10n_community.install:168
+msgid "Reference to the {l10n_community_release}.rid of the parent release."
+msgstr ""
+
+#: l10n_community/l10n_community.install:174
+msgid "Path to the file within the release package."
+msgstr ""
+
+#: l10n_community/l10n_community.install:180
+msgid "CVS revision number extracted for reuse in exports."
+msgstr ""
+
+#: l10n_community/l10n_community.install:193
+msgid "Information on occurances of strings on lines of specific files."
+msgstr ""
+
+#: l10n_community/l10n_community.install:196
+msgid "Reference to the {l10n_community_file}.fid of the parent file."
+msgstr ""
+
+#: l10n_community/l10n_community.install:202
+msgid "Number of line where the string occurance was found."
+msgstr ""
+
+#: l10n_community/l10n_community.install:208
+msgid ""
+"Type of occurance. Possible values are constants "
+"POTX_STRING_INSTALLER, POTX_STRING_RUNTIME or POTX_STRING_BOTH."
+msgstr ""
+
+#: l10n_community/l10n_community.install:215
+msgid "Reference to the {l10n_community_string}.sid found on this line."
+msgstr ""
+
+#: l10n_community/l10n_community.install:228
+msgid "Value of translatable strings found."
+msgstr ""
+
+#: l10n_community/l10n_community.install:231
+msgid "Internal numeric identifier for a source string."
+msgstr ""
+
+#: l10n_community/l10n_community.install:237
+msgid ""
+"The actual translatable string. For strings with multiple plural "
+"versions, we store them as the same translatable with a \\0 separator "
+"(unlike Drupal itself), because it is easier to match translations "
+"with them (for multiple plural versions) this way, and we can force "
+"people to translate both at once."
+msgstr ""
+
+#: l10n_community/l10n_community.install:248
+msgid "Internal numeric identifier for a translation."
+msgstr ""
+
+#: l10n_community/l10n_community.install:254
+msgid ""
+"Reference to the {l10n_community_string}.sid which is being "
+"translated."
+msgstr ""
+
+#: l10n_community/l10n_community.install:260
+msgid ""
+"Reference to the {languages}.language to which the string is being "
+"translated."
+msgstr ""
+
+#: l10n_community/l10n_community.install:266
+msgid "The actual translation or suggestion."
+msgstr ""
+
+#: l10n_community/l10n_community.install:271
+msgid ""
+"Reference to the {users}.uid who entered this translation or "
+"suggestion."
+msgstr ""
+
+#: l10n_community/l10n_community.install:278
+msgid ""
+"Reference to the {users}.uid who approved this translation or "
+"suggestion."
+msgstr ""
+
+#: l10n_community/l10n_community.install:285
+msgid "Unix timestamp of time when the translation or suggestion was entered."
+msgstr ""
+
+#: l10n_community/l10n_community.install:292
+msgid ""
+"Unix timestamp of time when the translation or suggestion was "
+"approved."
+msgstr ""
+
+#: l10n_community/l10n_community.install:299
+msgid ""
+"Cached flag of whether there is at least one other row in the table "
+"where is_suggestion = 1, is_active = 1 and sid and language is the "
+"same as this one. Only applicable to rows where is_suggestion = 0."
+msgstr ""
+
+#: l10n_community/l10n_community.install:306
+msgid ""
+"Flag of whether this is a suggestion (1) or not (0). If 0, *_approved "
+"fields should also be 0."
+msgstr ""
+
+#: l10n_community/l10n_community.install:313
+msgid ""
+"Flag of whether this is an active (1) suggestion or translation. Older "
+"suggestions and translations are kept (0). Unprocessed suggestions and "
+"active translations have this as 1."
+msgstr ""
+
+#: l10n_community/l10n_community.install:344
+msgid "Compression functionality"
+msgstr ""
+
+#: l10n_community/l10n_community.install:345
+msgid "Archive/Tar.php available"
+msgstr "Archive/Tar.php elérhető"
+
+#: l10n_community/l10n_community.install:348
+msgid ""
+"The PEAR library Archive/Tar.php is missing. Please <a "
+"href=\"@pear\">obtain PEAR</a> or a copy of this file and put it on "
+"the include path."
+msgstr ""
+
+#: l10n_community/l10n_community.install:360
+msgid "Translation template extractor"
+msgstr "Fordítási sablon készítő"
+
+#: l10n_community/l10n_community.install:361
+msgid "Localization Server compatible version"
+msgstr ""
+
+#: l10n_community/l10n_community.install:364
+msgid ""
+"The Translation template extractor should be from the 6.x-2.x branch "
+"to be compatible with Localization Server."
+msgstr ""
+
+#: l10n_community/l10n_community.install:366
+msgid "Not compatible with Localization Server"
+msgstr "Nem kompatibilis a Honosítási Kiszolgálóval"
+
+#: l10n_community/l10n_community.info:0
+msgid "Localization community"
+msgstr "Honosító közösség"
+
+#: l10n_community/l10n_community.info:0
+msgid "A community interface for string translation"
+msgstr "Egy közösségi fordítási felület"
+

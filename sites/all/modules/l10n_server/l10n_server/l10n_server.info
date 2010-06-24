@@ -1,0 +1,14 @@
+; $Id: l10n_server.info,v 1.1.2.1 2010/03/24 11:40:43 goba Exp $
+name = Localization server
+description = Base backend module for localization server
+package = "Localization server"
+dependencies[] = locale
+core = 6.x
+php = 5
+
+; Information added by drupal.org packaging script on 2010-05-05
+version = "6.x-2.0-beta2"
+core = "6.x"
+project = "l10n_server"
+datestamp = "1273073108"
+

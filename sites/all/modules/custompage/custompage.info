@@ -1,0 +1,12 @@
+; $Id: custompage.info,v 1.1.2.1 2008/07/23 11:31:13 inadarei Exp $
+name = "Custom Page"
+description = "Allows creation of custom pages wrapped into page.tpl.php and attached to any available path."
+core = 6.x
+
+
+; Information added by drupal.org packaging script on 2010-06-04
+version = "6.x-1.15"
+core = "6.x"
+project = "custompage"
+datestamp = "1275680105"
+
