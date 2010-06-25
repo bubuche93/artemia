@@ -26,22 +26,18 @@
 	</div>
 <?php endif; ?>
 
-<?php if ($menu): ?>
 	<div id="menu-firstlevel">
 		<?php print($menu) ?>
 		<?php if (isset($primary_links)) : ?>
     		<?php print theme('links', $primary_links, array('class' => 'links primary-links')) ?>
   		<?php endif; ?>
 	</div>
-<?php endif; ?>
 
-<div id="main">
-<?php if ($center): ?>
-	<div id="center" class="clear-block">
-		<?php print $content ?>
+	<div id="main">
+		<div id="center" class="clear-block">
+			<?php print $content ?>
+		</div>
 	</div>
-<?php endif; ?>
-</div>
 
 
 <?php include 'page.footer.inc'; ?>
