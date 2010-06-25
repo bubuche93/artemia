@@ -20,6 +20,7 @@ scripts[] = scripts/jquery.easing.1.3.js
 regions[header] = "Header"
 regions[logo] = "Logo header"
 regions[search] = "Page search"
+regions[menu] = "Menu"
 regions[center] = "Center Content"
 regions[left] = "Left sidebar"
 regions[right] = "Right sidebar"
@@ -40,10 +41,11 @@ features[] = favicon
 ; Layout: Homepage
 layouts[homepage][name] = "Homepage"
 layouts[homepage][description] = "Standard homepage."
-layouts[homepage][template] = "homepage"
+layouts[homepage][template] = "layout-homepage"
 layouts[homepage][regions][] = "header"
 layouts[homepage][regions][] = "logo"
 layouts[homepage][regions][] = "search"
+layouts[homepage][regions][] = "menu"
 layouts[homepage][regions][] = "center"
 
 ; Layout: Single sidebar left
@@ -54,6 +56,7 @@ layouts[sidebar-left][regions][] = "header"
 layouts[sidebar-left][regions][] = "logo"
 layouts[sidebar-left][regions][] = "search"
 layouts[sidebar-left][regions][] = "left"
+layouts[sidebar-left][regions][] = "menu"
 layouts[sidebar-left][regions][] = "content"
 
 ; Layout: Single sidebar right
@@ -64,6 +67,7 @@ layouts[sidebar-right][regions][] = "header"
 layouts[sidebar-right][regions][] = "logo"
 layouts[sidebar-right][regions][] = "search"
 layouts[sidebar-right][regions][] = "right"
+layouts[sidebar-right][regions][] = "menu"
 layouts[sidebar-right][regions][] = "content"
 
 ; Layout: Two sidebar
@@ -75,6 +79,7 @@ layouts[sidebar-both][regions][] = "logo"
 layouts[sidebar-both][regions][] = "search"
 layouts[sidebar-both][regions][] = "right"
 layouts[sidebar-both][regions][] = "left"
+layouts[sidebar-both][regions][] = "menu"
 layouts[sidebar-both][regions][] = "content"
 
 ; Layout: Login
@@ -83,6 +88,7 @@ layouts[login][description] = "Thin one column login page."
 layouts[login][template] = "layout-login"
 layouts[login][regions][] = "header"
 layouts[login][regions][] = "logo"
+layouts[login][regions][] = "menu"
 layouts[login][regions][] = "center"
 
 ; Information added by drupal.org packaging script on 2010-05-07
