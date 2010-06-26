@@ -1,0 +1,13 @@
+; $Id: georss.info,v 1.4.2.4 2009/09/22 18:50:56 rsoden Exp $
+name = "GeoRSS"
+description = "Adds geodata to outgoing RSS feeds"
+package = "GIS"
+core = "6.x"
+dependencies[] = content
+
+; Information added by drupal.org packaging script on 2009-09-22
+version = "6.x-1.1"
+core = "6.x"
+project = "georss"
+datestamp = "1253646072"
+
