@@ -9,7 +9,8 @@ base theme = blueprint
 
 ; Theme CSS ==========================================================
 
-stylesheets[screen,projection][] = css/style.css
+stylesheets[screen,projection][] = "css/style.css"
+stylesheets[screen][] = "css/openlayers.css"
 
 ; Theme Scripts ======================================================
 

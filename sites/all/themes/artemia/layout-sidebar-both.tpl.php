@@ -35,7 +35,7 @@
 
 	<div id="main">
 		<div id="center" class="clear-block">
-			
+			<?php print $content ?>
 		</div>
 	</div>
 
