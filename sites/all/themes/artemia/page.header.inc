@@ -8,7 +8,7 @@
 <title><?php print $head_title ?></title>
 </head>
 
-<body <?php print drupal_attributes($attr) ?>>
+<body<?php print phptemplate_body_attributes($is_front, $layout); ?>>
 
 <?php if (!empty($admin)) print $admin ?>
 

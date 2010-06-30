@@ -1,4 +1,4 @@
-// $Id: openlayers_ui.presets.js,v 1.1.2.2 2010/05/18 19:25:57 tmcw Exp $
+// $Id: openlayers_ui.presets.js,v 1.1.2.3 2010/05/28 15:37:30 tmcw Exp $
 
 /**
  * @file
@@ -15,7 +15,7 @@
  * @return bool true or false for existence
  */
 function function_exists(head) {
-  return _function_exists(String.split(head, '.'), window);
+  return _function_exists(head.split('.'), window);
 }
 
 function _function_exists(head, f) {

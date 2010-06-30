@@ -1,4 +1,4 @@
-// $Id: openlayers.js,v 1.47.2.31 2010/05/17 12:31:20 zzolo Exp $
+// $Id: openlayers.js,v 1.47.2.32 2010/06/09 12:57:17 tmcw Exp $
 /*jslint white: false */
 /*jslint forin: true */
 /*global OpenLayers Drupal $ document jQuery window */
@@ -63,29 +63,21 @@ Drupal.behaviors.openlayers = function(context) {
             .css('width', map.width)
             .css('height', map.height);
   
-          // Process map option settings and prepare params for OpenLayers.
-          if (map.options) {
-            var options = map.options;
-            options.projection = new OpenLayers.Projection('EPSG:' + map.projection);          
-            options.displayProjection = new OpenLayers.Projection('EPSG:' + map.displayProjection);
-            options.maxExtent = new OpenLayers.Bounds.fromArray(map.options.maxExtent);
-            options.controls = [];
+          var options = {};
+          // This is necessary because the input JSON cannot contain objects
+          options.projection = new OpenLayers.Projection('EPSG:' + map.projection);
+          options.displayProjection = new OpenLayers.Projection('EPSG:' + map.displayProjection);
+
+          // TODO: work around this scary code
+          if (map.projection === '900913') {
+            options.maxExtent = new OpenLayers.Bounds(-20037508.34, -20037508.34, 20037508.34, 20037508.34);
           }
-          else {
-            var options = {};
-            // This is necessary because the input JSON cannot contain objects
-            options.projection = new OpenLayers.Projection('EPSG:' + map.projection);
-            options.displayProjection = new OpenLayers.Projection('EPSG:' + map.displayProjection);
-            // TODO: work around this scary code
-            if (map.projection === '900913') {
-              options.maxExtent = new OpenLayers.Bounds(-20037508.34, -20037508.34, 20037508.34, 20037508.34);
-            }
-            if (map.projection === '4326') {
-              options.maxExtent = new OpenLayers.Bounds(-180, -90, 180, 90);
-            }
-            options.maxResolution = 1.40625;
-            options.controls = [];
+          if (map.projection === '4326') {
+            options.maxExtent = new OpenLayers.Bounds(-180, -90, 180, 90);
           }
+
+          options.maxResolution = 1.40625;
+          options.controls = [];
   
           // Change image path if specified
           if (map.image_path) {

@@ -1,4 +1,4 @@
-// $Id: openlayers_cck_vector_layer.js,v 1.1.2.2 2010/03/22 23:16:49 zzolo Exp $
+// $Id: openlayers_cck_vector_layer.js,v 1.1.2.4 2010/06/06 19:54:28 zzolo Exp $
 
 /**
  * @file
@@ -9,16 +9,18 @@
 Drupal.behaviors.openlayers_cck_vector_layer = function(context) {
   var data = $(context).data('openlayers');
   if (data && data.map.behaviors['openlayers_cck_vector_layer']) {
-    features = data.map.behaviors['openlayers_cck_vector_layer'].features;
+    var features = data.map.behaviors['openlayers_cck_vector_layer'].features;
 
     // Create options and layer
     var options = {
       drupalID: 'openlayers_cck_vector_layer'
     };
-    var data_layer = new OpenLayers.Layer.Vector(Drupal.t("Data Layer"), options);
+    var styleMap = Drupal.openlayers.getStyleMap(data.map, options.drupalID);
+    var dataLayer = new OpenLayers.Layer.Vector(Drupal.t("Data Layer"), options);
     
-    // Add features and layers
-    Drupal.openlayers.addFeatures(data.map, data_layer, features);
-    data.openlayers.addLayer(data_layer);
+    // Add features, styles, and layers
+    dataLayer.styleMap = styleMap;
+    Drupal.openlayers.addFeatures(data.map, dataLayer, features);
+    data.openlayers.addLayer(dataLayer);
   }
 };

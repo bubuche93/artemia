@@ -1,5 +1,5 @@
 <?php
-// $Id: openlayers.module,v 1.69.2.70 2010/05/18 19:25:57 tmcw Exp $
+// $Id: openlayers.module,v 1.69.2.75 2010/06/10 11:06:50 zzolo Exp $
 
 /**
  * @defgroup openlayers OpenLayers provides an API and
@@ -51,26 +51,7 @@ function openlayers_theme($existing, $type, $theme, $path) {
 }
 
 /**
- * Implementation of hook_ctools_plugin_api().
- */
-function openlayers_ctools_plugin_api($module, $api) {
-  if ($module == "openlayers") {
-    switch ($api) {
-      case 'openlayers_presets':
-        return array('version' => 1);
-
-      case 'openlayers_layers':
-        return array('version' => 1);
-
-      case 'openlayers_styles':
-        return array('version' => 1);
-
-    }
-  }
-}
-
-/**
- * Include necessary CSS and JS for OpenLayers.
+ * Include necessary CSS and JS for rendering maps
  *
  * @ingroup openlayers_api
  */
@@ -81,7 +62,7 @@ function openlayers_include() {
     $once = TRUE;
 
     $path = check_plain(variable_get('openlayers_source', 
-      'http://openlayers.org/dev/OpenLayers.js'));
+      'http://openlayers.org/api/OpenLayers.js'));
     // Check for full URL and include it manually if external.
     if (valid_url($path, TRUE)) {
       drupal_set_html_head('<script src="' . check_url($path) . 
@@ -100,10 +81,11 @@ function openlayers_include() {
 /**
  * Prepare a map for rendering.
  *
- * Takes a map array and ensures that the array is
- * filled properly.
+ * Takes a map array and builds up the data given the
+ * reference to objects like styles, layers, and behaviors.
  *
  * @ingroup openlayers_api
+ *
  * @param $map
  *   Array of map settings
  * @return
@@ -155,15 +137,19 @@ function openlayers_build_map($map = array()) {
 }
 
 /**
- * Render Map
+ * Render map array
  *
- * Given parameters, render an OpenLayers map
+ * Given a map array, render into HTML to display
+ * a map.
  *
  * @ingroup openlayers_api
+ *
  * @param $map
- *   Associative array of map paramters
+ *   Associative array of map paramters.
+ * @param $preset_name
+ *   Name of the preset used for use in the theme function.
  * @return
- *   Map HTML
+ *   Map HTML.
  */
 function openlayers_render_map($map = array(), $preset_name = '') {
   // Run map through build process
@@ -174,7 +160,8 @@ function openlayers_render_map($map = array(), $preset_name = '') {
     $js = array('openlayers' => array('maps' => array($map['id'] => $map)));
     // Try to use more efficient json_encode function, if available
     if (function_exists('json_encode')) {
-      drupal_add_js('Drupal.settings.openlayers.maps["' . $map['id'] . '"] = ' . json_encode($map) . ';', 'inline', 'header', TRUE);
+      drupal_add_js('Drupal.settings.openlayers.maps["' . $map['id'] . 
+        '"] = ' . json_encode($map) . ';', 'inline', 'header', TRUE);
     }
     else {
       drupal_add_js($js, 'setting');
@@ -205,12 +192,13 @@ function openlayers_get_layer_object($layer, $map = array()) {
   $layer->description = t($layer->description);
 
   // Attempt to get ctool class
+  // class is renamed klass because of PHP keywords
   if (isset($layer_types[$layer->data['layer_type']]) && 
-    $class = ctools_plugin_get_class(
+    $klass = ctools_plugin_get_class(
       $layer_types[$layer->data['layer_type']], 
       'layer_type')
   ) {
-    $layer_object = new $class($layer, $map);
+    $layer_object = new $klass($layer, $map);
     return $layer_object;
   }
   else {
@@ -377,13 +365,28 @@ function openlayers_layer_save($layer) {
 }
 
 /**
+ * Delete a layer object from the database.
+ *
+ * @ingroup openlayers_api
+ *
+ * @param $preset
+ *   String identifier of a layer or layer object with name.
+ * @return
+ *   The results of DB delete.
+ */
+function openlayers_layer_delete($layer) {
+  return openlayers_object_delete($layer, 'layer');
+}
+
+/**
  * Get all layer types.
  *
  * @ingroup openlayers_api
+ *
  * @param $reset
  *   Boolean whether to reset cache or not.
  * @return
- *   Array of behavior info.
+ *   Array of layer type info.
  */
 function openlayers_layer_types($reset = FALSE) {
   ctools_include('plugins');
@@ -393,24 +396,31 @@ function openlayers_layer_types($reset = FALSE) {
 /**
  * Menu loader for layer types.
  *
- * @param
- *   layer type string
+ * @ingroup openlayers_api
+ *
+ * @param $name
+ *   String identifier of layer type.
+ * @param $reset
+ *   Boolean whether to reset cache or not.
  * @return
- *   an instantiated layer type object
+ *   An instantiated layer type object or FALSE if not found.
  */
-function openlayers_layer_type_load($name) {
+function openlayers_layer_type_load($name, $reset = FALSE) {
   ctools_include('plugins');
+
   if ($layer_type_class = ctools_plugin_load_class(
     'openlayers', 'layer_types', $name, 'layer_type')) {
     $layer_type = new $layer_type_class();
     return $layer_type;
   }
+  return FALSE;
 }
 
 /**
  * Get all behaviors.
  *
  * @ingroup openlayers_api
+ *
  * @param $reset
  *   Boolean whether to reset cache or not.
  * @return
@@ -425,32 +435,56 @@ function openlayers_behaviors($reset = FALSE) {
  * Get all openlayers styles.
  *
  * @ingroup openlayers_api
+ *
  * @param $reset
- *   Boolean whether to reset cache or not
+ *   Boolean whether to reset cache or not.
  * @return
- *   array of styles info
+ *   Array of all available styles.
  */
 function openlayers_styles($reset = FALSE) {
   ctools_include('export');
-  if ($reset) ctools_export_load_object_reset('openlayers_styles');
+  if ($reset) {
+    ctools_export_load_object_reset('openlayers_styles');
+  }
+  
   $styles = ctools_export_load_object('openlayers_styles', 'all', array());
   return $styles;
 }
 
 /**
- * Menu loader for styles.
+ * Load a style object by name.
+ *
+ * This function can also be used as a 
+ * menu loader for a style.
+ *
+ * @ingroup openlayers_api
+ *
+ * @param $name
+ *   The string identifier of the style.
+ * @param $reset
+ *   Boolean whether to reset the cache or not.
+ * @return
+ *   A style object or FALSE if not found.
  */
-function openlayers_style_load($name) {
-  $styles = openlayers_styles();
+function openlayers_style_load($name, $reset = FALSE) {
+  $styles = openlayers_styles($reset);
   return !empty($styles[$name]) ? $styles[$name] : FALSE;
 }
 
 /**
  * Save style.
+ *
+ * @ingroup openlayers_api
+ *
+ * @param $style
+ *   The style object to save.
+ * @return
+ *   The results of DB write or FALSE if no name.
  */
 function openlayers_style_save($style) {
   if (!empty($style->name)) {
-    $exists = db_result(db_query("SELECT name FROM {openlayers_styles} WHERE name = '%s'", $style->name));
+    $exists = db_result(db_query("SELECT name FROM {openlayers_styles} 
+      WHERE name = '%s'", $style->name));
     return $exists ?
       drupal_write_record('openlayers_styles', $style, 'name') :
       drupal_write_record('openlayers_styles', $style);
@@ -459,18 +493,35 @@ function openlayers_style_save($style) {
 }
 
 /**
- *
- * Get Presets from DB or code, via cache
+ * Delete a style object from the database.
  *
  * @ingroup openlayers_api
- * @param $reset
- *   Boolean whether to reset or not
+ *
+ * @param $preset
+ *   String identifier of a style or style object with name.
  * @return
- *   Return formatted data
+ *   The results of DB delete.
+ */
+function openlayers_style_delete($style) {
+  return openlayers_object_delete($style, 'style');
+}
+
+/**
+ * Get Presets from DB or code, via cache.
+ *
+ * @ingroup openlayers_api
+ *
+ * @param $reset
+ *   Boolean whether to reset or not.
+ * @return
+ *   Return array of presets.
  */
 function openlayers_presets($reset = FALSE) {
   ctools_include('export');
-  if ($reset) ctools_export_load_object_reset('openlayers_map_presets');
+  if ($reset) {
+    ctools_export_load_object_reset('openlayers_map_presets');
+  }
+  
   $presets = ctools_export_load_object(
     'openlayers_map_presets', 'all', array());
   return $presets;
@@ -479,17 +530,24 @@ function openlayers_presets($reset = FALSE) {
 /**
  * Given a preset name, get full preset object.
  *
+ * This function can also be used as a 
+ * menu loader for a style.
+ *
  * @ingroup openlayers_api
+ *
  * @param $name
- *   Name of preset
+ *   String identifier of the preset.
  * @param $reset
- *   Boolean whether to reset cache
+ *   Boolean whether to reset cache.
  * @return
- *   Preset object
+ *   Preset object or FALSE if not found.
  */
 function openlayers_preset_load($name = '', $reset = FALSE) {
   ctools_include('export');
-  if ($reset) ctools_export_load_object_reset('openlayers_map_presets');
+  if ($reset) {
+    ctools_export_load_object_reset('openlayers_map_presets');
+  }
+  
   $presets = ctools_export_load_object(
     'openlayers_map_presets', 'names', array($name));
   return !empty($presets[$name]) ? $presets[$name] : FALSE;
@@ -499,14 +557,16 @@ function openlayers_preset_load($name = '', $reset = FALSE) {
  * Save a preset object to the database.
  *
  * @ingroup openlayers_api
+ *
  * @param $preset
- *   Array of data for preset
+ *   Preset object.
  * @return
- *   Boolean of whether successful
+ *   The results of DB write or FALSE if no name.
  */
 function openlayers_preset_save($preset) {
   if (!empty($preset->name)) {
-    $exists = db_result(db_query("SELECT name FROM {openlayers_map_presets} WHERE name = '%s'", $preset->name));
+    $exists = db_result(db_query("SELECT name FROM {openlayers_map_presets} 
+      WHERE name = '%s'", $preset->name));
     return $exists ?
       drupal_write_record('openlayers_map_presets', $preset, 'name') :
       drupal_write_record('openlayers_map_presets', $preset);
@@ -515,12 +575,28 @@ function openlayers_preset_save($preset) {
 }
 
 /**
+ * Delete a preset object from the database.
+ *
+ * @ingroup openlayers_api
+ *
+ * @param $preset
+ *   String identifier of a preset or preset object with name.
+ * @return
+ *   The results of DB delete.
+ */
+function openlayers_preset_delete($preset) {
+  return openlayers_object_delete($preset, 'preset');
+}
+
+/**
  * Get preset options in an array suitable for a FormAPI element.
  *
+ * @ingroup openlayers_api
+ *
  * @param $reset
- *   Boolean whether to reset or not
+ *   Boolean whether to reset or not.
  * @return
- *   Return formatted data
+ *   Return array of formatted data.
  */
 function openlayers_preset_options($reset = FALSE) {
   $presets = openlayers_presets($reset);
@@ -532,17 +608,57 @@ function openlayers_preset_options($reset = FALSE) {
 }
 
 /**
- * Check Map Errors
+ * Delete an object from the database.
  *
+ * @ingroup openlayers_api
+ *
+ * @param $ol_object
+ *   String identifier of an object or the object with name.
+ * @param $type
+ *   Type of object to delete.  The options are the following:
+ *   - 'layer'
+ *   - 'style'
+ *   = 'preset'
+ * @return
+ *   The results of the DB delete.
+ */
+function openlayers_object_delete($ol_object, $type) {
+  // Check for object or name
+  if (is_object($ol_object) && isset($ol_object->name)) {
+    $ol_object = $ol_object->name;
+  }
+  
+  // Determine query to use
+  switch ($type) {
+    case 'style':
+      $query = "DELETE FROM {openlayers_styles} WHERE name = '%s'";
+      break;
+      
+    case 'layer':
+      $query = "DELETE FROM {openlayers_layers} WHERE name = '%s'";
+      break;
+      
+    case 'preset':
+      $query = "DELETE FROM {openlayers_map_presets} WHERE name = '%s'";
+      break;
+      
+    default:
+      return FALSE;
+  }
+  return db_query($query, $ol_object);
+}
+
+/**
  * Checks map array for incompatibilities or errors.
  *
  * @ingroup openlayers_api
+ *
  * @param $map
  *   Map array
  * @param $log_errors
- *   Boolean whether to log erros
+ *   Boolean whether to log errors.
  * @return
- *   FALSE if passed. Array of descriptive errors if fail
+ *   FALSE if passed. Array of descriptive errors if fail.
  */
 function openlayers_error_check_map($map, $log_errors = TRUE) {
   // @TODO: Instead of manually specifying projections,
@@ -575,13 +691,19 @@ function openlayers_error_check_map($map, $log_errors = TRUE) {
 }
 
 /**
+ * Get extent given projection
+ *
  * Returns standard world-max-extents for common projections.
  * Layers implementing other projections and subsets of the
- * world should define their maxExtent in the layer array
+ * world should define their maxExtent in the layer array.
+ *
+ * @ingroup openlayers_api
  *
  * @param $projection
- *   Currently supports 900913, 4326
- * @return array of maxExtent in OpenLayers toArray() format
+ *   String of the projection value.  Currently 
+ *   supports 900913, 4326.
+ * @return
+ *   Array of maxExtent in OpenLayers toArray() format.
  */
 function openlayers_get_extent($projection) {
   switch ($projection) {
@@ -593,18 +715,23 @@ function openlayers_get_extent($projection) {
 }
 
 /**
+ * Get resolution given projection
+ *
  * Returns a default set of resolutions for standard
  * TMS, WMS, etc servers serving up common projections.
  * Layers supporting less common projections and resolutions
- * can easily define custom resolutions arrays
+ * can easily define custom resolutions arrays.
+ *
+ * @ingroup openlayers_api
  *
  * @param $projection
- *   string specifying which projection this should take, like 900913
+ *   String specifying which projection this should take, like 900913.
  * @param $zoom_start
- *    integer - first zoom level, default 0
+ *   Integer of first zoom level, default 0.
  * @param $zoom_end
- *    integer - last zoom level, default FALSE
- * @return array of resolutions
+ *   Integer of last zoom level, default FALSE.
+ * @return
+ *   Array of resolutions.
  */
 function openlayers_get_resolutions($projection, $zoom_start = 0, $zoom_end = FALSE) {
   switch ($projection) {
@@ -776,6 +903,25 @@ function openlayers_ctools_plugin_layer_types() {
 }
 
 /**
+ * Implementation of hook_ctools_plugin_api().
+ */
+function openlayers_ctools_plugin_api($module, $api) {
+  if ($module == "openlayers") {
+    switch ($api) {
+      case 'openlayers_presets':
+        return array('version' => 1);
+
+      case 'openlayers_layers':
+        return array('version' => 1);
+
+      case 'openlayers_styles':
+        return array('version' => 1);
+
+    }
+  }
+}
+
+/**
  * Implementation of hook_openlayers_layers().
  */
 function openlayers_openlayers_layers() {
@@ -785,7 +931,6 @@ function openlayers_openlayers_layers() {
 
 /**
  * Implementation of hook_openlayers_behaviors().
- *
  */
 function openlayers_openlayers_behaviors() {
   module_load_include('inc', 'openlayers', 'includes/openlayers.behaviors');

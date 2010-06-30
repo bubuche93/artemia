@@ -1,5 +1,5 @@
 <?php
-// $Id: openlayers.api.php,v 1.2.2.2 2010/05/02 10:27:31 zzolo Exp $
+// $Id: openlayers.api.php,v 1.2.2.5 2010/06/02 23:13:40 zzolo Exp $
 
 /**
  * @file
@@ -73,10 +73,56 @@ function hook_openlayers_layer_types() {
 }
 
 /**
+ * CTools Registration Hook
+ *
+ * IMPORTANT:
+ *
+ * In order to support styles, presets, and layers in an external module,
+ * one must notify the CTools module that that module provides implementations 
+ * of the hooks for styles, presets, and/or layers.
+ *
+ * This function is just an example implementation of 
+ * hook_ctools_plugin_api() and should be alter according to
+ * your module's name.
+ *
+ * @param $module
+ *   Name of a module that supports CTools exportables.
+ * @param $api
+ *   Name of the kind of exportable supported.
+ * @return
+ *  If $module is 'openlayers', and $api is a type of exportable that
+ *  your module provides, and you are using Openlayers 2.x, then
+ *  return array with the following values:
+ *  - version => 1
+ */
+function openlayers_example_ctools_plugin_api($module, $api) {
+  if ($module == "openlayers") {
+    switch ($api) {
+      case 'openlayers_presets':
+        return array('version' => 1);
+
+      case 'openlayers_layers':
+        return array('version' => 1);
+
+      case 'openlayers_styles':
+        return array('version' => 1);
+
+    }
+  }
+}
+
+/**
  * OpenLayers Layers
  *
  * This hook tells OpenLayers about the available layers
  * that can be used by name in maps.
+ *
+ * Ensure that you are telling CTools about this as well.
+ * @see openlayers_example_ctools_plugin_api().
+ *
+ * Please note, that to support translation for exportable
+ * code for potx extraction, you should include separate code
+ * of translatable string.
  *
  * @return
  *   Return an associative array with index being a unique string 
@@ -90,7 +136,6 @@ function hook_openlayers_layers() {
   // Taken from openlayers.layers.inc
 
   $layers = array();
-
   $layer = new stdClass();
   $layer->api_version = 1;
   $layer->name = 'google_satellite';
@@ -103,8 +148,13 @@ function hook_openlayers_layers() {
     'layer_type' => 'openlayers_layer_type_google',
   );
   $layers[$layer->name] = $layer;
-
   return $layers;
+  
+  // Extra code to support potx extractors
+  $potx = array(
+    t('Google Maps Satellite'),
+    t('Google Maps Satellite Imagery.'),
+  );
 }
 
 /**
@@ -112,6 +162,9 @@ function hook_openlayers_layers() {
  *
  * This hook tells OpenLayers about the available behaviors
  * that can be used in maps.
+ *
+ * Ensure that you are telling CTools about this as well.
+ * @see openlayers_example_ctools_plugin_api().
  *
  * @return
  *   Return a nested associative array with the top level
@@ -146,6 +199,9 @@ function hook_openlayers_behaviors() {
  *
  * This hook tells OpenLayers about the available styles
  * that can be used in maps.
+ *
+ * Ensure that you are telling CTools about this as well.
+ * @see openlayers_example_ctools_plugin_api().
  *
  * @return
  *   Return an associative array with index being a unique string 

@@ -28,9 +28,6 @@
 
 	<div id="menu-firstlevel">
 		<?php print($menu) ?>
-		<?php if (isset($primary_links)) : ?>
-    		<?php print theme('links', $primary_links, array('class' => 'links primary-links')) ?>
-  		<?php endif; ?>
 	</div>
 
 	<div id="main">

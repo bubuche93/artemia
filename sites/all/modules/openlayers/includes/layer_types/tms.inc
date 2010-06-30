@@ -1,5 +1,5 @@
 <?php
-// $Id: tms.inc,v 1.1.2.10 2010/04/29 20:58:37 tmcw Exp $
+// $Id: tms.inc,v 1.1.2.12 2010/06/25 16:23:51 tmcw Exp $
 
 /**
  * @file
@@ -50,7 +50,7 @@ class openlayers_layer_type_tms extends openlayers_layer_type {
         '#type' => 'textfield',
         '#title' => t('Layer Name'),
         '#default_value' => isset($this->data['layername']) ?
-          $this->data['base_url'] : ''
+          $this->data['layername'] : ''
       ),
       'type' => array(
         '#type' => 'select',
@@ -85,7 +85,7 @@ class openlayers_layer_type_tms extends openlayers_layer_type {
    */
   function render(&$map) {
     drupal_add_js(drupal_get_path('module', 'openlayers') 
-      .'/includes/layer_types/tms.js');
+      . '/includes/layer_types/js/tms.js');
     return $this->options;
   }
 }

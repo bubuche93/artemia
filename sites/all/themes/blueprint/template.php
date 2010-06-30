@@ -181,31 +181,31 @@ function blueprint_preprocess_comment(&$vars) {
  *   An array of variables to pass to the theme template.
  * @param $hook
  *   The name of the template being rendered ("block" in this case.)
- */
-function blueprint_preprocess_block(&$vars, $hook) {
-  $block = $vars['block'];
+ *
+ *function blueprint_preprocess_block(&$vars, $hook) {
+ * $block = $vars['block'];
 
-  // Special classes for blocks.
-  $classes = array('block');
-  $classes[] = 'block-' . $block->module;
-  $classes[] = 'region-' . $vars['block_zebra'];
-  $classes[] = $vars['zebra'];
-  $classes[] = 'region-count-' . $vars['block_id'];
-  $classes[] = 'count-' . $vars['id'];
+ *  // Special classes for blocks.
+ *  $classes = array('block');
+ *  $classes[] = 'block-' . $block->module;
+ *  $classes[] = 'region-' . $vars['block_zebra'];
+ *  $classes[] = $vars['zebra'];
+ *  $classes[] = 'region-count-' . $vars['block_id'];
+ *  $classes[] = 'count-' . $vars['id'];
 
-  $vars['edit_links_array'] = array();
-  $vars['edit_links'] = '';
+ *  $vars['edit_links_array'] = array();
+ *  $vars['edit_links'] = '';
   
-  if (user_access('administer blocks')) {
-    include_once './' . drupal_get_path('theme', 'blueprint') . '/template.block-editing.inc';
-    blueprint_preprocess_block_editing($vars, $hook);
-    $classes[] = 'with-block-editing';
-  }
+ *  if (user_access('administer blocks')) {
+ *    include_once './' . drupal_get_path('theme', 'blueprint') . '/template.block-editing.inc';
+ *    blueprint_preprocess_block_editing($vars, $hook);
+ *    $classes[] = 'with-block-editing';
+ *  }
 
-  // Render block classes.
-  $vars['classes'] = implode(' ', $classes);
-}
-
+ *  // Render block classes.
+ *  $vars['classes'] = implode(' ', $classes);
+ *}
+ */
 
 /**
  * Intercept box template variables

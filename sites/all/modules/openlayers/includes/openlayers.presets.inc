@@ -1,5 +1,5 @@
 <?php
-// $Id: openlayers.presets.inc,v 1.1.2.4 2010/05/06 14:37:40 tmcw Exp $
+// $Id: openlayers.presets.inc,v 1.1.2.5 2010/06/09 12:57:17 tmcw Exp $
 
 /**
  * @file
@@ -34,11 +34,8 @@ function _openlayers_openlayers_presets() {
         'zoom' => '2'
       )
     ),
-    // TODO: eliminate
-    'options' => array(
-      'displayProjection' => '4326',
-      'maxExtent' => openlayers_get_extent('4326'),
-    ),
+    'displayProjection' => '4326',
+    'maxExtent' => openlayers_get_extent('4326'),
     'behaviors' => array(
       'openlayers_behavior_panzoombar' => array(),
       'openlayers_behavior_layerswitcher' => array(),

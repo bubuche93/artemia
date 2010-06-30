@@ -1,5 +1,5 @@
 <?php
-// $Id: google.inc,v 1.1.2.11 2010/03/22 23:55:10 zzolo Exp $
+// $Id: google.inc,v 1.1.2.14 2010/06/07 20:41:40 tmcw Exp $
 
 /**
  * @file
@@ -82,8 +82,13 @@ class openlayers_layer_type_google extends openlayers_layer_type {
    * Render.
    */
   function render(&$map) {
-    drupal_add_js(drupal_get_path('module', 'openlayers') .'/includes/layer_types/google.js');
-    drupal_set_html_head('<script src="'. check_url("http://maps.google.com/maps?file=api&v=2&sensor=false&key=" . variable_get('openlayers_layers_google_api', variable_get('googlemap_api_key', ''))) . '" type="text/javascript"></script>');
+    static $google_maps_included;
+    
+    if (!isset($google_maps_included)) {
+      drupal_add_js(drupal_get_path('module', 'openlayers') . '/includes/layer_types/js/google.js');
+      drupal_set_html_head('<script src="'. check_url("http://maps.google.com/maps?file=api&v=2&sensor=false&key=" . variable_get('openlayers_layers_google_api', variable_get('googlemap_api_key', ''))) . '" type="text/javascript"></script>');
+      $google_maps_included = TRUE;
+    }
     return $this->options;
   }
 }

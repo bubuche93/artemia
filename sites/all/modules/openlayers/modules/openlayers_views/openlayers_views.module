@@ -1,5 +1,5 @@
 <?php
-// $Id: openlayers_views.module,v 1.4.2.16 2010/05/14 15:19:03 tmcw Exp $
+// $Id: openlayers_views.module,v 1.4.2.17 2010/06/06 18:44:41 zzolo Exp $
 
 /**
  * @file
@@ -17,6 +17,21 @@ function openlayers_views_help($path, $arg) {
     case 'admin/help#openlayers_views':
       return '<p>'. t('The OpenLayers Views module provides a set of plugins for Views.') .'</p>';
   }
+}
+
+/**
+ * Implementation of hook_theme().
+ */
+function openlayers_views_theme($existing, $type, $theme, $path) {
+  return array(
+    'openlayers_views_group_display_item' => array(
+      'arguments' => array(
+        'name' => '',
+        'description' => '',
+      ),
+      'file' => 'includes/openlayers_views.theme.inc',
+    ),
+  );
 }
 
 /**

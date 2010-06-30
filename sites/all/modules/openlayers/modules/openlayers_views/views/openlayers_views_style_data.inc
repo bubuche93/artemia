@@ -1,5 +1,5 @@
 <?php
-// $Id: openlayers_views_style_data.inc,v 1.1.2.17 2010/05/13 23:55:38 zzolo Exp $
+// $Id: openlayers_views_style_data.inc,v 1.1.2.20 2010/06/14 18:36:35 tmcw Exp $
 
 /**
  * @file
@@ -255,26 +255,37 @@ class openlayers_views_style_data extends views_plugin_style {
         }
 
         $descriptions = array();
+        $excluded_fields = array();
         foreach ($record as $k => $v) {
           foreach ($handlers as $hid => $handler) {
             $rendered_record[$handler->field_alias] = $handler->advanced_render($v);
+            if (!empty($handler->options['exclude'])) {
+              $excluded_fields[] = $handler->field_alias;
+            }
           }
-          $item = '';
-          if ($data_source['name_field']) {
-            $name_field = $fields[$data_source['name_field']]['field_alias'];
-            $item .= "<h2 class='point-title'>". $rendered_record[$name_field] ."</h2>";
-          }
-          if ($data_source['description_field']) {
-            $description_field = $fields[$data_source['description_field']]['field_alias'];
-            $item .= "<div class='point-content'>". $rendered_record[$description_field] ."</div>";
-          }
-          $descriptions[] = $item;
+
+          // Get aliases name
+          $name_field = (!empty($data_source['name_field'])) ? 
+            $fields[$data_source['name_field']]['field_alias'] : NULL;
+          $description_field = (!empty($data_source['description_field'])) ? 
+            $fields[$data_source['description_field']]['field_alias'] : NULL;
+          // Create output
+          $descriptions[] = theme('openlayers_views_group_display_item', 
+            $rendered_record[$name_field], $rendered_record[$description_field]);
         }
 
         $grouped_description = theme('item_list', $descriptions);
 
         $feature['attributes']['description'] = $grouped_description;
         $feature['attributes']['count'] = count($record);
+
+        foreach ($fields as $fid => $field) {
+          $field_alias = $field['field_alias'];
+          if (!in_array($field_alias, $excluded_fields, TRUE)) {
+            // Use regular field name as this is easier to understand
+            $feature['attributes'][$fid . "_rendered"] = $rendered_record[$field_alias];
+          }
+        }
 
         // Only add features with WKT data
         if (!empty($feature['wkt'])) {
@@ -359,10 +370,16 @@ class openlayers_views_style_data extends views_plugin_style {
           $feature['attributes']['name'] = $rendered_record[$name_field];
           $excluded_fields[] = $name_field;
         }
+        else {
+          $feature['attributes']['name'] = '';
+        }
         if ($data_source['description_field']) {
           $description_field = $fields[$data_source['description_field']]['field_alias'];
           $feature['attributes']['description'] = $rendered_record[$description_field];
           $excluded_fields[] = $description_field;
+        }
+        else {
+          $feature['attributes']['description'] = '';
         }
 
         // Fill in attributes that are not:

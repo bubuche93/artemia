@@ -1,5 +1,5 @@
 <?php
-// $Id: openlayers_ui.module,v 1.1.2.31 2010/05/18 19:25:57 tmcw Exp $
+// $Id: openlayers_ui.module,v 1.1.2.37 2010/06/21 20:29:36 tmcw Exp $
 
 /**
  * Implementation of hook_help
@@ -60,7 +60,7 @@ function openlayers_ui_menu() {
   // Core OpenLayers settings pages.
   $items['admin/build/openlayers'] = array(
     'title' => 'OpenLayers',
-    'description' => 'Main settings for OpenLayers.',
+    'description' => 'Manage maps, layers, styles, and map behaviors.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('openlayers_ui_admin_settings'),
     'access arguments' => array('administer openlayers'),
@@ -378,7 +378,17 @@ function openlayers_ui_object_list($type) {
   }
 
   // Make table of presets and actions
-  $header = array(t('Title'), t('Description'), t('Actions'));
+  if ($type == 'layers') {
+    $header = array(t('Title'), t('Type'), t('Description'), t('Actions'));
+    $layer_types = openlayers_layer_types();
+  }
+  elseif ($type == 'presets') {
+    $header = array(t('Title'), t('Layers'), t('Description'), t('Actions'));
+    $layers = openlayers_layers_load();
+  }
+  else {
+    $header = array(t('Title'), t('Description'), t('Actions'));
+  }
 
   // Create table rows
   foreach ($objects as $object) {
@@ -395,7 +405,25 @@ function openlayers_ui_object_list($type) {
         $row[] = $object->title .' <em><small>(' .t('Default'). ')</small></em>';
         break;
     }
+
+    if ($type == 'layers') {
+      $row[] = $layer_types[$object->data['layer_type']]['title'];
+    }
+    elseif ($type == 'presets') {
+      if (!empty($object->data['layers'])) {
+        $layer_names = array();
+        foreach ($object->data['layers'] as $layer) {
+          $layer_names[] = empty($layers[$layer]->title) ? $layer : $layers[$layer]->title;
+        }
+        $row[] = '<small>' . implode(', ', $layer_names) . '</small>';
+      }
+      else {
+        $row[] = '';
+      }
+    }
+
     $row[] = $object->description;
+
     // Check preset type and create links accordingly.
     if ($object->export_type == (EXPORT_IN_CODE | EXPORT_IN_DATABASE)) {
       $links[] = l(t('Edit'), "admin/build/openlayers/{$type}/{$object->name}/edit");
@@ -442,13 +470,15 @@ function openlayers_ui_object_delete_submit($form, &$form_state) {
 
   switch ($type) {
     case 'styles':
-      $result = db_query("DELETE FROM {openlayers_styles} WHERE name = '%s'", $object->name);
+      $result = openlayers_style_delete($object);
       break;
+      
     case 'layers':
-      $result = db_query("DELETE FROM {openlayers_layers} WHERE name = '%s'", $object->name);
+      $result = openlayers_layer_delete($object);
       break;
+      
     case 'presets':
-      $result = db_query("DELETE FROM {openlayers_map_presets} WHERE name = '%s'", $object->name);
+      $result = openlayers_preset_delete($object);
       break;
   }
 

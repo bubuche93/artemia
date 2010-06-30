@@ -1,5 +1,5 @@
 <?php
-// $Id: openlayers.layer_types.inc,v 1.1.2.4 2010/04/27 18:17:45 tmcw Exp $
+// $Id: openlayers.layer_types.inc,v 1.1.2.5 2010/05/30 19:38:01 tmcw Exp $
 
 /**
  * @file
@@ -120,6 +120,18 @@ function _openlayers_openlayers_layer_types() {
         'path' => drupal_get_path('module', 'openlayers') . '/includes/layer_types',
         'file' => 'kml.inc',
         'class' => 'openlayers_layer_type_kml',
+        'parent' => 'openlayers_layer_type',
+      ),
+    ),
+    'openlayers_layer_type_raw' => array(
+      'title' => t('Raw'),
+      'description' => t('Layer type for raw data input - 
+        not meant to be added with the UI.' 
+      ),
+      'layer_type' => array(
+        'path' => drupal_get_path('module', 'openlayers') . '/includes/layer_types',
+        'file' => 'raw.inc',
+        'class' => 'openlayers_layer_type_raw',
         'parent' => 'openlayers_layer_type',
       ),
     ),

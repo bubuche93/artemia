@@ -24,7 +24,15 @@
   right: 0;
 }
 
+.openlayers_map_fullscreen .openlayers_behavior_fullscreen_buttonItemInactive {
+  width: 8em;
+}
+
 .openlayers_behavior_fullscreen_buttonItemInactive:after {
-  content: "fullscreen";
+  content: "Fullscreen";
   text-decoration: underline;
+}
+
+.openlayers_map_fullscreen .openlayers_behavior_fullscreen_buttonItemInactive:after {
+  content: "Exit fullscreen";
 }

@@ -1,5 +1,5 @@
 <?php
-// $Id: openlayers_ui.styles.inc,v 1.1.2.5 2010/03/22 23:55:10 zzolo Exp $
+// $Id: openlayers_ui.styles.inc,v 1.1.2.7 2010/06/25 15:47:04 tmcw Exp $
 
 /**
  * @file
@@ -14,7 +14,143 @@
  */
 function openlayers_ui_styles_form(&$form_state, $style = NULL, $edit = FALSE) {
   $form = array();
+  
+  // Available styling properies.  Defaults and descriptions are taken
+  // from OpenLayers.
+  // @see http://docs.openlayers.org/library/feature_styling.html
+  $properties = array(
+    'externalGraphic' => array(
+      'default' => '',
+      'desc' => t('The URL of an icon for points in a layer.'),
+    ),
+    'pointRadius' => array(
+      'default' => 6,
+      'desc' => t('The radius of a vector point or the size of
+        an icon. Note that, when using icons, this value should be half the
+        width of the icon image.'),
+    ),
+    'fillColor' => array(
+      'default' => '#EE9900',
+      'desc' => t('This is the color used for 
+        filling in Polygons. It is also used in the center of marks for 
+        points: the interior color of circles or other shapes. It is 
+        not used if an externalGraphic is applied to a point.  This should be
+        a hexideicmal value like #FFFFFF.'),
+    ),
+    'strokeColor' => array(
+      'default' => '#EE9900',
+      'desc' => t('This is color of the line on features. On 
+        polygons and point marks, it is used as an outline to the feature. 
+        On lines, this is the representation of the feature.  This should be
+        a hexideicmal value like #FFFFFF.'),
+    ),
+    'strokeWidth' => array(
+      'default' => 1,
+      'desc' => t('This is width of the line on features. On 
+        polygons and point marks, it is used as an outline to 
+        the feature. On lines, this is the representation of the 
+        feature.  This is a value in pixels.'),
+    ),
+    'fillOpacity' => array(
+      'default' => 1,
+      'desc' => t('This is the opacity used for filling in Polygons. 
+        It is also used in the center of marks for points: the interior 
+        color of circles or other shapes. It is not used if an 
+        externalGraphic is applied to a point.  This should be a value
+        between 0 and 1.'),
+    ),
+    'strokeOpacity' => array(
+      'default' => 1,
+      'desc' => t('This is opacity of the line on features. 
+        On polygons and point marks, it is used as an outline to the 
+        feature. On lines, this is the representation of the feature.
+        This should be a value between 0 and 1.'),
+    ),
+    'strokeLinecap' => array(
+      'default' => 'round',
+      'desc' => t('Options are butt, round, square. This property 
+        is similar to the SVG stroke-linecap property. It determines 
+        what the end of lines should look like. See the SVG link for 
+        image examples.'),
+      'options' => array(
+        'butt' => t('Butt'),
+        'round' => t('Round'),
+        'square' => t('Square'),
+      ),
+    ),
+    'strokeDashstyle' => array(
+      'default' => 'solid',
+      'desc' => t('Options are dot, dash, dashdot, longdash, longdashdot, solid.'),
+      'options' => array(
+        'dot' => t('Dot'),
+        'dash' => t('Dash'),
+        'dashdot' => t('Dash-dot'),
+        'longdash' => t('Long-dash'),
+        'longdashdot' => t('Long-dash-dot'),
+        'solid' => t('Solid'),
+      ),
+    ),
+    'cursor' => array(
+      'default' => '',
+      'desc' => t('Cursor used when mouse is over the feature. Default 
+        is an empty string, which inherits from parent elements.  See
+        <a href="!url">CSS cursor styles</a>.', array(
+          '!url' => 'http://www.w3schools.com/css/pr_class_cursor.asp',
+        )),
+    ),
+    'graphicWidth' => array(
+      'default' => '',
+      'desc' => t('This properties define the width of an externalGraphic. 
+        This is an alternative to the pointRadius symbolizer property 
+        to be used when your graphic has different sizes in the X and 
+        Y direction.  This should be in pixels.'),
+    ),
+    'graphicHeight' => array(
+      'default' => '',
+      'desc' => t('This properties define the height of an externalGraphic. 
+        This is an alternative to the pointRadius symbolizer property 
+        to be used when your graphic has different sizes in the X and 
+        Y direction.  This should be in pixels.'),
+    ),
+    'graphicOpacity' => array(
+      'default' => '1',
+      'desc' => t('Opacity of an external graphic.  This should be a 
+      value between 0 and 1. Grahics that are already semitransparent,
+      like alpha PNGs, should have this set to 1, or rendering problems in 
+      Internet Explorer will ensue.'),
+    ),
+    'graphicXOffset' => array(
+      'default' => '',
+      'desc' => t('Where the X value of the "center" of an 
+      externalGraphic should be.  This should be in pixels.'),
+    ),
+    'graphicYOffset' => array(
+      'default' => '',
+      'desc' => t('Where the Y value of the "center" of an 
+      externalGraphic should be.  This should be in pixels.'),
+    ),
+    'graphicName' => array(
+      'default' => '',
+      'desc' => t('Name of a type of symbol to be used 
+        for a point mark.'),
+    ),
+    'rotation' => array(
+      'default' => '',
+      'desc' => t('The rotation angle in degrees clockwise for 
+        a point symbolizer.'),
+    ),
+    'display' => array(
+      'default' => '',
+      'desc' => t('Can be set to "none" to hide features 
+        from rendering.'),
+      'options' => array(
+        '' => t('On'),
+        'none' => t('None (off)'),
+      ),
+    ),
+  );
 
+  // Style object basics
   $form['info'] = array(
     '#type' => 'fieldset',
     '#tree' => FALSE,
@@ -37,52 +173,23 @@ function openlayers_ui_styles_form(&$form_state, $style = NULL, $edit = FALSE) {
     '#default_value' => !empty($style->description) ? $style->description : '',
   );
 
+  // OpenLayers style properties
   $form['data'] = array('#type' => 'fieldset', '#tree' => TRUE);
 
-  $form['data']['externalGraphic'] = array(
-    '#title' => 'externalGraphic',
-    '#type' => 'textfield',
-    '#description' => t('The URL of an icon for points in a layer.'),
-    '#default_value' => isset($style->data['externalGraphic']) ?
-      $style->data['externalGraphic'] : '',
-  );
-  $form['data']['pointRadius'] = array(
-    '#title' => 'pointRadius',
-    '#type' => 'textfield',
-    '#description' => t('The radius of a vector point or the size of
-      an icon. Note that, when using icons, this value should be half the
-      width of the icon image.'),
-    '#default_value' => isset($style->data['pointRadius']) ?
-      $style->data['pointRadius'] : 5,
-  );
-  $form['data']['fillColor'] = array(
-    '#title' => 'fillColor',
-    '#type' => 'textfield',
-    '#default_value' => isset($style->data['fillColor']) ?
-      $style->data['fillColor'] : "#FFFFFF",
-  );
-  $form['data']['strokeColor'] = array(
-    '#title' => 'strokeColor',
-    '#type' => 'textfield',
-    '#description' => t('The color of the border around a vector
-      point'),
-    '#default_value' => isset($style->data['strokeColor']) ?
-      $style->data['strokeColor'] : "#FFFFFF",
-  );
-  $form['data']['strokeWidth'] = array(
-    '#title' => 'strokeWidth',
-    '#type' => 'textfield',
-    '#description' => t('The width of the border around a vector
-      point'),
-    '#default_value' => isset($style->data['strokeWidth']) ?
-      $style->data['strokeWidth'] : 5,
-  );
-  $form['data']['fillOpacity'] = array(
-    '#title' => 'fillOpacity',
-    '#type' => 'textfield',
-    '#default_value' => isset($style->data['fillOpacity']) ?
-      $style->data['fillOpacity'] : 0.5,
-  );
+  foreach ($properties as $key => $prop) {
+    $form['data'][$key] = array(
+      '#type' => !isset($prop['options']) ? 'textfield' : 'select',
+      '#title' => $key,
+      '#description' => $prop['desc'],
+      '#default_value' => isset($style->data[$key]) ?
+        $style->data[$key] : $prop['default'],
+    );
+    
+    // Add options if needed
+    if (isset($prop['options']) && is_array($prop['options'])) {
+      $form['data'][$key]['#options'] = $prop['options'];
+    }
+  }
 
   $form['submit'] = array(
     '#type' => 'submit',

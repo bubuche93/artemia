@@ -1,5 +1,5 @@
 <?php
-// $Id: xyz.inc,v 1.1.2.9 2010/04/29 20:58:37 tmcw Exp $
+// $Id: xyz.inc,v 1.1.2.10 2010/05/30 21:46:15 zzolo Exp $
 
 /**
  * @file
@@ -72,7 +72,8 @@ class openlayers_layer_type_xyz extends openlayers_layer_type {
    * Render.
    */
   function render(&$map) {
-    drupal_add_js(drupal_get_path('module', 'openlayers') .'/includes/layer_types/xyz.js');
+    drupal_add_js(drupal_get_path('module', 'openlayers')
+      . '/includes/layer_types/js/xyz.js');
     return $this->options;
   }
 }

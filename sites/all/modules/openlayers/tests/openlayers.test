@@ -1,5 +1,5 @@
 <?php
-// $Id: openlayers.test,v 1.2.2.9 2010/05/15 23:06:51 zzolo Exp $
+// $Id: openlayers.test,v 1.2.2.10 2010/06/03 21:30:46 zzolo Exp $
 
 /**
  * @file
@@ -113,27 +113,34 @@ class OpenLayersStyles extends DrupalWebTestCase {
     $user = $this->drupalCreateUser(array('administer openlayers'));
     $this->drupalLogin($user);
 
-
-    // Styles
-    $this->drupalGet('admin/build/openlayers/styles/default/export');
-    $this->assertResponse(200, t('User can reach default style export page.'));
-
-    $this->drupalGet('admin/build/openlayers/styles/add');
-    $this->assertResponse(200, t('User can reach preset add page.'));
-
+    // New style.
     $new_style = array(
       'name' => 'UnitStyle',
       'title' => 'Unit Style',
       'description' => 'Unit Style for Drupal',
     );
+    
+    // Check basic navigation.
+    $this->drupalGet('admin/build/openlayers/styles/default/export');
+    $this->assertResponse(200, t('User can reach default style export page.'));
+    $this->drupalGet('admin/build/openlayers/styles/add');
+    $this->assertResponse(200, t('User can reach style add page.'));
 
+    // Add new style.
     $this->drupalPost('admin/build/openlayers/styles/add', $new_style, t('Save'));
     $this->assertText(t('Style saved.'),
       t('The style was successfully saved.'));
 
+    // Test that the style shows up in the style list.
     $this->drupalGet('admin/build/openlayers/styles');
     $this->assertRaw(t('UnitStyle'),
       t('A new style has been added by the test'));
+      
+    // Test removing style.
+    $this->drupalPost('admin/build/openlayers/styles/UnitStyle/delete', 
+      array(), t('Confirm'));
+    $this->assertText($new_style['name'] .' was deleted.', 
+      t('Style removed succesfully.'));
   }
 }
 
@@ -158,10 +165,7 @@ class OpenLayersLayers extends DrupalWebTestCase {
     $user = $this->drupalCreateUser(array('administer openlayers'));
     $this->drupalLogin($user);
 
-    // Layers
-    $this->drupalGet('admin/build/openlayers/layers/add');
-    $this->assertResponse(200, t('User can reach layer add page.'));
-
+    // New layers to add
     $layer_inputs = array(
       'openlayers_layer_type_osm' => array(
         'name' => 'UnitLayerOSM',
@@ -205,19 +209,29 @@ class OpenLayersLayers extends DrupalWebTestCase {
       )
     );
 
+    // Basic navigation.  
+    $this->drupalGet('admin/build/openlayers/layers/add');
+    $this->assertResponse(200, t('User can reach layer add page.'));
+
+    // Go through each new layer for testing.
     foreach ($layer_inputs as $layer_type => $input_data) {
-      $this->drupalGet('admin/build/openlayers/layers/add');
-      $this->assertResponse(200, t('User can reach layer add page.'));
+      // Test saving new layer.
       $this->drupalPost('admin/build/openlayers/layers/add/' . $layer_type,
-        $input_data,
-        t('Save'));
+        $input_data, t('Save'));
       $this->assertText(t('Layer saved.'),
         t('The layer was successfully saved.'));
 
+      // Ensure that the layer shows up in the list.
       $this->drupalGet('admin/build/openlayers/layers');
       $this->assertRaw($input_data['name'],
         t('A new layer of layer type %type_name has been added by the test',
           array('%type_name' => $layer_type)));
+      
+      // Test removing layer.
+      $this->drupalPost('admin/build/openlayers/layers/' . 
+        $input_data['name'] . '/delete', array(), t('Confirm'));
+      $this->assertText($input_data['name'] . ' was deleted.', 
+        t('Layer removed succesfully.'));
     }
   }
 }

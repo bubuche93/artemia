@@ -1,0 +1,172 @@
+body {
+background-color:#004487;
+}
+
+/* expand
+*******************************************************************************/
+.js .expand .exp
+{
+   display:none;
+}
+.expand h2
+{
+   background-image:url(../img/bg/expand.png);
+   background-position:-548px 0;
+   background-repeat:no-repeat;
+   padding:0.45em 0 0.45em 40px;
+   font-size:1.25em;
+   font-weight:bold;
+   color:#004487;
+   zoom:1;
+   
+   text-shadow:0 0 2px #FFF;
+   -moz-text-shadow:0 0 2px #FFF;
+   -webkit-text-shadow:0 0 2px #FFF;
+}
+.mac .expand h2
+{
+	font-weight:normal;
+}
+.js .expand h2
+{
+   background-position:0 38%;
+}
+.js .on h2
+{
+   background-position:-548px 38%;
+}
+.js .off h2
+{
+   background-position:0 38%;
+}
+.expand h2 a
+{
+   display:block;
+   text-decoration:none;
+   color:#004487!important;
+}
+
+
+/* menu
+*******************************************************************************/
+#block-menu-primary-links
+{
+   margin-bottom:1.5em;
+   zoom:1;
+}
+.ie6 #block-menu-primary-links
+{
+	position:relative;
+	top:-1.5em;
+	margin-bottom:0;
+}
+#block-menu-primary-links ul
+{
+   padding:0;
+   margin:0;
+}
+#block-menu-primary-links ul .menu
+{
+   font-size:0.8em;
+   line-height:1.875em;
+   margin-bottom:1.875em;
+}
+#block-menu-primary-links li
+{
+   line-height:3;
+   float:left;
+   list-style-type:none;
+   position:relative;
+}
+#block-menu-primary-links
+{
+	background-image:url(../img/bg/nav.png);
+	background-position:-1000px 50%;
+   border-right:1px solid #56a5db;
+}
+#block-menu-primary-links li a
+{
+   border-right:1px solid #56a5db;
+   padding:0 20px 0 40px;
+   background-repeat:no-repeat;
+   display:block;
+   color:#FFF;
+   font-weight:bold;
+   text-transform:uppercase;
+   text-decoration:none;
+   background-image:url(../img/bg/nav.png);
+   background-position:0 50%;
+}
+
+#block-menu-primary-links li.last a
+{
+   border:none!important;
+}
+.mac #block-menu-primary-links li a
+{
+	font-weight:normal;
+	padding:0 30px 0 42px;
+}
+
+.ie #block-menu-primary-links li a
+{
+   padding:0 25px 0 40px;
+}
+
+#block-menu-primary-links li a:hover,
+#block-menu-primary-links li a:focus
+{
+   text-decoration:underline;
+}
+#block-menu-primary-links li.active-trail a
+{
+   border-color:#aed253;
+   background-position:-318px 50%;
+   text-decoration:none;
+}
+#block-menu-primary-links li.active-trail.last a
+{
+   border-right:1px solid #56A5DB;	
+}
+#block-menu-primary-links li.active-trail li a:focus,
+#block-menu-primary-links li.active-trail li a:hover
+{
+   text-decoration:underline;
+}
+#block-menu-primary-links li ul
+{
+   position:absolute;
+   width:150px;
+   left:0;
+   top:3.75em;
+   background-color:#5F5F5F;
+   color:#FFF;
+   opacity:0.9;
+   padding:0.9375em 0;
+   display:none;
+   z-index:50;
+}
+.op #block-menu-primary-links li ul {
+   top:3.6em;
+}
+#block-menu-primary-links li:hover ul,
+#block-menu-primary-links li.hover ul
+{
+   display:block;
+}
+#block-menu-primary-links li li
+{
+   zoom:1;
+   float:none;
+   line-height:1.875;
+}
+#block-menu-primary-links li li a
+{
+   border:none;
+   padding:0 10px 0 20px!important;
+   background-image:url(../img/bg/puce.png);
+   background-position:10px 0.575em!important;
+   font-weight:normal;
+   text-transform:none;
+}
+

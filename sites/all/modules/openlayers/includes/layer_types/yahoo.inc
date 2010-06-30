@@ -1,5 +1,5 @@
 <?php
-// $Id: yahoo.inc,v 1.1.2.10 2010/03/22 23:55:10 zzolo Exp $
+// $Id: yahoo.inc,v 1.1.2.13 2010/06/07 20:41:40 tmcw Exp $
 
 /**
  * @file
@@ -77,8 +77,14 @@ class openlayers_layer_type_yahoo extends openlayers_layer_type {
    * Render.
    */
   function render(&$map) {
-    drupal_add_js(drupal_get_path('module', 'openlayers') .'/includes/layer_types/yahoo.js');
-    drupal_set_html_head('<script src="' . check_url("http://api.maps.yahoo.com/ajaxymap?v=3.0&appid=" . variable_get('openlayers_layers_yahoo_api', '')) . '" type="text/javascript"></script>');
+    static $yahoo_maps_included;
+    
+    if (!isset($yahoo_maps_included)) {
+      drupal_add_js(drupal_get_path('module', 'openlayers')
+        . '/includes/layer_types/js/yahoo.js');
+      drupal_set_html_head('<script src="' . check_url("http://api.maps.yahoo.com/ajaxymap?v=3.0&appid=" . variable_get('openlayers_layers_yahoo_api', '')) . '" type="text/javascript"></script>');
+      $yahoo_maps_included = TRUE;
+    }
     return $this->options;
   }
 }

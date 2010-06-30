@@ -1,5 +1,5 @@
 <?php
-// $Id: maptiler.inc,v 1.1.2.1 2010/04/27 18:17:45 tmcw Exp $
+// $Id: maptiler.inc,v 1.1.2.2 2010/05/30 21:46:15 zzolo Exp $
 
 /**
  * @file
@@ -77,7 +77,7 @@ class openlayers_layer_type_maptiler extends openlayers_layer_type {
    */
   function render(&$map) {
     drupal_add_js(drupal_get_path('module', 'openlayers') 
-      .'/includes/layer_types/maptiler.js');
+      . '/includes/layer_types/js/maptiler.js');
     return $this->options;
   }
 }

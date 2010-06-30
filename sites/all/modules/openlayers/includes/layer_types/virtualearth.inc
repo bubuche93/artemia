@@ -1,5 +1,5 @@
 <?php
-// $Id: virtualearth.inc,v 1.1.2.9 2010/03/12 15:59:18 tmcw Exp $
+// $Id: virtualearth.inc,v 1.1.2.12 2010/06/07 20:41:40 tmcw Exp $
 
 /**
  * @file
@@ -62,8 +62,14 @@ class openlayers_layer_type_virtualearth extends openlayers_layer_type {
    * Render.
    */
   function render(&$map) {
-    drupal_add_js(drupal_get_path('module', 'openlayers') .'/includes/layer_types/virtualearth.js');
-    drupal_set_html_head('<script src="' . check_url("http://dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.1") . '" type="text/javascript"></script>');
+    static $virtualearth_maps_included;
+    
+    if (!isset($virtualearth_maps_included)) {
+      drupal_add_js(drupal_get_path('module', 'openlayers')
+        . '/includes/layer_types/js/virtualearth.js');
+      drupal_set_html_head('<script src="' . check_url("http://dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.1") . '" type="text/javascript"></script>');
+      $virtualearth_maps_included = TRUE;
+    }
     return $this->options;
   }
 }

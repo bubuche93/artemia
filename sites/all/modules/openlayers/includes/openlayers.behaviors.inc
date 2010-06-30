@@ -1,5 +1,5 @@
 <?php
-// $Id: openlayers.behaviors.inc,v 1.1.2.11 2010/04/06 21:20:31 zzolo Exp $
+// $Id: openlayers.behaviors.inc,v 1.1.2.14 2010/06/07 20:21:25 zzolo Exp $
 
 /**
  * @file
@@ -20,6 +20,18 @@ function _openlayers_openlayers_behaviors() {
       'file' => 'openlayers_behavior_attribution.inc',
       'behavior' => array(
         'class' => 'openlayers_behavior_attribution',
+        'parent' => 'openlayers_behavior',
+      ),
+    ),
+    'openlayers_behavior_argparser' => array(
+      'title' => t('ArgParser'),
+      'description' => t('Parses Permalink-formatted arguments without adding a 
+        Permalink link to the map'),
+      'type' => 'layer',
+      'path' => drupal_get_path('module', 'openlayers') .'/includes/behaviors',
+      'file' => 'openlayers_behavior_argparser.inc',
+      'behavior' => array(
+        'class' => 'openlayers_behavior_argparser',
         'parent' => 'openlayers_behavior',
       ),
     ),
@@ -189,6 +201,17 @@ function _openlayers_openlayers_behaviors() {
         'parent' => 'openlayers_behavior',
       ),
     ),
+    'openlayers_behavior_zoompanel' => array(
+      'title' => t('Zoom Panel'),
+      'description' => t('Provides a Zoom In, Zoom Out, and Zoom to Max Extent Button'),
+      'type' => 'map',
+      'path' => drupal_get_path('module', 'openlayers') .'/includes/behaviors',
+      'file' => 'openlayers_behavior_zoompanel.inc',
+      'behavior' => array(
+        'class' => 'openlayers_behavior_zoompanel',
+        'parent' => 'openlayers_behavior',
+      ),
+    ),
     'openlayers_behavior_zoomtomaxextent' => array(
       'title' => t('Zoom to Max Extent'),
       'description' => t('Provides button to zoom to the maximum extent of the map.'),
@@ -221,6 +244,17 @@ function _openlayers_openlayers_behaviors() {
          'class' => 'openlayers_behavior_drawfeatures',
          'parent' => 'openlayers_behavior',
        ),
+    ),
+    'openlayers_behavior_cluster' => array(
+      'title' => t('Cluster'),
+      'description' => t('Provides vector layer features clustering by proximity.'),
+      'type' => 'layer',
+      'path' => drupal_get_path('module', 'openlayers') . '/includes/behaviors',
+      'file' => 'openlayers_behavior_cluster.inc',
+      'behavior' => array(
+        'class' => 'openlayers_behavior_cluster',
+        'parent' => 'openlayers_behavior',
+      ),
     ),
   );
 }

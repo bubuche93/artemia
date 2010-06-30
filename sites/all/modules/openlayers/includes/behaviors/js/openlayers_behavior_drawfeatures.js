@@ -1,30 +1,25 @@
-// $Id: openlayers_behavior_drawfeatures.js,v 1.1.2.6 2010/05/17 12:25:14 zzolo Exp $
+// $Id: openlayers_behavior_drawfeatures.js,v 1.1.2.8 2010/06/06 19:54:28 zzolo Exp $
 
 /**
  * @file
  * DrawFeatures Behavior
  */
 
-// Declare global variable
-openlayers_drawfeature_element = null;
-
 /**
  * Update function for features
  *
- * TODO: put in a non-global namespace
  */
-function update(features) {
+function openlayers_behavior_drawfeatures_update(features) {
   WktWriter = new OpenLayers.Format.WKT();
   var features_copy = features.object.clone();
   for(var i in features_copy.features) {
-    // transform() modifies geometry
     features_copy.features[i].geometry.transform(
       features.object.map.projection,
       new OpenLayers.Projection("EPSG:4326")
     );
   }
   wkt_value = WktWriter.write(features_copy.features);
-  openlayers_drawfeature_element.val(wkt_value);
+  this.val(wkt_value);
 }
 
 /**
@@ -36,7 +31,7 @@ Drupal.behaviors.openlayers_behavior_drawfeatures = function(context) {
     var feature_types = data.map.behaviors['openlayers_behavior_drawfeatures'].feature_types;
       
     // Add control
-    openlayers_drawfeature_element = 
+    var openlayers_drawfeature_element = 
       $("#" + data.map.behaviors['openlayers_behavior_drawfeatures'].element_id);
 
     // Create options
@@ -44,29 +39,34 @@ Drupal.behaviors.openlayers_behavior_drawfeatures = function(context) {
       projection: new OpenLayers.Projection('EPSG:4326'),
       drupalID: 'openlayers_drawfeatures_layer'
     };
-    var data_layer = new OpenLayers.Layer.Vector(Drupal.t("Feature Layer"), options);
-    data.openlayers.addLayer(data_layer);
+    var styleMap = Drupal.openlayers.getStyleMap(data.map, options.drupalID);
+    var dataLayer = new OpenLayers.Layer.Vector(Drupal.t("Feature Layer"), options);
+    dataLayer.styleMap = styleMap;
+    data.openlayers.addLayer(dataLayer);
 
     if (openlayers_drawfeature_element.text() != '') {
       var wktFormat = new OpenLayers.Format.WKT();
-      wkt = openlayers_drawfeature_element.text();
-      features = wktFormat.read(wkt);
+      var wkt = openlayers_drawfeature_element.text();
+      var features = wktFormat.read(wkt);
       for(var i in features) {
         features[i].geometry = features[i].geometry.transform(
           new OpenLayers.Projection('EPSG:4326'),
           data.openlayers.projection
         );
       }
-      data_layer.addFeatures(features);
+      dataLayer.addFeatures(features);
     }
 
     // registering events late, because adding data
     // would result in a reprojection loop
-    data_layer.events.register('featureadded', null, update);
-    data_layer.events.register('featureremoved', null, update);
-    data_layer.events.register('featuremodified', null, update);
+    dataLayer.events.register('featureadded', openlayers_drawfeature_element,
+      openlayers_behavior_drawfeatures_update);
+    dataLayer.events.register('featureremoved', openlayers_drawfeature_element,
+      openlayers_behavior_drawfeatures_update);
+    dataLayer.events.register('featuremodified', openlayers_drawfeature_element,
+      openlayers_behavior_drawfeatures_update);
     
-    var control = new OpenLayers.Control.EditingToolbar(data_layer);
+    var control = new OpenLayers.Control.EditingToolbar(dataLayer);
     data.openlayers.addControl(control);
     control.activate();
 
@@ -95,7 +95,7 @@ Drupal.behaviors.openlayers_behavior_drawfeatures = function(context) {
     control.redraw();
 
     var mcontrol = new OpenLayers.Control.ModifyFeature(
-      data_layer, {
+      dataLayer, {
         displayClass: 'olControlModifyFeature',
         deleteCodes: [46, 68, 100],
         handleKeypress: function(evt){                              

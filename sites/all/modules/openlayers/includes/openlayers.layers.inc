@@ -1,5 +1,5 @@
 <?php
-// $Id: openlayers.layers.inc,v 1.9.2.21 2010/04/26 21:20:19 tmcw Exp $
+// $Id: openlayers.layers.inc,v 1.9.2.23 2010/06/09 12:57:17 tmcw Exp $
 
 /**
  * @file
@@ -240,9 +240,10 @@ function _openlayers_openlayers_layers() {
     'projection' => array('4326'),
     'baselayer' => TRUE,
     'layer_type' => 'openlayers_layer_type_wms',
-    'url' => 'http://labs.metacarta.com/wms/vmap0',
-    'params' => array('layers' => 'basic'),
+    'base_url' => 'http://labs.metacarta.com/wms-c/Basic.py',
+    'params' => array(),
     'options' => array(
+      'layers' => array('basic'),
       'maxExtent' => openlayers_get_extent('4326'),
     ),
   );
@@ -291,5 +292,6 @@ function _openlayers_openlayers_layers_i18n() {
     t('Virtual Earth (Bing) street tiles.'),
     t('Yahoo hybrid of streets and satellite tiles.'),
     t('Yahoo satellite imagery tiles.'),
-    t('Yahoo streets tiles.'));
+    t('Yahoo streets tiles.'),
+  );
 }

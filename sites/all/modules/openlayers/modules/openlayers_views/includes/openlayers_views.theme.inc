@@ -1,5 +1,5 @@
 <?php
-// $Id: openlayers_views.theme.inc,v 1.3 2009/09/21 04:36:32 zzolo Exp $
+// $Id: openlayers_views.theme.inc,v 1.3.2.2 2010/06/06 19:18:43 tmcw Exp $
 
 /**
  * @file
@@ -9,11 +9,20 @@
  */
 
 /**
- * Theme function for openlayers_views_feature_style
+ * Theme function for openlayers_views_group_display_item
+ *
+ * Output of OpenLayers View diplay plugin for grouped items.
  */
-function theme_openlayers_views_feature_style($view = NULL, $row = NULL, $group = NULL) {
-  $output = array();
+function theme_openlayers_views_group_display_item($name = '', $description = '') {
+  $output = '';
 
-  // Here is where styles based on the view or row can be created
+  // Build output
+  if (!empty($name)) {
+    $output .= '<h2 class="point-title openlayers-views-group-feature-name">' . $name . '</h2>';
+  } 
+  if (!empty($description)) {
+    $output .= '<div class="point-content openlayers-views-group-feature-description">' . $description . '</div>';
+  } 
+
   return $output;
 }
