@@ -1,4 +1,17 @@
-// $Id: CHANGELOG.txt,v 1.107 2010/06/23 15:24:24 alexb Exp $
+// $Id: CHANGELOG.txt,v 1.115 2010/07/10 15:54:17 alexb Exp $
+
+Feeds 6.x 1.0 Beta 2, 2010-07-10
+--------------------------------
+
+- #753426 Monkey Master, andrewlevine, alex_b: Partial update of nodes.
+- #840626 andrewlevine, alex_b: Support using same mapping target multiple
+  times.
+- #624464 lyricnz, alex_b: Fix to "support tabs as delimiters".
+- #840350 lyricnz: (Optionally) Transliterate enclosure filenames to provide
+  protection from awkward names.
+- #842040 dixon_: Accept all responses from the 2xx status code series.
+- #836982 Steven Merrill: Fix Feeds.module tests do not work when run from the
+  command line.
 
 Feeds 6.x 1.0 Beta 1, 2010-06-23
 --------------------------------

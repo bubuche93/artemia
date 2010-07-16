@@ -1,4 +1,4 @@
-// $Id: video.js,v 1.1.2.4 2010/05/26 21:08:12 iLLin Exp $
+// $Id: video.js,v 1.1.2.5 2010/07/09 01:20:04 heshanmw Exp $
 
 /**
  * @file
@@ -56,7 +56,7 @@ $(document).ready(function() {
 			  } else {
 				$('#video-overlay').media({ flashvars: {autostart: Drupal.settings.video.autoplay}, width:width, height:height }); 
 			  }
-			},
+			}
 		});
 	});
 });

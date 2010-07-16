@@ -1,0 +1,213 @@
+<?php
+// $Id: image_fupload_gallery_assist.module,v 1.0 2010/01/04 07:02:19 jcmc Exp $
+
+/**
+ * @file
+ * Extends Gallery Assist with SWF-Upload functionality.
+ */
+
+/**
+ * Implementation of hook_help
+ */
+function image_fupload_gallery_assist_help($path, $arg) {
+// will come later...
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+function image_fupload_gallery_assist_menu() {
+  $items['fupload/gallery_assist/%node'] = array(
+    'title' => 'GA-Image FUpload',
+    'page callback' => 'image_fupload_gallery_assist_swf_upload',
+    'page arguments' => array(2),
+    'access callback' => TRUE, // must be examined later
+    'type' => MENU_CALLBACK,
+  ); 
+  
+  return $items;  
+}
+
+/**
+ * Implementation of hook_form_alter().
+ */
+function image_fupload_gallery_assist_form_alter(&$form, $form_state, $form_id) {
+  global $user;  
+  $data = variable_get('image_fupload_gallery_assist_data', FALSE);
+
+  // Check for existence of a nid and assigned Gallery Assist functionality.
+  if ($form['#node']->nid && variable_get('gallery_assist_'. $form['#node']->type, 0) == 1) {    
+
+    $module_path = drupal_get_path('module', 'image_fupload');
+    $my_module_path = drupal_get_path('module', 'image_fupload_gallery_assist');
+    drupal_add_js($module_path .'/swfupload/swfupload.js', 'module');
+    drupal_add_js($module_path .'/swfupload/swfupload.queue.js', 'module');
+    drupal_add_js($module_path .'/swfupload/fileprogress.js', 'module');
+    drupal_add_js($module_path .'/swfupload/handlers.js', 'module');
+
+    /* Check END */
+    drupal_add_js(theme('swfupload_settings', base_path() . $module_path, url('fupload/gallery_assist/'. $form['#node']->nid), $data['gafu_maxfilesize'], '*.jpg; *.jpeg; *.png; *.gif; *.JPG; *.JPEG; *.PNG; *.GIF', (!empty($user->sid) ? $user->sid : session_id()), $data['gafu_uploadlimit'], $form['#node']->type, 'pictures', 'true', '', 0), 'inline');
+    drupal_add_css($module_path .'/image_fupload-style.css', 'module', 'all', FALSE);  // Style of swfUpload
+
+    $form['message'] = array(
+      '#value' => '<div id="jsstatus"></div>',
+      '#weight' => variable_get('gallery_assist_forms_possition', 0),
+    );
+
+    $form['gallery_assist_fupload'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Multiple Uploads (Image FUploader)'),
+      '#value' => '<span style="font-style:italic;">'. t('Click the "Select Images" icon on the left below to begin.') .'</span>',
+      '#weight' => variable_get('gallery_assist_forms_possition', 0),
+      '#attributes' => array('class' => 'flash', 'id' => 'fsUploadProgress'),
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+    );
+
+    $form['gallery_assist_fupload']['upload_info'] = array(
+      '#value' => t('0 Files uploaded.'),
+      '#prefix' => '<div id="divStatus">',
+      '#suffix' => '</div>',
+      '#weight' => variable_get('gallery_assist_forms_possition', 0),
+    );
+
+    // Drupal 6 Bug: can't use "normal" buttons, only submit buttons are possible => workaround
+    // Select Button has no real function, but Flash Player (swfUpload) overlays it with an transparent effect handler
+    $form['gallery_assist_fupload']['upload_buttons'] = array(
+      '#prefix' => '<div>',
+      '#value' => '<span id="spanUploadButton"></span> <input id="btnCancel" type="button" value="'. t('Cancel All Uploads') .'" onclick="swfu.cancelQueue();" disabled="disabled" /> ',
+      '#suffix' => '</div>',
+      '#weight' => variable_get('gallery_assist_forms_possition', 0),
+    );
+
+    $form['gallery_assist_fupload']['upload_buttons']['node_create'] = array(
+    '#type' => 'submit',
+      '#value' => t('Process queued images'),
+      '#weight' => variable_get('gallery_assist_forms_possition', 0),
+      '#ahah' => array(
+        'path' => 'fupload/gallery_assist/'. $form['#node']->nid,
+        'event' => 'click',
+        'method' => 'replace',
+        'wrapper' => 'jsstatus',
+        'progress' => array('type' => 'bar', 'message' => t('Images in queue are processed...')),
+      ),
+    );
+
+    $form['gallery_assist_fupload']['upload_buttons']['delete_queue'] = array(
+    '#type' => 'submit',
+      '#value' => t('Delete queued images'),
+      '#weight' => variable_get('gallery_assist_forms_possition', 0),
+      '#ahah' => array(
+        'path' => 'fupload/js/deletequeue/images',
+        'event' => 'click',
+        'method' => 'append',
+        'wrapper' => 'jsstatus',
+      ),
+    );
+
+    $form['gallery_assist_fupload']['upload_buttons']['submit'] = array(
+      '#value' => '<input type="button" value="'. t('Save') .'" id="startuploadbutton" onclick="startUploadProcess()" />',
+      '#weight' => variable_get('gallery_assist_forms_possition', 0),
+      '#submit' => array('node_form_submit'),
+    );    
+  }
+
+  if ($form_id == 'gallery_assist_settings_extras') {
+    //$form['gallery_assist_'. $type .'_settings'][$type]['gallery_assist_fupload'] = array(
+    $form['gallery_assist_extras']['gallery_assist_fupload'] = array(
+      '#type' => 'fieldset',
+      '#title' => 'SWF-Upload',
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+    );
+
+    //$form['gallery_assist_'. $type .'_settings'][$type]['gallery_assist_fupload']['ga_maxfilesize'] = array(
+    $form['gallery_assist_extras']['gallery_assist_fupload']['gafu_maxfilesize'] = array(
+      '#type' => 'textfield',
+      '#title' => 'Max-Filesize',
+      '#default_value' => $data['gafu_maxfilesize'],
+      '#size' => 8,
+    );
+
+    //$form['gallery_assist_'. $type .'_settings'][$type]['gallery_assist_fupload']['ga_maxfilesize'] = array(
+    $form['gallery_assist_extras']['gallery_assist_fupload']['gafu_uploadlimit'] = array(
+      '#type' => 'textfield',
+      '#title' => 'Input-Limit',
+      '#default_value' => $data['gafu_uploadlimit'],
+      '#size' => 8,
+    );
+
+    $form['#submit'][] = 'image_fupload_gallery_assist_settings_submit_validate';
+    $form['#submit'][] = 'image_fupload_gallery_assist_settings_submit';
+  }
+}
+
+function image_fupload_gallery_assist_settings_submit_validate($form, $form_state) {
+  if (!is_numeric($form_state['values']['gallery_assist_forms_possition'])) {
+    form_set_error('gallery_assist_forms_possition', 'The value of field "Gallery Assist form fiedsets weight" muss be numeric.');
+  }
+  if (!is_numeric($form_state['values']['gafu_maxfilesize'])) {
+    form_set_error('gafu_maxfilesize', 'The value of field "Max-Filesize" muss be numeric.');
+  }
+  if (!is_numeric($form_state['values']['gafu_uploadlimit'])) {
+    form_set_error('gafu_uploadlimit', 'The value of field "Input-Limit" muss be numeric.');
+  }
+}
+
+/**
+ * Prepare the needed node keys for items saving.
+ */
+function image_fupload_gallery_assist_swf_upload($node = array()) {
+
+  if (empty($node->nid) || empty($node->uid)) {
+    drupal_json(array('status' => FALSE, 'data' => 'Missing data. Break the upload process.'));
+    exit();
+  }
+
+  $user = user_load($node->uid);
+
+  // Adapt to drupal files structure
+  $_FILES['files']['name']['pictures0'] = $_FILES['Filedata']['name'];
+  $_FILES['files']['type']['pictures0'] = $_FILES['Filedata']['type'];
+  $_FILES['files']['tmp_name']['pictures0'] = $_FILES['Filedata']['tmp_name'];
+  $_FILES['files']['error']['pictures0'] = $_FILES['Filedata']['error'];
+  $_FILES['files']['size']['pictures0'] = $_FILES['Filedata']['size'];
+
+  $node->newfile = $_FILES['files'];
+  $node->temp_copyright = $node->temp_copyright;
+
+  if (empty($node->gid)) {
+    gallery_assist_insert($node);
+    $message = t('The gallery places had to be recreated. Possible causes: The gallery feature was assigned to this content type after the creation of this article or the gallery-assist module has been reinstalled. In order to be able to upload pictures you have to reload this page. <a href="@myLink">RELOAD HERE</a>', array('@myLink' => url('node/'. $node->nid .'/edit')));
+    drupal_json(array('status' => FALSE, 'data' => $message));
+    exit;
+  }
+  else {
+    //if () {
+      gallery_assist_save($node, $node->uid);
+      $filepath = file_directory_path() .'/gallery_assist/'. $node->uid .'/'. $node->ganame .'/'. $node->newfile['name']['pictures0'];
+      db_query("UPDATE {files} set uid = %d WHERE filepath = '%s'", $node->uid, $filepath);
+      // Get all status messages and add them to server message for swfUpload --> inform client
+      // $messages = drupal_get_messages('status');
+      // Reply a status message to satisfy swfUpload
+      // drupal_json(array('status' => TRUE, 'data' => t('Complete. !messages', array('!messages' => (!empty($messages['status']) ? implode(' ', $messages['status']) : '')))));
+      $output .= 'Image '. $_FILES['files']['name']['pictures0'] .' has ben sucessfully uploaded.';
+      drupal_json(array('status' => FALSE, 'data' => 'Complete. '. $output));
+      exit;
+    //}
+  }
+}
+
+/**
+ * Save image_fupload settings for Gallery Assist.
+ * 
+ * Update the the system variable "image_fupload_gallery_assist_data" with currently two parameters:
+ * gafu_maxfilesize
+ * gafu_uploadlimit
+ */
+function image_fupload_gallery_assist_settings_submit(&$form, $form_state) {
+  $data = variable_get('image_fupload_gallery_assist_data', FALSE);
+  $data['gafu_maxfilesize'] = $form_state['values']['gafu_maxfilesize'] ? $form_state['values']['gafu_maxfilesize'] : 10000;
+  $data['gafu_uploadlimit'] = $form_state['values']['gafu_uploadlimit'] ? $form_state['values']['gafu_uploadlimit'] : 100;
+  variable_set('image_fupload_gallery_assist_data', $data);
+}

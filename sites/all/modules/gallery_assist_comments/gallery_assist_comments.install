@@ -1,0 +1,139 @@
+<?php
+// $Id: gallery_assist_comments.install,v 1.4 2010/05/25 13:35:28 quiptime Exp $
+
+/**
+ * @file
+ * Install, update and uninstall functions for the Gallery Assist Comments module.
+ */
+
+/**
+ * Implementation of hook_requirements()
+ *
+ * Don't play with this. Gallery Assist (GA) v. 6.x-1.15-beta2 or higher is required to 100%.
+ */
+function gallery_assist_comments_requirements($phase) {
+  $requirements = array();
+  $t = get_t();
+
+  switch ($phase) {
+    case 'install':
+      $error = FALSE;
+      $name = 'gallery_assist';
+
+      if (module_exists($name)) {
+        $module_info = drupal_parse_info_file(drupal_get_path('module', $name) .'/'. $name .'.info');
+
+        if ($module_info['datestamp'] < 1274790411) {
+          $error = TRUE;
+        }
+
+        $value = $t('. This module require Gallery Assist version <strong>6.x-1.15-beta2</strong> or higher.');
+        $severity = REQUIREMENT_ERROR;
+      }
+
+      if ($error) {
+        $requirements[$name] = array(
+          'title' => $t('Gallery Assist Comments'),
+          'value' => $value . $t(' If the required module are now installed, please enable again the Gallery Assist Comments module.'),
+          'severity' => $severity,
+        );
+      }
+    break;
+  }
+
+  return $requirements;
+}
+
+/**
+ * Implementation of hook_schema().
+ */
+function gallery_assist_comments_schema() {
+  $schema['gallery_assist_comments'] = array(
+    'description' => 'Gallery Assist comments table.',
+    'fields' => array(
+      'cid' => array(
+        'description' => 'The primary identifier for a Gallery Assist item comment.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE),
+      'nid' => array(
+        'description' => 'The Gallery Assist node ID.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE),
+      'ref' => array(
+        'description' => 'The reference identifier to the Gallery Assist node.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE),
+      'pid' => array(
+        'description' => 'The reference identifier to the Gallery Assist item.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE),
+      'status' => array(
+        'description' => 'Set the comment status to published or unpublished.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE),
+      'uid' => array(
+        'description' => 'The uid from comment owner.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE),
+      'name' => array(
+        'description' => 'The user name from comment owner.',
+        'type' => 'varchar',
+        'length' => 100,
+        'not null' => TRUE,
+        'default' => ''),
+      'subject' => array(
+        'description' => 'The coment subject.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => ''),
+      'comment' => array(
+        'description' => 'The item comment.',
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => TRUE),
+      'created' => array(
+        'description' => 'The Unix timestamp when the comment was created.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE),
+      ),
+    'primary key' => array('cid'),
+  );
+  
+  return $schema;
+}
+
+/**
+ * Implementation of hook_install().
+ */
+function gallery_assist_comments_install() {
+  drupal_install_schema('gallery_assist_comments');
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function gallery_assist_comments_uninstall() {
+  drupal_uninstall_schema('gallery_assist_comments');
+  db_query("DELETE FROM {variable} WHERE name LIKE 'gallery_assist_comments\_%'");
+  db_query("DELETE FROM {gallery_assist_modules_settings} WHERE module = 'gallery_assist_comments'");
+}
+
+/**
+ * Implementation of hook_update_N().
+ */
+function gallery_assist_comments_update_1() {
+  $ret = array();
+
+  db_add_field($ret, 'gallery_assist_comments', 'nid', array('type' => 'int', 'not null' => TRUE));
+  db_add_field($ret, 'gallery_assist_comments', 'ref', array('type' => 'int', 'not null' => TRUE));
+
+  return $ret;
+}

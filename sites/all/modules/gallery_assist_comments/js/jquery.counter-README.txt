@@ -1,0 +1,12 @@
+// $Id: jquery.counter-README.txt,v 1.2 2010/05/25 13:33:24 quiptime Exp $
+
+The included jQuery plugin jquery.counter.js is an modified version of the
+original jquery.counter-1.0.js.
+Are modified text strings to make text translatable and the counter
+functionality RTL compatible.
+
+jquery.counter.js
+--------------------------------------------------------------------------------
+http://plugins.jquery.com/project/word-and-character-counter
+
+Quiptime

@@ -1,5 +1,5 @@
 <?php
-// $Id: filefield_field.inc,v 1.40 2010/06/29 21:44:07 quicksketch Exp $
+// $Id: filefield_field.inc,v 1.41 2010/06/30 23:52:45 quicksketch Exp $
 
 /**
  * @file
@@ -289,9 +289,9 @@ function filefield_field_sanitize($node, $field, &$items, $teaser, $page) {
     if (!empty($item['fid']) && empty($item['filepath'])) {
       $file = (array) field_file_load($item['fid']);
       if (isset($file['data'])) {
-        $items[$delta]['data'] = array_merge($item['data'], $file['data']);
+        $file['data'] = array_merge($items[$delta]['data'], $file['data']);
       }
-      $items[$delta] = array_merge($item, $file);
+      $items[$delta] = array_merge($items[$delta], $file);
     }
 
     // Verify the file exists on the server.

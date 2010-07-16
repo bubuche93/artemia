@@ -1,0 +1,55 @@
+<?php
+// $Id: gallery_assist_ic.install,v 1.1 2009/10/11 05:55:52 jcmc Exp $
+
+/**
+ * @file
+ * Install Gallery Assist ImageCache.
+ */
+
+/**
+ * Implementation of hook_install().
+ */
+function gallery_assist_ic_install() {
+  variable_set('gallery_assist_use_imagecache', 1);
+
+  $types = node_get_types('types');
+  if (!array_key_exists('gallery_assist', $types)) {
+    $types['gallery_assist']->type = 'gallery_assist';
+  }
+  $types['default']->type = 'default';
+
+  foreach ($types as $type) {
+    if (variable_get('gallery_assist_'. $type->type, 0) == 1) {
+      $data = variable_get('gallery_assist_'. $type->type .'_data', FALSE);
+      if (gallery_assist_generate_ic_presets($type->type, $data)) {
+        drupal_set_message('Settings for the gallery assigment "'. $type->type .'" has been saved.');
+      }
+    }
+   }
+
+  return TRUE;
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function gallery_assist_ic_uninstall() {
+  $types = node_get_types('types');
+
+  foreach ($types as $type) {
+    variable_del('gallery_assist_'. $type->type .'_ic_data');
+  }
+
+  variable_del('gallery_assist_use_imagecache');
+
+  return TRUE;
+}
+
+/**
+ * Generate and manage imagecache presets for existing galleries from gallery assist or assigments. 
+ */
+function gallery_assist_generate_ic_presets(&$type, &$data = array()) {
+  module_load_include('inc', 'gallery_assist_ic', 'gallery_assist_ic_presets');
+
+  return gallery_assist_presets_maker($type, $data);
+}

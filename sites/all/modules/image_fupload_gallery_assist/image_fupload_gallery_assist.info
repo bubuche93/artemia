@@ -1,0 +1,14 @@
+; $Id: image_fupload_gallery_assist.info,v 1.0 2010/01/03 23:55:43 jcmc Exp $
+name = Image FUpload (Gallery Assist)
+description = "Allows uploading several images all at once to the Gallery Assist module"
+core = 6.x
+package = Media
+dependencies[] = image_fupload
+dependencies[] = gallery_assist
+
+; Information added by drupal.org packaging script on 2010-07-11
+version = "6.x-1.x-dev"
+core = "6.x"
+project = "image_fupload_gallery_assist"
+datestamp = "1278834558"
+

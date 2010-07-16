@@ -4,9 +4,9 @@ description = "Administration user interface for Custom Page module."
 dependencies[] = custompage
 core = 6.x
 
-; Information added by drupal.org packaging script on 2010-06-04
-version = "6.x-1.15"
+; Information added by drupal.org packaging script on 2010-06-24
+version = "6.x-1.17"
 core = "6.x"
 project = "custompage"
-datestamp = "1275680105"
+datestamp = "1277410507"
 

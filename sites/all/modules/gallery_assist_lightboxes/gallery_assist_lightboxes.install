@@ -1,0 +1,23 @@
+<?php
+// $Id: gallery_assist_lightboxes.install,v 1.1.2.11 2010/04/06 00:58:41 jcmc Exp $
+
+/**
+ * @file
+ */
+
+/**
+ * Implementation of hook_install().
+ */
+function gallery_assist_lightboxes_install() {
+  if (module_exists('lightbox2')) {
+    drupal_set_message('Gallery Assist Lightboxes have detected: the Lightbox2 module is activated in your Drupal installation. Create a folder called lightbox in path_to_your_contributed_modules/gallery_assist_lightboxes/lightboxes if you want to use the Lightbox2 in Gallery Assist galleries.');
+  }
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function gallery_assist_lightboxes_uninstall() {
+  variable_del('gallery_assist_lightbox');
+  variable_del('gallery_assist_lightbox_data');
+}

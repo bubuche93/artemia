@@ -1,0 +1,31 @@
+/* $Id: gallery_assist_comments-rtl.css,v 1.4 2010/05/29 01:48:42 quiptime Exp $ */
+
+/**
+ * @file gallery_assist_comments-rtl.css
+ */
+
+.item-list ul.ga-comment-area-links li.last {
+   margin: 0 0 0 0;
+}
+.ga-comment-container .submitted-by {
+  float: right;
+}
+.ga-comment-container .submitted-date {
+  float: left;
+}
+.item-list .ga-comment-command-links {
+  text-align: left;
+}
+.item-list .ga-comment-area-links li {
+  margin: 0 0 0 1.5em;
+}
+.item-list .ga-comment-command-links li {
+  margin: 0 1em 0 0;
+}
+#edit-comment-body-counter {
+  text-align: right;
+}
+.box-rtl {
+  right: 15px;
+  >right: -130px;
+}

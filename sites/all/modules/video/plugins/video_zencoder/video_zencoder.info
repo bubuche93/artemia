@@ -1,0 +1,13 @@
+;$Id: video_zencoder.info,v 1.1.2.1 2010/06/13 04:14:06 heshanmw Exp $
+name = Zencoder API on Video
+description = Zencoder is a webservice to transcode videos.
+package = "Video"
+dependencies[] = video
+dependencies[] = video_s3
+core = 6.x
+; Information added by drupal.org packaging script on 2010-07-13
+version = "6.x-4.0-rc4"
+core = "6.x"
+project = "video"
+datestamp = "1278981311"
+

@@ -1,4 +1,4 @@
-// $Id: README.txt,v 1.8.4.5.4.5.2.3 2010/06/02 03:23:35 glen201 Exp $
+// $Id: README.txt,v 1.8.4.5.4.5.2.4 2010/07/10 04:02:19 heshanmw Exp $
 ------------
 
  to embed videos into drupal pages, using CCK and filefield support.
@@ -20,5 +20,5 @@ Maintainers
 -----------
 
 	Heshan Wanigasooriya :heshan at heidisoft dot com, heshanmw at gmail dot com
-        Dennis : http://drupal.org/user/384543
-        Glen Marianko : http://drupal.org/usr/527446 http://linkedin.com/in/glenergetic twitter: @glenergetic
+  Dennis : http://drupal.org/user/384543
+  Glen Marianko : http://drupal.org/usr/527446 http://linkedin.com/in/glenergetic twitter: @glenergetic

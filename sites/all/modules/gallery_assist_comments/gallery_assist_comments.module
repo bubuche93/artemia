@@ -1,0 +1,1500 @@
+<?php
+// $Id: gallery_assist_comments.module,v 1.22 2010/05/31 23:27:46 quiptime Exp $
+
+/**
+ * @file
+ * Enables users to comment on published Gallery Assist (GA) items.
+ *
+ * When enabled, the Gallery Assist Comments (GAC) module creates a comment
+ * function for each Gallery Assist item - images etc.
+ *
+ * Multilingual galleries with multilingual comments.
+ *   - Each gallery item shows the comments of all languages. There are no
+ *     available options to change this.
+ *   - Adapted to this situation will be deleted comments of all languages, if
+ *     a gallery or an item to be deleted.
+ *     @see gallery_assist_comments_gallery_assist_api()
+ */
+
+/**
+ * Implementation of hook_init().
+ */
+function gallery_assist_comments_init() {
+  $path = drupal_get_path('module', 'gallery_assist_comments');
+  module_load_include('inc', 'gallery_assist_comments', 'inc/theme');
+  drupal_add_css($path .'/theme/gallery_assist_comments.css');
+  drupal_add_js($path .'/js/gallery_assist_comments.js');
+  drupal_add_js($path .'/js/jquery.counter.js');
+
+  $direction = _gallery_assist_comments_direction();
+  drupal_add_js(array('direction' => $direction), 'setting');
+}
+
+/**
+ * Implementation of hook_perm().
+ */
+function gallery_assist_comments_perm() {
+  return array(
+    'administer gallery assist comments',
+    'access gallery assist comments',
+    'post gallery assist comments',
+    'delete own gallery assist comments',
+    'delete any gallery assist comments',
+  );
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+function gallery_assist_comments_menu() {
+  $items = array();
+
+  // Unpublish a comment.
+  $items['gacomment/%/%/cu/%gallery_assist_comments'] = array(
+    'page callback' => 'gallery_assist_comments_edit_comment',
+    'page arguments' => array(2, 3, 4),
+    'access callback' => 'gallery_assist_comments_access_publish_comment',
+    'access arguments' => array(4),
+    'type' => MENU_CALLBACK,
+  );
+  // Parameter 5: comments-all
+  $items['gacomment/%/%/cu/%gallery_assist_comments/%'] = array(
+    'page callback' => 'gallery_assist_comments_edit_comment',
+    'page arguments' => array(2, 3, 4, 5),
+    'access callback' => 'gallery_assist_comments_access_publish_comment',
+    'access arguments' => array(4),
+    'type' => MENU_CALLBACK,
+  );
+  
+  // Publish a comment.
+  $items['gacomment/%/%/cp/%gallery_assist_comments'] = array(
+    'page callback' => 'gallery_assist_comments_edit_comment',
+    'page arguments' => array(2, 3, 4),
+    'access callback' => 'gallery_assist_comments_access_publish_comment',
+    'access arguments' => array(4),
+    'type' => MENU_CALLBACK,
+  );
+  // Parameter 5: comments-all
+  $items['gacomment/%/%/cp/%gallery_assist_comments/%'] = array(
+    'page callback' => 'gallery_assist_comments_edit_comment',
+    'page arguments' => array(2, 3, 4, 5),
+    'access callback' => 'gallery_assist_comments_access_publish_comment',
+    'access arguments' => array(4),
+    'type' => MENU_CALLBACK,
+  );
+
+  // Delete a comment.
+  $items['gacomment/%/%/cd/%gallery_assist_comments'] = array(
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('gallery_assist_comments_delete_comment_confirm', 1, 2, 4),
+    'access callback' => 'gallery_assist_comments_access_delete_comment',
+    'access arguments' => array(4),
+    'load arguments' => array('%map'), //, '%index'),
+    'type' => MENU_CALLBACK,
+  );
+  // Parameter 5: comments-all
+  $items['gacomment/%/%/cd/%gallery_assist_comments/%'] = array(
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('gallery_assist_comments_delete_comment_confirm', 1, 2, 4, 5),
+    'access callback' => 'gallery_assist_comments_access_delete_comment',
+    'access arguments' => array(4),
+    'load arguments' => array('%map'), //, '%index'),
+    'type' => MENU_CALLBACK,
+  );
+
+  return $items;
+}
+
+/**
+ * Access callback.
+ * 
+ * @param object $comment
+ *   A comment object.
+ * @return
+ *   TRUE or FALSE
+ * 
+ * @see gallery_assist_comments_menu()
+ * @see _gallery_assist_comments_command_links()
+ */
+function gallery_assist_comments_access_publish_comment($comment) {
+  global $user;
+
+  $return = FALSE;
+
+  // Preventing direct URL access.
+  if (!user_access('access gallery assist comments')) {
+    return $return;
+  }
+  $type_settings = _gallery_assist_comments_settings($comment->nodetype);
+  if ($type_settings['general']['enable'] == 0) {
+    return $return;
+  }
+
+  // The pid uid - anonymous users can not create gallery items.
+  if ($user->uid > 0 && $user->uid == $comment->pid_uid) {
+    $return = TRUE;
+  }
+  if (user_access('delete any gallery assist comments') && $user->uid == $comment->pid_uid) {
+    $return = TRUE;
+  }
+  if (user_access('administer gallery assist comments')) {
+    $return = TRUE;
+  }
+
+  return $return;
+}
+
+/**
+ * Access callback.
+ *
+ * @param object $comment
+ *   A comment object.
+ * @return
+ *   TRUE or FALSE
+ *
+ * @see gallery_assist_comments_menu()
+ * @see _gallery_assist_comments_command_links()
+ */
+function gallery_assist_comments_access_delete_comment($comment) {
+  global $user;
+
+  $return = FALSE;
+  
+  // Preventing direct URL access.
+  if (!user_access('access gallery assist comments')) {
+    return $return;
+  }
+  $type_settings = _gallery_assist_comments_settings($comment->nodetype);
+  if ($type_settings['general']['enable'] == 0) {
+    return $return;
+  }
+
+  if (user_access('delete own gallery assist comments') && $user->uid == $comment->uid) {
+    $return = TRUE;
+  }
+  // Special case anonymous comments.
+  // Gallery / item owner should have the permission to delete these comments.
+  // Is this not so, only an administrator can delete such comments.
+  if ($comment->uid == 0 && $user->uid == $comment->pid_uid) {
+    $return = TRUE;
+  }
+  if (user_access('delete any gallery assist comments') && $user->uid == $comment->pid_uid) {
+    $return = TRUE;
+  }
+  if (user_access('administer gallery assist comments')) {
+    $return = TRUE;
+  }
+
+  return $return;
+}
+
+/**
+ * Implementation of hook_form_alter().
+ *
+ * Make module administration functions available to the main module.
+ */
+function gallery_assist_comments_form_alter(&$form, &$form_state, $form_id) {
+  // Alter GA admin settings form.
+  switch ($form_id) {
+    case 'gallery_assist_settings':
+      $type = arg(4) ? arg(4) : 'gallery_assist';
+      $form['#submit'][] = 'gallery_assist_comments_admin_submit';
+      $form['gallery_assist_'. $type .'_settings'][$type]['comments'] = gallery_assist_comments_admin($type);
+      $form['gallery_assist_'. $type .'_settings'][$type]['comments']['#weight'] = 4;
+      break;
+  }
+  // Alter GA assigned node type edit form.
+  if ($form['#node']->ganame && isset($form['gallery_assist_settings'])) {
+    $settings = _gallery_assist_comments_settings($form['#node']->type);
+    // Check has admin enabled the user configurable option.
+    if ($settings['general']['user_settings'] >= 1) {
+      $form['#submit'][] = 'gallery_assist_comments_admin_submit';
+      $form['gallery_assist_settings']['wrapper']['comments'] = gallery_assist_comments_admin($form['#node']->type, $form['#node']->nid, $form['#node']->ref);
+      $form['gallery_assist_settings']['wrapper']['comments']['#weight'] = 4;
+    }
+  }
+}
+
+/**
+ * Provide the GAC module administration form.
+ *
+ * This function handle the module backend settings of a GA node type
+ * and the settings from a gallery by user.
+ *
+ * @param string $type
+ *   A machine-readable name of a content type.
+ * @param int $nid
+ *   A node ID
+ * @param int $ref
+ *   A node reference ID.
+ * @return array
+ *   Form API array for the form elements.
+ *
+ * @see gallery_assist_comments_form_alter()
+ * @ingroup forms
+ */
+function gallery_assist_comments_admin($type, $nid = NULL, $ref = NULL) {
+  global $user;
+
+  $form = array();
+  $description = array();
+
+  $toggle = 'user';
+  if (arg(0) === 'admin') {
+    $toggle = 'admin';
+    $form['gac_toggle'] = array(
+      '#type' => 'value',
+      '#value' => $toggle,
+    );
+  }
+
+  $settings = _gallery_assist_comments_settings($type);
+
+  if ($toggle == 'user') {
+    $type_settings = $settings;
+    $settings = gallery_assist_comments_get_settings($type, $nid, $ref);
+  }
+
+  // Provide anonymous commenting values
+  // to display different form element for "Anonymous commenting".
+  $disabled_anonymous_commenting = FALSE;
+  if (!user_access('post gallery assist comments', drupal_anonymous_user())) {
+    $disabled_anonymous_commenting = TRUE;
+    if ($toggle == 'admin') {
+      $settings['general']['anonymous_commenting'] = 0;
+    }
+  }
+
+  $description['main'] = '';
+  if ($toggle == 'admin') {
+    $description['main'] = '<p>'. t('Important') .'</p>';
+    $description['main'] .= '<p>'. t('Make sure in any case, the configuration of the %functions-settings.', array('%functions-settings' => t('Functions settings'))) .'<br />';
+    $description['main'] .= t('These settings are used when a gallery is processed as new or if not selected the %user-settings option %all-settings.', array('%user-settings' => t('Allow user settings'), '%all-settings' => t('Allow all settings'))) .'</p>';
+  }
+  if ($toggle == 'user' && $settings['first_time']) {
+    $description['main'] .= '<p class="marker">'. t('Information') .'<br />';
+    $description['main'] .= t('This is the first time you edit this gallery with GAC. The GAC settings for this gallery are the default settings.') .' ';
+    $description['main'] .= t('If needed configure the settings and safe the node to save this settings.') .'</p>';
+  }
+  $form['gallery_assist_comments'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('!gac (GAC)', array('!gac' => t('Gallery Assist Comments'))),
+    '#description' => $description['main'],
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#tree' =>TRUE,
+  );
+
+  // General settings
+  $form['gallery_assist_comments']['general'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('General settings'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+
+  $description['enable'] = t('Enable or disable the %comment-function for this @content-type.', array('%comment-function' => t('Comment function'), '@content-type' => t('content type')));
+  if ($toggle == 'user') {
+    $description['enable'] = t('Enable or disable the %comment-function for this @gallery.', array('%comment-function' => t('Comment function'), '@gallery' => t('gallery')));
+  }
+  $form['gallery_assist_comments']['general']['enable'] = array(
+    '#type' => 'select',
+    '#title' => t('Comment function'),
+    '#description' => $description['enable'],
+    '#options' => array(0 => t('Disabled'), 1 => t('Enabled')),
+    '#default_value' => $settings['general']['enable'],
+  );
+
+  $description['anonymous_commenting'] = t('Allow anonymous users to comment.') .'<br />';
+
+  if ($toggle == 'admin') {
+    $description['anonymous_commenting'] .= t('This option is configurable when anonymous users have permission to post comments on the <a href="!url">permissions page</a>.', array('!url' => url('admin/user/permissions', array('fragment' => 'module-gallery_assist_comments'))));
+  }
+  if ($toggle == 'user' && $disabled_anonymous_commenting == TRUE) {
+    $description['anonymous_commenting'] .= t('This option is configurable when anonymous users have permission to post comments.');
+  }
+  $form['gallery_assist_comments']['general']['anonymous_commenting'] = array(
+    '#type' => 'select',
+    '#title' => t('Anonymous commenting'),
+    '#description' => $description['anonymous_commenting'],
+    '#options' => array(0 => t('Disabled'), 1 => t('Enabled')),
+    '#disabled' => $disabled_anonymous_commenting,
+    '#default_value' => $settings['general']['anonymous_commenting'],
+  );
+
+  if ($toggle == 'admin') {
+    $form['gallery_assist_comments']['general']['input_format'] = array(
+     '#type' => 'select',
+      '#title' => t('Input format'),
+      '#description' => t('Please choose an %input-format as default for the comment forms. The %input-format can not be changed by the user.', array('%input-format' => t('Input format'))),
+      '#options' => _gallery_assist_comments_filter_formats(),
+      '#default_value' => $settings['general']['input_format'],
+    );
+
+    $form['gallery_assist_comments']['general']['character_count'] = array(
+     '#type' => 'select',
+      '#title' => t('Character count'),
+      '#description' => t('Please choose an %character-count value as default for the comment forms. The %character-count can not be changed by the user.', array('%character-count' => t('Character count'))),
+      '#options' => array(160 => '160', 200 => '200', 250 => '250', 300 => '300', 400 => '400', 450 => '450', 500 => '500', 600 => '600', 700 => '700', 800 => '800', 900 => '900', 1000 => '1000', 0 => t('No count function')),
+      '#default_value' => $settings['general']['character_count'],
+    );
+    $description['variant'] = t('Please choose an %count-variant as default to count. The %count-variant can not be changed by the user.', array('%count-variant' => t('Character count variant'))) .'<br />';
+    $description['variant'] .= t('Count down: 0 characters (160 max); Count up: 160 character(s) left');
+    $form['gallery_assist_comments']['general']['character_count_variant'] = array(
+     '#type' => 'select',
+      '#title' => t('Character count variant'),
+      '#description' => $description['variant'],
+      '#options' => array(
+        'down' => t('Count down'),
+        'up' => t('Count up'),
+      ),
+      '#default_value' => $settings['general']['character_count_variant'],
+    );
+
+    $form['gallery_assist_comments']['general']['user_settings'] = array(
+      '#type' => 'select',
+      '#title' => t('Allow user settings'),
+      '#description' => t('Allow users to define functions settings per @gallery.', array('@gallery' => t('gallery'))),
+      '#options' => array(0 => t('No'), 1 => t('Allow enable/disable option'), 2 => t('Allow all settings')),
+      '#default_value' => $settings['general']['user_settings'],
+    );
+  }
+
+  // Feature settings.
+  if ($toggle == 'admin') {
+    $form['gallery_assist_comments']['features'] = _gallery_assist_comments_admin_features($settings);
+  }
+  if ($toggle == 'user' && $type_settings['general']['user_settings'] == 2) {
+    $form['gallery_assist_comments']['features'] = _gallery_assist_comments_admin_features($settings);
+  }
+  // Obtain the user settings from a gallery.
+  if ($toggle == 'user' && $type_settings['general']['user_settings'] == 1) {
+    $form['gallery_assist_comments']['features']['form_position'] = array(
+      '#type' => 'value',
+      '#default_value' => $settings['features']['form_position'],
+    );
+    $form['gallery_assist_comments']['features']['form_display'] = array(
+      '#type' => 'value',
+      '#default_value' => $settings['features']['form_display'],
+    );
+    $form['gallery_assist_comments']['features']['numbers'] = array(
+      '#type' => 'value',
+      '#default_value' => $settings['features']['numbers'],
+    );
+    $form['gallery_assist_comments']['features']['numbers_form_below'] = array(
+      '#type' => 'value',
+      '#default_value' => $settings['features']['numbers_form_below'],
+    );
+    $form['gallery_assist_comments']['features']['order'] = array(
+      '#type' => 'value',
+      '#default_value' => $settings['features']['order'],
+    );
+    $form['gallery_assist_comments']['features']['submitted_format'] = array(
+      '#type' => 'value',
+      '#default_value' => $settings['features']['submitted_format'],
+    );
+  }
+
+  return $form;
+}
+
+/**
+ * Help function to get the features part of the admin form.
+ *
+ * @param array $settings
+ *   Settings are node type settings or node settings.
+ * @return array
+ *   Form API array for the form elements.
+ *
+ * @ingroup forms
+ * @see gallery_assist_comments_admin()
+ */
+function _gallery_assist_comments_admin_features($settings) {
+  $form = array(
+    '#type' => 'fieldset',
+    '#title' => t('Functions settings'),
+    '#description' => t('Define the comment functionality.'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+  $form['form_position'] = array(
+    '#type' => 'select',
+    '#title' => t('Comment form position'),
+    '#options' => array(1 => t('Above the comments'), 2 => t('Below the comments'), 3 => t('Above and below')),
+    '#default_value' => $settings['features']['form_position'],
+  );
+
+  $form['form_display'] = array(
+    '#type' => 'select',
+    '#title' => t('Comment form display'),
+    '#options' => array(
+      1 => t('No styling'),
+      2 => t('Collapsed'),
+      3 => t('Collapsible'),
+      4 => t('Simple popup'),
+     // 5 => t('Lightbox popup'), @todo Coming soon
+     ),
+    '#default_value' => $settings['features']['form_display'],
+  );
+  
+  $form['numbers'] = array(
+    '#type' => 'select',
+    '#title' => t('Comment numbers'),
+    '#description' => t('How many comments are displayed by default? Note: Users have the opportunity to display all comments.'),
+    '#options' =>  _gallery_assist_comments_per_page() + array(0 => t('Unlimited')),
+    '#default_value' => $settings['features']['numbers'],
+  );
+
+  $description['numbers_form_below'] = t('At the setting %form-position is the option %above is used.', array('%form-position' => t('Comment form position'), '%above' => t('Above and below'))) .' ';
+  $description['numbers_form_below'] .= t('From how many comments will be available the comment form below?');
+  $form['numbers_form_below'] = array(
+    '#type' => 'select',
+    '#title' => t('Comment form below'),
+    '#description' => $description['numbers_form_below'],
+    '#options' => _gallery_assist_comments_per_page(),
+    '#default_value' => $settings['features']['numbers_form_below'],
+  );
+
+  $form['order'] = array(
+    '#type' => 'select',
+    '#title' => t('Comment order'),
+    '#description' => t('The default comment sorting.'),
+    '#options' => array(1 => t('Date - newest first'), 2 => t('Date - oldest first')),
+    '#default_value' => $settings['features']['order'],
+  );
+
+  $form['submitted_format'] = array(
+    '#type' => 'select',
+    '#title' => t('Submitted format'),
+    '#description' => t('Short: Fr, 14.05.2010 - 05:26; Long: Submitted on Fr, 14.05.2010 - 05:26'),
+    '#options' => array(1 => t('Short'), 2 => t('Long'), 0 => t('No submitted information')),
+    '#default_value' => $settings['features']['submitted_format'],
+  );
+
+  return $form;
+}
+
+/**
+ * Get the settings for a gallery.
+ *
+ * Two situations are possible:
+ *   - Situation 1
+ *     The (source node) settings for the gallery are available.
+ *     Return the GAC settings for the gallery.
+ *   - Situation 2
+ *     The gallery is new and no settings for this gallery exist.
+ *     - Return the GAC node type settings if it is a source node.
+ *     - Return the GAC source node settings if it is a translated node.
+ *
+ * @param string $type
+ *   A node type.
+ * @param int $nid
+ *   A node ID.
+ * @return array
+ *  Associative array contain the settings of the situation 1 or 2.
+ *
+ * @see gallery_assist_comments_admin()
+ */
+function gallery_assist_comments_get_settings($type, $nid, $ref) {
+  $settings = array();
+
+  $query = "SELECT data FROM {gallery_assist_modules_settings} WHERE nid = %d AND module = 'gallery_assist_comments'";
+  $data = db_fetch_object(db_query($query, $nid));
+
+  // Situation 1.
+  if ($data) {
+    $settings = unserialize($data->data);
+  }
+  // Situation 2.
+  else {
+    // If it is a translated gallery get the settings from source gallery.
+    if ($nid != $ref) {
+      $query = "SELECT data FROM {gallery_assist_modules_settings} WHERE nid = %d AND module = 'gallery_assist_comments'";
+      $data = db_fetch_object(db_query($query, $ref));
+
+      $settings = unserialize($data->data);
+      $settings['translated'] = TRUE;
+    }
+    // If it is a source gallery get node type settings.
+    else{
+      $type_settings = variable_get('gallery_assist_comments_'. $type, array());
+
+      $settings['first_time'] = TRUE;
+      $settings['general'] = $type_settings['general'];
+      $settings['features'] = $type_settings['features'];
+    }
+  }
+  
+  return $settings;
+}
+
+/**
+ * Implementation of hook_gallery_assist_api().
+ */
+function gallery_assist_comments_gallery_assist_api($op, $pid, $node_light = NULL) {
+  switch ($op) {
+    case 'view':
+      $elements = array();
+
+      // Get the node type GAC settings; Use as default settings if needed.
+      $type_settings = _gallery_assist_comments_settings($node_light->nodetype, $node_light);
+
+      if (!user_access('access gallery assist comments') || $type_settings['general']['enable'] == 0) {
+        // There is nothing to do.
+        return $elements;
+      }
+
+      // Make sure that settings available. Two situations are possible:
+      //   - A gallery is new and can not have their own settings.
+      //   - A gallery exist and has not saved own settings.
+      // In these two cases will use the settings of the node type.
+      if (!$node_light->node_settings && ($type_settings['general']['user_settings'] == 1 || $type_settings['general']['user_settings'] == 2)) {
+        $node_light->node_settings['general']['enable'] = $type_settings['general']['enable'];
+        $node_light->node_settings['general']['anonymous_commenting'] = $type_settings['general']['anonymous_commenting'];
+        $node_light->node_settings['features'] = $type_settings['features'];
+      }
+
+      // Provide the "No user editable settings".
+      $node_light->node_settings['general']['input_format'] = $type_settings['general']['input_format'];
+      // Extend settings; provide the general character count for this node type.
+      $node_light->node_settings['general']['character_count'] = $type_settings['general']['character_count'];
+      // Extend settings; provide the general character count variant for this node type.
+      $node_light->node_settings['general']['character_count_variant'] = $type_settings['general']['character_count_variant'];
+
+      // Provide RTL functionality requirement information.
+      $node_light->direction = _gallery_assist_comments_direction();
+
+      // Provide the "Display all comments" / "Display fewer comments" functionality.
+      if (arg(3) === 'comments-all') {
+        $node_light->gac_action = 'comments-all';
+      }
+
+      // The weight interacts with other additives GA modules that display content below an item.
+      $elements = array(
+        'gallery_assist_comments' => array(
+          '#value' => gallery_assist_comments_list($node_light),
+          '#weight' => 5,
+        ),
+      );
+
+      return $elements;
+
+    case 'delete':
+      // Current situation GA
+      // Source and translated gallery nodes have the same items.
+      // Items per language are therefore not possible.
+      // Therefore comments by ref-condition be deleted.
+      $query = "DELETE FROM {gallery_assist_comments} WHERE ref = %d";
+      db_query($query, $node_light->ref);
+      break;
+
+    case 'item_delete':
+      // If a item to delete no ckecks to other languages required
+      // and we can delete all comments from pid.
+      $query = "DELETE FROM {gallery_assist_comments} WHERE pid = %d";
+      db_query($query, $node_light->pid);
+      break;
+  }
+}
+
+/**
+ * Save the GAC admin settings of a GA node type.
+ */
+function gallery_assist_comments_admin_submit(&$form, $form_state) {
+  $values = $form_state['values']['gallery_assist_comments'];
+  $type = $form_state['values']['node_type'];
+
+  if ($form_state['values']['gac_toggle'] == 'admin') {
+    variable_set('gallery_assist_comments_'. $type, $values);
+  }
+}
+
+/**
+ * Retrieve a single action from the database.
+ *
+ * Note
+ *   Returned raw is not sanitized.
+ *
+ * @param int $cid
+ *   The comment ID.
+ * @param string $return
+ *   Define the return variant. Possible values:
+ *   - raw Content from DB select.
+ *   - themed Same content but sanitized.
+ * @return object
+ *   A comment object.
+ *
+ * @todo
+ *   Make $input_format and $submitted_format available as system variables.
+ */
+function gallery_assist_comments_load($cid, $return = 'themed') { 
+  $query = "SELECT c.*, p.uid AS pid_uid, n.type AS nodetype FROM {gallery_assist_comments} c LEFT JOIN {gallery_assist_item} p ON c.pid = p.pid LEFT JOIN {node} n ON c.nid = n.nid WHERE c.cid = %d";
+  
+  $comment = db_fetch_object(db_query($query, $cid));
+
+  switch ($return) {
+    case 'themed':
+    default:
+      $input_format = variable_get('gallery_assist_comments_input_format', 1);
+      $submitted_format = variable_get('gallery_assist_comments_submitted_format', 'short');
+      $comment->name = _gallery_assist_comments_commenters_name($comment);
+      $comment->comment = check_markup($comment->comment, $input_format);
+      $comment->created = gallery_assist_comments_submitted($comment, $submitted_format);
+      return $comment;
+
+    case 'raw':
+      return $comment;
+  }
+}
+
+/**
+ * Menu callback.
+ *
+ * Unpublish and publish comments.
+ */
+function gallery_assist_comments_edit_comment() {
+  // Unpublish a comment.
+  if (arg(3) && arg(4) && arg(3) === 'cu') {
+    $q = "UPDATE {gallery_assist_comments} set status = %d WHERE cid = %d";
+    db_query($q, 1, arg(4));
+
+    drupal_set_message(t('The comment has been unpublished.'), 'status');
+  }
+  // Publish a comment.
+  if (arg(3) && arg(4) && arg(3) === 'cp') {
+    $q = "UPDATE {gallery_assist_comments} set status = %d WHERE cid = %d";
+    db_query($q, 2, arg(4));
+
+    drupal_set_message(t('The comment has been published.'), 'status');
+  }
+
+  $link = 'node/'. arg(1) .'/'. arg(2);
+
+  if (arg(5) === 'comments-all') {
+    $link .= '/comments-all';
+  }
+
+  drupal_goto($link);
+}
+
+/**
+ * Menu callback.
+ *
+ * Define the confirm form values to delete a comment.
+ *
+ * @param int $nid
+ *   A node ID.
+ * @param int $pid
+ *   A item ID.
+ * @param object $comment
+ *   A comment object.
+ * @param string $action
+ *   Optional; Allowed value: comments-all
+ * @return array
+ *   The confirm form.
+ */
+function gallery_assist_comments_delete_comment_confirm($form_state, $nid, $pid, $comment, $action = FALSE) {
+  $question = t('Are you sure you want to delete the comment #!cid?', array('!cid' => $comment->cid));
+
+  $redirect = 'node/'. $nid .'/'. $pid;
+  
+  if ($action === 'comments-all') {
+    $redirect .= '/comments-all';
+  }
+
+  $form_state['storage']['redirect'] = $redirect;
+  $form_state['storage']['cid'] = $comment->cid;
+
+  return confirm_form(array(),
+    $question,
+    array('path' => $redirect), '<p>'. t('This action cannot be undone.') .'</p>',
+    t('Delete'),
+    t('Cancel')
+  );
+}
+
+/**
+ * Delete an comment.
+ */
+function gallery_assist_comments_delete_comment_confirm_submit($form, &$form_state) {
+  $query = "DELETE FROM {gallery_assist_comments} WHERE cid = %d";
+  db_query($query, $form_state['storage']['cid']);
+
+  drupal_set_message(t('The comment has been deleted.'), 'status');
+
+  drupal_goto($form_state['storage']['redirect']);
+}
+
+/**
+ * Implementation of hook_theme().
+ */
+function gallery_assist_comments_theme() {
+  return array(
+    'gallery_assist_comments_comments_counter' => array(
+      'arguments' => array('counter' => NULL),
+    ),
+    'gallery_assist_comments_form_box' => array(
+      'arguments' => array('content' => NULL),
+    ),
+    'gallery_assist_comments_content' => array(
+      'arguments' => array('content' => NULL),
+    ),
+    'gallery_assist_comments_container' => array(
+      'arguments' => array('comment' => NULL, 'classes' => NULL),
+    ),
+    'gallery_assist_comments_command_links' => array(
+      'arguments' => array('comment' => NULL, 'links' => NULL, 'classes' => NULL),
+    ),
+    'gallery_assist_comments_submitted' => array(
+      'arguments' => array('submitted' => NULL),
+    ),
+    'gallery_assist_comments_comments_title' => array(
+      'arguments' => array('title' => NULL, 'counter' => NULL),
+    ),
+    'gallery_assist_comments_say_all' => array(
+      'arguments' => array('content' => NULL),
+    ),
+    'gallery_assist_comments_say_fewer' => array(
+      'arguments' => array('content' => NULL),
+    ),
+    'gallery_assist_comments_comment_button' => array(
+      'arguments' => array(),
+    ),
+  );
+}
+
+/**
+ * Generate the basic commenting form, for appending to a GA item.
+ *
+ * @return array
+ *   Form API array for the form elements.
+ *
+ * @ingroup forms
+ */
+function gallery_assist_comments_form($form_state, $node_light) {
+  global $user;
+
+  $form = array();
+  $form['#node_light'] = $node_light;
+
+  $form['comment_body'] = array(
+    '#type' => 'textarea',
+    '#rows' => 2,
+  );
+  // Display the comment form as simple popup.
+  if ($node_light->node_settings['features']['form_display'] == 4) {
+    $form['comment_body']['#prefix'] = '<span class="ga-comment-new">'. t('New comment') .'</span>';
+  }
+
+  if (!isset($edit['format'])) {
+    $edit['format'] = $node_light->node_settings['general']['input_format']; 
+  }
+  $form['format'] = gallery_assist_comments_filter_form($edit['format']);
+  $form['format']['#default_value'] = $node_light->node_settings['general']['input_format'];
+
+  $form['gaco'] = array(
+    '#type' => 'value',
+    '#value' => $user->uid,
+  );
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => gallery_assist_comments_comment_button(),
+    '#name' => 'editone',
+    '#submit' => array('gallery_assist_comments_submit'),
+  );
+
+  return $form;
+}
+
+/**
+ * Provide the comments area links.
+ *
+ * The area links are "Add comment" and "Display all comments/Display fewer comments".
+ * 
+ * @param array $toggle
+ *   Contains two values:
+ *   - access | TRUE or FALSE
+ *   - position | 1 Above the comments or 2 Below the comments or 3 Above and below
+ * @param object $node_light
+ *   A node object.
+ * @param string $arg
+ *   A value to identify the two positions to display the comment form.
+ *   Possible values:
+ *   - above
+ *   - below
+ * @param array $counters
+ *   The counter array contains the two comment counters:
+ *   - comments
+ *     All comments from an item.
+ *   - setting
+ *     The configured comment numbers to display.
+ *   - numbers_form_below
+ *     Number of comments will be available the comment form below.
+ * @return string
+ *   The HTML formatted area links.
+ *
+ * @see gallery_assist_comments_list()
+ */
+function _gallery_assist_comments_area_links($toggle, $node_light, $arg, $counters) {
+  $links = array();
+
+  // Provide the character count function to comment forms.
+  $count = $node_light->node_settings['general']['character_count_variant'];
+  $goal = $node_light->node_settings['general']['character_count'];
+
+  // Provide the form display variant.
+  // Variants: 1 No styling, 2 Collapsed, 3 Collapsible
+  $form_display = $node_light->node_settings['features']['form_display'];
+  // The jQuery link color function need an reference link to get the link color.
+  // We add a dummy link if the form display option collapsible or collapsed.
+  $link_inheritancer[1] = '<span class="get-link-color"><a href="#"></a></span>';
+  $link_inheritancer[2] = '<span class="get-link-color-jump"><a href="#"></a></span>';
+
+  // Provide the "Add comment" element as simple text or as
+  // text with clickable link layout and toggle functionality.
+  // Positions: 1 - Above, 2 - Below, 3 - Above and below
+  switch ($arg) {
+    case 'above':
+      if ( $toggle['access'] == TRUE
+        && ($toggle['position'] == 1 || $toggle['position'] == 3)
+      ) {
+        // Provide the jQuery link color and toggle functionality JS values.
+        // No styling
+        $popup_ident = '';
+        if ($form_display == '1') {
+          $link_inheritancer[1] = '';
+          drupal_add_js(array('gacLinkCA' => '1'), 'setting');
+        }
+        // Collapsed.
+        if ($form_display == '2') {
+          drupal_add_js(array('gacLinkCA' => '2'), 'setting');
+        }
+        // Collapsible.
+        if ($form_display == '3') {
+          drupal_add_js(array('gacLinkCA' => '3'), 'setting');
+        }
+        // Simple popup.
+        if ($form_display == '4') {
+          $popup_ident = ' simple-popup toggle-pointer';
+          if ($counters['comments'] < 3) {
+            drupal_add_js(array('gacPopSA' => '1', 'gacPopType' => 'simple', 'gacPopSAUP' => '1'), 'setting');
+          }
+          else {
+            drupal_add_js(array('gacPopSA' => '1', 'gacPopType' => 'simple'), 'setting');
+          }
+        }
+        // Lightbox popup.
+        // @todo Coming soon
+        //if ($form_display == '5') {
+          //drupal_add_js(array('gacPopLA' => '1'), 'setting');
+        //}
+
+        // The "Add comment" element.
+        $links[] = $link_inheritancer[1] .'<span id="ga-comment-form-toggle-'. $arg .'" class="'. $popup_ident .'">'. t('Add comment') .'</span><span id="ga-comment-cancel-toggle-'. $arg .'" class="'. $popup_ident .'" style="display: none;">'. t('Cancel') .'</span>';
+
+        // Comment form character count JS values.
+        if ($goal > 0) {
+          drupal_add_js(array('gacCCA' => TRUE, 'gacCountA' => $count, 'gacGoalA' => $goal), 'setting');
+        }
+      }
+
+      // Jump link.
+      if ($node_light->gac_action === 'comments-all' && $counters['comments'] >= 10) {
+        $jump = $link_inheritancer[2] .'<span id="move-top-'. $arg .'" class="jump-pointer">'. t('Jump') .'</span>';
+      }
+      
+      break;
+
+    case 'below':
+      if (($toggle['access'] == TRUE) 
+        && ($toggle['position'] == 2 || $toggle['position'] == 3)
+      ) {
+        if (_gallery_assist_comments_below_addc($toggle, $counters) == TRUE) {
+          // Provide the jQuery link color and the jQuery toggle functionality values.
+          if ($form_display == '1') {
+            $link_inheritancer = '';
+            drupal_add_js(array('gacLinkCB' => '1'), 'setting');
+          }
+          if ($form_display == '2') {
+            drupal_add_js(array('gacLinkCB' => '2'), 'setting');
+          }
+          if ($form_display == '3') {
+            drupal_add_js(array('gacLinkCB' => '3'), 'setting');
+          }
+          if ($form_display == '4') {
+            $popup_ident = ' simple-popup toggle-pointer';
+            drupal_add_js(array('gacPopSB' => '1', 'gacPopSAUP' => '1'), 'setting');
+          }
+          // Lightbox popup.
+          // @todo Coming soon
+          //if ($form_display == '5') {
+            //drupal_add_js(array('gacPopLB' => '1'), 'setting');
+          //}
+
+          // The "Add comment" element.
+          $links[] = $link_inheritancer[1] .'<span id="ga-comment-form-toggle-'. $arg .'" class="'. $popup_ident .'">'. t('Add comment') .'</span><span id="ga-comment-cancel-toggle-'. $arg .'" class="'. $popup_ident .'" style="display: none;">'. t('Cancel') .'</span>';
+
+          // Comment form character count JS values.
+          if ($goal > 0) {
+            drupal_add_js(array('gacCCB' => TRUE, 'gacCountB' => $count, 'gacGoalB' => $goal), 'setting');
+          }
+        }
+      }
+
+      // Jump link.
+      if ($node_light->gac_action === 'comments-all'&& $counters['comments'] >= 10) {
+        $jump = $link_inheritancer[2] .'<span id="move-top-'. $arg .'" class="jump-pointer">'. t('Jump') .'</span>';
+      }
+
+      break;
+  }
+
+  // Provide the "Display all comments"/"Display fewer comments" link.
+  if ($counters['setting'] > 0 && $counters['comments'] > $counters['setting']) {
+    if (!isset($node_light->gac_action)) {
+      $option['link'] = '/comments-all';
+      $option['css'] = 'all';
+      $option['name'] = gallery_assist_comments_say_all();
+    }
+    if ($node_light->gac_action == 'comments-all') {
+      $option['link'] = '';
+      $option['name'] = gallery_assist_comments_say_fewer();
+      $option['css'] = 'fewer';
+    }
+    // The link.
+    $links[] = l($option['name'], 'node/'. $node_light->nid .'/'. $node_light->pid . $option['link'], array('html' => TRUE, 'attributes' => array('class' => 'ga-comment-say-'. $option['css'])));
+
+    $links[] = $jump;
+
+  }
+
+  // OK, we have the area links.
+  if (count($links) >= 1) {
+    if ($node_light->direction === '1') {
+      $links = array_reverse($links);
+    }
+
+    return theme('item_list', $links, NULL, 'ul', array('class' => 'ga-comment-area-links ga-comment-area-links-'. $arg));
+  }
+  // Or is there none.
+  else {
+    return FALSE;
+  }
+}
+
+/**
+ * Help function.
+ *
+ * There are additional evaluations necessary to display the form below the comments.
+ *
+ * @param array $toggle
+ *   Contains two values:
+ *   - access | TRUE or FALSE
+ *   - position | 1 Above the comments or 2 Below the comments or 3 Above and below
+ * @param array $counters
+ *   The counter array contains the two comment counters:
+ *   - comments
+ *     All comments from an item.
+ *   - setting
+ *     The configured comment numbers to display.
+ * @return TRUE or FALSE
+ *
+ * @see gallery_assist_comments_list()
+ * @see _gallery_assist_comments_area_links()
+ */
+function _gallery_assist_comments_below_addc($toggle, $counters) {
+  $return = FALSE;
+
+  if ($toggle['position'] == 2) {
+    $return = TRUE;
+  }
+  if ($toggle['position'] == 3 && $counters['comments'] > $counters['numbers_form_below']) {
+    $return = TRUE;
+  }
+
+  return $return;
+}
+
+/**
+ * GA item content.
+ *
+ * @param string $op
+ *   Possible values:
+ *   - count
+ *     Get comment count for a GA item.
+ * @param int $pid
+ *   A Gallery Assist item ID.
+ * @param int $cid
+ *   A comment ID
+ * @param object $node_light
+ *   A node object.
+ *
+ * @see gallery_assist_comments_list()
+ */
+function gallery_assist_comments_comments($op, $pid, $cid = NULL, $node_light = NULL) {
+  switch ($op) {
+    case 'count':
+      return db_result(db_query("SELECT COUNT(cid) FROM {gallery_assist_comments} WHERE pid = %d AND status = %d", $pid, 2));
+  }
+}
+
+/**
+ * Get the rendered comments content from a gallery item.
+ *
+ * @param object $node_light
+ *   An node object.
+ * @return string
+ *   The themed comments content from a gallery item.
+ *
+ * @see gallery_assist_comments_ga_expand()
+ * @todo
+ *   Make better integration of "GA module layout things".
+ */
+function gallery_assist_comments_list($node_light) {
+  global $user;
+
+  $content = '';
+  $context_link = array('class-region' => '', 'class-box' => '');
+
+  $settings = $node_light->node_settings;
+  // Get the comments to display.
+  $comments = gallery_assist_comments_load_content($node_light);
+
+  // Provide control values.
+  $toggle['access'] = user_access('post gallery assist comments');
+  // Check special situation with the gallery configurable "Anonymous commenting" option
+  // and the global anonymous permission "post gallery assist comments".
+  if ($user->uid == 0 
+    && (($toggle['access'] == 0 && $settings['general']['anonymous_commenting'] == 0) || ($toggle['access'] == 1 && $settings['general']['anonymous_commenting'] == 0) || ($toggle['access'] == 0 && $settings['general']['anonymous_commenting'] == 1))
+  ) {
+    $toggle['access'] = 0;
+  }
+
+  // Form positions: 1 Above the comments, 2 Below the comments, 3 Above and below
+  $toggle['position'] = $settings['features']['form_position'];
+  
+  // Provide the two comment counters.
+  // - comments: All published comments.
+  // - setting: The comments to display.
+  // - numbers_form_below: Number of comments will be available the comment form below.
+  $count_comments = gallery_assist_comments_comments('count', $node_light->pid);
+  $counters = array(
+    'comments' => $count_comments,
+    'setting' => $settings['features']['numbers'],
+    'numbers_form_below' => $settings['features']['numbers_form_below'],
+  );
+
+  // GA module layout things. @todo
+  $container_css = array(
+    'id' => 'ga-comments-container',
+    'class' => 'ga-comments-container-'. str_replace('_', '-', $node_light->nodetype),
+    'style' => $node_light->extra_styles,
+  );
+
+  // Helpers for content display.
+  // Simple popup.
+  if ($settings['features']['form_display'] == 4) {
+    $context_link['class-region'] = 'gac-context-link-region';
+    $context_link['class-box'] = 'gac-context-link-box';
+  }
+  // Lightbox popup.
+  //if ($settings['features']['form_display'] == 5) {
+    // @todo Coming soon.
+  //}
+  // Correct RTL display of the comment form.
+  if ($node_light->direction == 0) {
+    $context_link['class_direction'] = ' box-ltr';
+  }
+  if ($node_light->direction == 1) {
+    $context_link['class_direction'] = ' box-rtl';
+  }
+
+  // Start all comment containers output.
+  $content .= '<div '. drupal_attributes($container_css) .'>'."\n";
+  $content .= '<div id="ga-comments" class="'. str_replace('_', '-', $node_light->nodetype) .'">'."\n";
+
+  // The comments list title.
+  $content .= gallery_assist_comments_comments_title('Comments', $count_comments);
+
+  // Needed by jQuery toggle functionality.
+  $content .= '<div id="ga-comments-content-wrapper">'."\n";
+
+  // Comments area above.
+  // "Add comment" and "Display all comments"/"Display fewer comments".
+  $content .= _gallery_assist_comments_area_links($toggle, $node_light, 'above', $counters);
+
+  // The comment form.
+  if (($toggle['access'] == TRUE) && ($toggle['position'] == 1 || $toggle['position'] == 3)) {
+    $content .= '<div id="ga-comment-area-form-wrapper-above" class="'. $context_link['class-region'] .'" style="position: relative;">'."\n";
+    $content .= '<div id="ga-comment-area-form-above" class="'. $context_link['class-box'] . $context_link['class_direction'] .'">'."\n";
+    $content .= gallery_assist_comments_form_box($node_light);
+    $content .= '</div>'."\n";
+    $content .= '</div>'."\n";
+  }
+
+  $content .= '<div id="ga-comments-list">'."\n";
+
+  // Comments main area.
+  // Provide the comments.
+  if ($node_light->node_settings['features']['order'] == 2) {
+    $comments = array_reverse($comments);
+  }
+  $i = 1;
+  foreach ($comments as $comment) {
+    $evenodd = $i % 2 ? 'odd' : 'even';
+    $evenodd = $i & 1 ? 'odd' : 'even';
+    $comment->name = _gallery_assist_comments_commenters_name($comment);
+    $comment->node_uid = $node_light->uid;
+    $comment->gac_action = $node_light->gac_action ? $node_light->gac_action : FALSE;
+
+    // A comment itself.
+    $content .= gallery_assist_comments_container($comment, array('class' => $evenodd));
+    
+    // The comment command links.
+    if ($user->uid > 0) {
+      $links = _gallery_assist_comments_command_links($comment);
+      if ($links) {
+        $content .= gallery_assist_comments_command_links($comment, $links);
+      }
+      else {
+        $content .= '</div>'."\n";
+      }
+    }
+    else {
+      $content .= '</div>'."\n";
+    }
+
+    ++$i;
+  }
+
+  $content .= '</div>'."\n";
+  $content .= '</div>'."\n";
+
+  // Comments area below.
+  // "Add comment" and "Display all comments"/"Display fewer comments".
+  $content .= _gallery_assist_comments_area_links($toggle, $node_light, 'below', $counters);
+  // The comment form.
+  if (($toggle['access'] == TRUE) && _gallery_assist_comments_below_addc($toggle, $counters) == TRUE) {
+    $content .= '<div id="ga-comment-area-form-wrapper-below" class="'. $context_link['class-region'] .'">'."\n";
+    $content .= '<div id="ga-comment-area-form-below" class="'. $context_link['class-box'] . $context_link['class_direction'] .'" >'."\n";
+    $content .= gallery_assist_comments_form_box($node_light);
+    $content .= '</div>'."\n";
+    $content .= '</div>'."\n";
+  }
+
+  $content .= '</div>'."\n";
+  $content .= '</div>'."\n";
+
+  return theme('gallery_assist_comments_content', $content);
+}
+
+/**
+ * Get the comments from a gallery item.
+ *
+ * @param object $node_light
+ *   A node object.
+ * @return array
+ *   The associative array contains the sanitized comment objects.
+ *
+ * @see gallery_assist_comments_list()
+ */
+function gallery_assist_comments_load_content($node_light) {
+  global $user;
+
+  // Comment status: 1 - unpublished, 2 - published
+  if ($node_light->uid == $user->uid || user_access('administer gallery assist comments')) {
+    $query = "SELECT c.*, p.nid, p.uid AS pid_uid, n.type AS nodetype FROM {gallery_assist_comments} c 
+      LEFT JOIN {gallery_assist_item} p ON c.pid = p.pid
+      LEFT JOIN {node} n ON c.nid = n.nid
+      WHERE c.pid = %d";
+  }
+  else {
+    $query = "SELECT c.*, p.nid, p.uid AS pid_uid, n.type AS nodetype FROM {gallery_assist_comments} c 
+      LEFT JOIN {gallery_assist_item} p ON c.pid = p.pid
+      LEFT JOIN {node} n ON c.nid = n.nid
+      WHERE c.pid = %d";
+
+    $query .= " AND c.status = %s";
+    $status = 2;
+  }
+
+  // Don't use ASC here.
+  $query .= " ORDER BY c.created DESC";
+
+  $limit = $node_light->node_settings['features']['numbers'];
+  if ($node_light->gac_action != 'comments-all' && $limit > 0) {
+    $query .= " LIMIT $limit";
+  }
+
+  $result = $node_light->uid == $user->uid ? db_query($query, $node_light->pid) : db_query($query, $node_light->pid, $status);
+
+  $input_format = $node_light->node_settings['general']['input_format'];
+
+  $comments = array();
+  while ($comment = db_fetch_object($result)) {
+    $comment->submitted_format = $node_light->node_settings['features']['submitted_format'];
+    $comment->comment = check_markup($comment->comment, $input_format);
+    $comments[$comment->cid] = $comment;
+
+    // RTL functionality.
+    if ($node_light->direction == '0') {
+      $submitted = gallery_assist_comments_submitted($comment);
+      $submitted .= $comment->status == 1 ? ' <span class="marker">'. t('Unpublished') .'</span>' : '';
+    }
+    if ($node_light->direction == '1') {
+      $submitted = $comment->status == 1 ? '<span class="marker">'. t('Unpublished') .'</span> ' : '';
+      $submitted .= gallery_assist_comments_submitted($comment);
+    }
+
+    $comments[$comment->cid]->created = $submitted;
+  }
+
+  return $comments;
+}
+
+/**
+ * Save a comment.
+ */
+function gallery_assist_comments_submit(&$form, $form_state) {
+  if (empty($form_state['values']['comment_body'])) {
+    return FALSE;
+  }
+
+  $node_light = $form['#node_light'];
+
+  $owner = user_load($form_state['values']['gaco']);
+
+  $comment_new = array(
+    'nid' => $node_light->nid,
+    'ref' => $node_light->ref,
+    'pid' => $node_light->pid,
+    'status' => 2, // published
+    'uid' => $form_state['values']['gaco'],
+    'name' => $owner->name,
+    'subject' => '', // Reserved for the future.
+    'comment' => $form_state['values']['comment_body'],
+    'created' => time(),
+  );
+  drupal_write_record('gallery_assist_comments', $comment_new);
+
+  $cid = db_last_insert_id('gallery_assist_comments', 'cid');
+}
+
+/**
+ *  Provide the comment submitted line.
+ *
+ * @param object $comment
+ *   A comment object.
+ * @return string
+ *   The themed submitted line.
+ *
+ * @see gallery_assist_comments_load()
+ * @see gallery_assist_comments_load_content()
+ */
+function gallery_assist_comments_submitted($comment) {
+  $output = '';
+  $submitted = '';
+
+  switch ($comment->submitted_format) {
+    case '2':
+      $submitted = t('Submitted on @datetime', array('@datetime' => format_date($comment->created, 'custom', t('D, m/d/Y - h:i')),));
+      break;
+    case '1':
+      $submitted = format_date($comment->created, 'custom', t('D, m/d/Y - h:i'));
+      break;
+  }
+
+  $output = theme('gallery_assist_comments_submitted', $submitted);
+
+  return $output;
+}
+
+/**
+ * Retrieve an single input format.
+ *
+ * Note: Display no filter tips.
+ *
+ * @param int $value
+ *   The ID of the format that is currently selected;
+ *   uses the default format if not provided.
+ * @param array $parents
+ *   The parents array of the element.
+ *   Required when defining multiple text formats on a single form or having a
+ *   different parent than 'format'.
+ * @return array
+ *   Form API array for the form element.
+ *
+ * @see gallery_assist_comments_form()
+ */
+function gallery_assist_comments_filter_form($value = FILTER_FORMAT_DEFAULT, $parents = array('format')) {
+  $formats = filter_formats($value);
+
+  // Only one format available: use a value type form item.
+  $format = (array) $formats;
+  $form[$format->format] = array('#type' => 'value', '#value' => $format->format, '#parents' => $parents);
+
+  return $form;
+}
+
+/**
+ * Provide the GAC settings for a node type.
+ *
+ * @param string $type
+ *   Optional.
+ *   A machine-readable name of a content type.
+ * @return array
+ *   The associative array contains the settings.
+ *
+ * @see gallery_assist_comments_admin()
+ */
+function _gallery_assist_comments_settings($type = FALSE) {
+  $default = array(
+    'general' => array(
+      'enable' => 0,
+      'anonymous_commenting' => 0,
+      'input_format' => 1,
+      'character_count' => 160,
+      'character_count_variant' => 'down',
+      'user_settings' => 0,
+    ),
+    'features' => array(
+      'form_position' => 1,
+      'form_display' => 2,
+      'numbers' => 5,
+      'numbers_form_below' => 5,
+      'order' => 1,
+      'submitted_format' => 1,
+    )
+  );
+  
+  if (!$type) {
+    return $default;
+  }
+  if ($type) {
+    $settings = variable_get('gallery_assist_comments_'. $type, array());
+    if (count($settings) == 0) {
+      return $default;
+    }
+    else {
+      return $settings;
+    }
+  }
+}
+
+/**
+ * Return an array of "comments per item" setting.
+ */
+function _gallery_assist_comments_per_page() {
+  return drupal_map_assoc(array(5, 10, 15, 20, 25, 50, 70, 90, 150, 200, 250, 300));
+}
+
+/**
+ * Get the commenters name.
+ *
+ * Make name translatable if name the user Anonymous.
+ *
+ * @param object $comment
+ *   A comment object.
+ * @return string
+ *   The themed user name.
+ *
+ * @see gallery_assist_comments_load()
+ * @see gallery_assist_comments_list()
+ */
+function _gallery_assist_comments_commenters_name($comment) {
+  if ($comment->uid == 0) {
+    $anonymous = variable_get('anonymous', 'Anonymous');
+    return t('@name', array('@name' => t($anonymous)));
+  }
+  else {
+    return theme('username', $comment);
+  }
+}
+
+/**
+ * Provide the command links for a comment.
+ *
+ * @param object $comment
+ *   A comment object.
+ * @return array
+ *   A array contains the HTML formatted command links.
+ *
+ * @see gallery_assist_comments_command_links()
+ */
+function _gallery_assist_comments_command_links($comment) {
+  global $user;
+
+  $output = FALSE;
+  $links = array();
+
+  $gac_action = '';
+  if ($comment->gac_action) {
+    $gac_action = '/'. $comment->gac_action;
+  }
+  
+  // Comment status: 1 - unpublished, 2 - published
+  // Unpublish/publish a comment.
+  // A gallery / item owner can unpublish/publish comments of his items.
+  if (gallery_assist_comments_access_publish_comment($comment) == TRUE) {
+    // Unpublish.
+    if ($comment->status == 2) {
+      $links[] = l(t('unpublish'), 'gacomment/'. $comment->nid .'/'. $comment->pid .'/cu/'. $comment->cid . $gac_action, array('attributes' => array('class' => 'comment-unpublish')));
+    }
+    // Publish.
+    if ($comment->status == 1) {
+      $links[] = l(t('publish'), 'gacomment/'. $comment->nid .'/'. $comment->pid .'/cp/'. $comment->cid . $gac_action, array('attributes' => array('class' => 'comment-publish')));
+    }
+  }
+  
+  // Delete.
+  if (gallery_assist_comments_access_delete_comment($comment) == TRUE) {
+    $links[] = l(t('delete'), 'gacomment/'. $comment->nid .'/'. $comment->pid .'/cd/'. $comment->cid . $gac_action, array('attributes' => array('class' => 'comment-delete')));
+  }
+
+  $direction = _gallery_assist_comments_direction();
+  if (count($links) && $direction === '1') {
+    $links = array_reverse($links);
+  }
+
+  if (count($links)) {
+    $output = theme('item_list', $links, NULL, 'ul', array('class' => 'ga-comment-command-links'));
+  }
+
+  return $output;
+}
+
+/**
+ * Help function to provide RTL functionality requirement information.
+ *
+ * @return string
+ *  0 LTR
+ *  1 RTL
+ */
+function _gallery_assist_comments_direction() {
+  global $language;
+
+  if (isset($language->direction)) {
+    return $language->direction;
+  }
+  else {
+    return '0';
+  }
+}
+
+/**
+ * Help function to provide an simple filter formats option list.
+ *
+ * @return array
+ *   A a associative array contains the filter formats.
+ *   format ID | format name
+ *
+ * @see gallery_assist_comments_admin()
+ */
+function _gallery_assist_comments_filter_formats() {
+  foreach (filter_formats() as $id => $format) {
+    $filter_formats[$id] = filter_xss($format->name);
+  }
+
+  return $filter_formats;
+}

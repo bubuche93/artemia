@@ -1,5 +1,5 @@
 <?php
-//$Id: video_ffmpeg_wrapper.inc,v 1.1.2.7 2010/06/03 15:39:43 iLLin Exp $
+//$Id: video_ffmpeg_wrapper.inc,v 1.1.2.9 2010/07/11 14:17:09 heshanmw Exp $
 /*
  * @file
  * Transcoder class file to handle ffmpeg_wrapper settings and conversions.
@@ -159,7 +159,7 @@ class video_ffmpeg_wrapper implements transcoder_interface {
    * Return the playtime seconds of a video
    */
   public function get_playtime($video) {
-    $ffmpeg_output = ffmpeg_wrapper_get_file_data($video['filepath']);
+    $ffmpeg_output = ffmpeg_wrapper_file_data($video['filepath']);
     return $ffmpeg_output['duration'];
   }
 
@@ -167,7 +167,7 @@ class video_ffmpeg_wrapper implements transcoder_interface {
    * Return the dimensions of a video
    */
   public function get_dimensions($video) {
-    $ffmpeg_output = ffmpeg_wrapper_get_file_data($video);
+    $ffmpeg_output = ffmpeg_wrapper_file_data($video);
     $res = array('width' => 0,'height' => 0);
     if($ffmpeg_output['video']['s']) {
       $dimensions = explode("x", $ffmpeg_output['video']['s']);

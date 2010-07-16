@@ -1,0 +1,108 @@
+/* $Id: gallery_assist_comments.css,v 1.6 2010/05/31 23:27:46 quiptime Exp $ */
+
+/**
+ * @file gallery_assist_comments.css
+ */
+
+.box-ltr {
+  left: 15px;
+}
+#ga-comments-title-wrapper {
+  margin: 1em 0 0.5em 0;
+}
+h2.ga-comments {
+  display: inline;
+}
+#ga-comments-container .counter {
+  margin: 0 0.4em 0 0.4em;
+}
+#ga-comment-area-form-top {
+  margin: 0 0 1.5em 0;
+}
+html.js .gac-context-link-region .resizable-textarea textarea {
+  width: 35em;
+}
+.gac-context-link-box .resizable-textarea {
+  width: inherit;
+}
+#ga-comments-container form {
+  margin: 0;
+}
+#ga-comments-container .form-submit {
+  margin: 0;
+}
+#ga-comments-container .odd {
+  background-color: rgba(200, 200, 200, 0.1);
+}
+.ga-comment-container {
+  padding: 0.5em;
+  border-bottom: 1px solid #CFCFCF;
+}
+.ga-comment-container p {
+  margin: 0.35em 0;
+}
+#ga-comments-list {
+  margin: 1.5em 0 1.5em 0;
+}
+.submitted-date .marker, .ga-comment-submitted {
+  font-size: 10px;
+}
+.ga-comment-container .submitted-by {
+  display: inline;
+  float: left;
+}
+.ga-comment-container .submitted-date {
+  display: inline;
+  float: right;
+}
+#ga-comments .item-list {
+  background-color: transparent;
+  border: none;
+}
+.ga-comment-command-links .item-list ul {
+  margin: 0;
+}
+.item-list .ga-comment-command-links {
+  text-align: right;
+}
+.item-list .ga-comment-command-links li {
+  display: inline;
+  list-style-image: none;
+  list-style-type: none;
+  background-image: none;
+  margin: 0 0 0 1em;
+  padding: 0;
+}
+.toggle-pointer, .jump-pointer {
+  cursor: pointer;
+}
+.toggle-pointer:hover, .jump-pointer:hover {
+  text-decoration: underline;
+}
+.item-list ul.ga-comment-area-links {
+  margin: 1em 0 1em 0.2em
+}
+.item-list ul.ga-comment-area-links li {
+  display: inline;
+  list-style-image: none;
+  list-style-type: none;
+  background-image: none;
+  margin: 0 1em 0 0;
+  padding: 0;
+}
+#ga-comment-area-form-wrapper-above, .gac-context-link-region {
+  position: relative;
+}
+.gac-context-link-box {
+  position: absolute;
+  top: 0;
+  z-index: 999;
+  padding: 1em;
+  display: inline;
+  border: 1px solid #CCC;
+}
+.gac-context-link-box {
+  -moz-box-shadow: 3px 3px 4px #BBB;
+  -webkit-box-shadow: 3px 3px 4px #BBB;
+  box-shadow: 3px 3px 4px #BBB;
+}

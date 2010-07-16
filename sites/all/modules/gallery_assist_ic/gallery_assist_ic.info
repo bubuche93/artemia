@@ -1,0 +1,15 @@
+; $Id: gallery_assist_ic.info,v 1.1 2009/10/11 05:55:52 jcmc Exp $
+name = Gallery Assist ImageCache
+description = "This module help Gallery Assist to work with ImageCache."
+package = "Media"
+dependencies[] = gallery_assist
+dependencies[] = imagecache
+dependencies[] = imageapi_gd
+core = 6.x
+
+; Information added by drupal.org packaging script on 2010-01-26
+version = "6.x-1.1"
+core = "6.x"
+project = "gallery_assist_ic"
+datestamp = "1264482609"
+

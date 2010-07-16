@@ -1,0 +1,17 @@
+<?php
+// $Id: image_fupload_gallery_assist.install,v 1.0 2010/01/04 07:02:19 jcmc Exp $
+
+/**
+ * @file
+ * Install  SWF-Upload functionality.
+ */
+
+/**
+ * Implementation of hook_install().
+ */
+function image_fupload_gallery_assist_install() {
+  $data = array();
+  $data['gafu_maxfilesize'] = 10000;
+  $data['gafu_uploadlimit'] = 100;
+  variable_set('image_fupload_gallery_assist_data', $data);
+}

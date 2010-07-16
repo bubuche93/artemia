@@ -1,0 +1,154 @@
+# $Id: gallery_assist_lightboxes.de.po,v 1.1 2009/10/11 08:09:14 jcmc Exp $
+#
+# German translation of Drupal (general)
+# Copyright 2009 Juan Morejón <jcmc.devel@gmail.com>
+# Generated from files:
+#  gallery_assist_lightboxes_display.inc, v 1.5 2009/09/09 18:54:00 jcmc
+#  gallery_assist_lightboxes.module: n/a
+#  gallery_assist_lightboxes.info: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2009-10-09 03:34+0200\n"
+"PO-Revision-Date: 2009-10-09 03:34+0200\n"
+"Last-Translator: Juan Morejón <jcmc.devel@gmail.com>\n"
+"Language-Team: German <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+
+
+#: gallery_assist_lightboxes_display.inc:60
+msgid "next ›"
+msgstr "nächste Seite ›"
+
+#: gallery_assist_lightboxes_display.inc:63
+msgid "‹ previous"
+msgstr "‹ vorherige Seite"
+
+#: gallery_assist_lightboxes.module:118
+msgid "Lightboxes for Gallery Assist"
+msgstr "Lightboxes für Gallery Assistent"
+
+#: gallery_assist_lightboxes.module:126
+msgid "none"
+msgstr "Keine"
+
+#: gallery_assist_lightboxes.module:139
+msgid "Choose a lightbox variant."
+msgstr "Eine Lightbox-Variant wählen."
+
+#: gallery_assist_lightboxes.module:144
+msgid "Please wait..."
+msgstr "Bitte warten..."
+
+#: gallery_assist_lightboxes.module:148
+msgid "@lightbox_variant settings"
+msgstr "Konfiguration von @lightbox_variant"
+
+#: gallery_assist_lightboxes.module:178
+msgid "Validation error, please try again. If this error persists, please contact the site administrator."
+msgstr ""
+"Fehler bei der Gültigkeitsüberprüfung, bitte erneut versuchen. "
+"Falls der Fehler bestehen bleibt, wenden Sie sich bitte an den "
+"Administrator der Website."
+
+#: gallery_assist_lightboxes.module:192
+msgid "@lightboxes settings"
+msgstr "@lightboxes Einstellungen"
+
+#: gallery_assist_lightboxes.module:193
+msgid "You have changed the lightbox for Gallery Assist. The configuration data are stored only by pressing the button save."
+msgstr "Sie haben eine andere lightbox für Galerie Assistent gewählt. Die Einstellungen werden nach dem Speichern aktiv."
+
+#: gallery_assist_lightboxes.module:232
+msgid "This module not contains lightboxes. The application facilitates to apply a lightbox to images belonging to a gallery created with Gallery Assist. It supports Lightbox2 and some of its modifications. These can be downloaded from their respective websites. Here the links:"
+msgstr "Dieses Modul enthält keine Lightboxen. Dieses Modul ermöglicht die Anwendung von Lightbox auf Galeriebilder, die zum Inhaltstyp Galerie Assisten oder desen Zuweisungen gehören. Es unterstützt Lightbox2 und einige seiner Modifikationen. Diese können von den jeweiligen Webseiten heruntergeladen werden. Hier die Links:"
+
+#: gallery_assist_lightboxes.module:237
+msgid "Once downloaded unpack the files, rename the folders to (lightbox, litebox, thickbox or prettyBox) and move all in to the lightboxes folder in the gallery_assist_lightboxes directory. Back to this adress and choose one."
+msgstr ""
+"Einmal heruntergeladen, entpacken und umbenennen Sie die Ordner zu (lightbox, "
+"litebox, thickbox oder prettyBox) dann bewegen Sie sie in den Ordner lightboxes "
+"in gallery_assist_lightboxes. Kommen Sie zu dieser Adresse zurück und wählen Sie eine Lightbox."
+
+#: gallery_assist_lightboxes.module:244
+msgid "@lb_count lightbox modifications are available to use on this Drupal installation."
+msgstr "@lb_count Lightbox-Varianten stehen zur verfügung."
+
+#: gallery_assist_lightboxes.module:258
+msgid "Dark rounded"
+msgstr "Dunkel und abgerundet"
+
+#: gallery_assist_lightboxes.module:259
+msgid "Dark square"
+msgstr "Dunkel und quadratisch"
+
+#: gallery_assist_lightboxes.module:260
+msgid "Light rounded"
+msgstr "Hell und abgerundet"
+
+#: gallery_assist_lightboxes.module:261
+msgid "Light square"
+msgstr "Hell und quadratisch"
+
+#: gallery_assist_lightboxes.module:268
+msgid "Animation speed"
+msgstr "Animationsgeschwindigkeit"
+
+#: gallery_assist_lightboxes.module:280
+msgid "Opacity"
+msgstr "Opazität"
+
+#: gallery_assist_lightboxes.module:299
+msgid "Counter separator label"
+msgstr "Counter-Trenner"
+
+#: gallery_assist_lightboxes.module:311
+msgid "Padding"
+msgstr "Innenabstand"
+
+#: gallery_assist_lightboxes.module:319
+msgid "Show title"
+msgstr "Zeige den Titel"
+
+#: gallery_assist_lightboxes.module:328
+msgid "Allow resize"
+msgstr "Größenänderung erlauben"
+
+#: gallery_assist_lightboxes.module:354
+msgid "You have just selected the <strong>@lightbox</strong>. It work with default settings."
+msgstr ""
+"Sie haben eben die <strong>@lightbox</strong> gewählt. Sie arbeitet "
+"mit Standartwerten."
+
+#: gallery_assist_lightboxes.module:355
+msgid "Gallery Assist Lightboxes can't -for the moment- manage the settings to this lightbox."
+msgstr ""
+"Galerie Assistent Lightboxes kann zur Zeit die Konfiguration dieser "
+"Lightbox nicht administrieren."
+
+#: gallery_assist_lightboxes.module:356
+msgid "If you need to change the settings, do it directly in the js file."
+msgstr ""
+"Wenn Sie andere Einstellungen brauchen, ändern Sie sie direkt in der "
+"JS-Datei."
+
+#: gallery_assist_lightboxes.module:22
+msgid "administer gallery_assist_lightboxes"
+msgstr "Gallery-Assist Lightboxen verwalten"
+
+#: gallery_assist_lightboxes.info:0
+msgid "Gallery Assist Lightboxes"
+msgstr "Galerie Assistent Lightboxes"
+
+#: gallery_assist_lightboxes.info:0
+msgid "Allow Gallery Assist to apply lightboxes."
+msgstr "Ermöglich Lightboxes an Galerie Assistent Bilder anzuwenden."
+
+#: gallery_assist_lightboxes.info:0
+msgid "Media"
+msgstr "Media"

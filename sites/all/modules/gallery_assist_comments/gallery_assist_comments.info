@@ -1,0 +1,12 @@
+; $Id: gallery_assist_comments.info,v 1.4 2010/05/25 13:35:28 quiptime Exp $
+name = Gallery Assist Comments
+description = "Comment functionality for Gallery Assist items."
+package = "Media"
+core = 6.x
+
+; Information added by drupal.org packaging script on 2010-06-01
+version = "6.x-1.5"
+core = "6.x"
+project = "gallery_assist_comments"
+datestamp = "1275426611"
+

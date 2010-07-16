@@ -1,5 +1,5 @@
 <?php
-//$Id: video.module,v 1.69.4.17.2.7.2.32 2010/06/07 19:08:44 iLLin Exp $
+//$Id: video.module,v 1.69.4.17.2.7.2.46 2010/07/13 00:28:04 heshanmw Exp $
 /**
  *
  * @file video.module
@@ -12,6 +12,28 @@
 function video_init() {
   drupal_add_css(drupal_get_path('module', 'video'). '/css/video.css');
   drupal_add_js(drupal_get_path('module', 'video'). '/js/video.js');
+}
+
+/**
+ * Invokes hook_video_*action*() in every module.
+ * Eg :
+ * hook_video_submit()
+ * hook_video_insert()
+ * hook_video_preview()
+ * hook_video_delete()
+ * hook_video_load()
+ * hook_video_form() - to show values once upload is completed eg. Resolution, and Convert on Save etc
+ *
+ * We cannot use module_invoke() for this, because the arguments need to
+ * be passed by reference.
+ */
+function video_module_invoke($action, &$array, &$video = NULL, $other = NULL) {
+  foreach (module_list() as $module) {
+    $function = $module . '_video_' . $action;
+    if (function_exists($function)) {
+      $function($array, $video, $other);
+    }
+  }
 }
 
 /**
@@ -231,6 +253,8 @@ function video_node_update_submit($form, &$form_state) {
     foreach($form_state['values']['video_id'] as $fid) {
       //lets update our table to include the nid
       db_query("UPDATE {video_files} SET nid=%d WHERE fid=%d", $form_state['nid'], $fid);
+      // Lets other module to know to update
+      video_module_invoke('update', $form, $form_state);
     }
   }
 }
@@ -353,6 +377,8 @@ function video_file_delete($file) {
   $thumb_folder = file_directory_path(). '/' . $video_thumb_path . '/' . $file->fid;
   // Recursively delete our folder and files
   rmdirr($thumb_folder);
+  // Let other modules to know about the file delete
+  video_module_invoke('delete', $file);
 }
 
 /**
@@ -387,6 +413,10 @@ function video_views_api() {
   );
 }
 
+/**
+ * Process elements loads on settings
+ * @param <type> $element 
+ */
 function video_widget_element_settings(&$element) {
   $file = $element['#value'];
   $delta = $element['#delta'];
@@ -472,6 +502,42 @@ function video_widget_element_settings(&$element) {
         '#attributes' => array('class' => 'video-use-default-video-thumb'),
       );
     }
+  }
+}
+
+
+/**
+ * Video_widget_process for API handlers for any video types.
+ * @param <type> $element
+ * @param <type> $form_state
+ */
+function video_widget_process($element, &$form_state) {
+  $item = $element['#value'];
+  $field = content_fields($element['#field_name'], $element['#type_name']);
+  switch($form_state['clicked_button']['#submit'][0]) {
+    case 'node_form_submit':
+    // Auto convert our video file
+      if($field['widget']['autoconversion']) {
+        video_convert_process($element);
+        //lets set our node status to unpublished if our video is not converted.
+        if ($element['#unpublish']) {
+          //unpublish the node
+          $form_state['values']['status'] = 0;
+        }
+      }
+      // Call hook_video_submit API
+      video_module_invoke('insert', $element, $form_state);
+      //
+      //queue up the file id to update the node id in the video rendering / cdn tables.
+      $form_state['values']['video_id'][] = $item['fid'];
+      break;
+    case 'node_form_build_preview':
+    // Call hook_video_preview API
+      video_module_invoke('preview', $element, $form_state);
+      break;
+    case 'node_form_delete_submit':
+    //moved to hook_file_delete in video module.
+      break;
   }
 }
 

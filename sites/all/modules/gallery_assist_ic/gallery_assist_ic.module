@@ -1,0 +1,85 @@
+<?php
+// $Id: gallery_assist_ic.module,v 1.3 2010/01/26 05:00:18 jcmc Exp $
+
+/**
+ * @file
+ * Manage the format settings from Gallery Assist and help the module to display the gallery content with ImageCache.
+ */
+
+/*
+ * Implementation of hook_form_alter().
+ */
+function gallery_assist_ic_form_alter(&$form, $form_state, $form_id) {
+  if ($form_id == 'gallery_assist_settings_extras') {
+    $form['#submit'][] = 'gallery_assist_ic_nodetypes_submit';
+  }
+
+  if ($form_id == 'gallery_assist_settings') {
+    $form['#submit'][] = 'gallery_assist_ic_settings_submit';
+  }
+}
+
+/*
+ * Save gallery_assist more settings.
+ */
+function gallery_assist_ic_settings_submit(&$form, $form_state) {
+  static $reset = FALSE;
+  if (!$reset) {
+    //if (!$w = gallery_assist_invalidate_cache("*")) {
+    //  drupal_set_message('Konnte die ga-cache tabelle nicht löschen. '. $w, 'error');
+    //}
+    db_query("TRUNCATE TABLE {cache_gallery_assist_data}");
+  }
+  $node_types = node_get_types();
+
+  foreach ($node_types as $type => $value) {
+    if ($form_state['values']['gallery_assist_' . $type . '_change'] == TRUE) {
+      $thm  = imagecache_preset($form_state['values']['gallery_assist_' . $type . '_thm_presetid']);
+      $prev = imagecache_preset($form_state['values']['gallery_assist_' . $type . '_prev_presetid']); 
+
+      $gallery_assist_ic_update_data = array(
+        'thm_presetid'    => $form_state['values']['gallery_assist_' . $type . '_thm_presetid'],
+        'prev_presetid'   => $form_state['values']['gallery_assist_' . $type . '_prev_presetid'],
+        'thm_presetname'  => $thm['presetname'],
+        'prev_presetname' => $prev['presetname'],
+        'use_imagecache'  => 1,
+      );
+
+      variable_set('gallery_assist_' . $type . '_ic_data', $gallery_assist_ic_update_data);
+
+    }
+  }
+}
+
+/**
+ * Save extra settings for assigments when gallery_assist work with ImageCache. 
+ */
+function gallery_assist_ic_nodetypes_submit(&$form, $form_state) {
+  gallery_assist_invalidate_cache();
+  $node_types = node_get_types();
+
+  unset($node_types['gallery_assist']);
+
+  $defaults = variable_get('gallery_assist_default_ic_data', FALSE);
+
+  foreach ($node_types as $type) {
+    if ($form_state['values']['gallery_assist_' . $type->type .'_changed'] != $form_state['values']['gallery_assist_' . $type->type]) {
+      if ($form_state['values']['gallery_assist_' . $type->type] == 1) {
+        variable_set('gallery_assist_' . $type->type . '_ic_data', $defaults);
+      }
+      else {
+        variable_set('gallery_assist_' . $type->type . '_ic_data', FALSE);
+      }      
+    }
+  }
+}
+
+/**
+ * Generate and manage imagecache presets for existing galleries from gallery assist or assigments. 
+ */
+function gallery_assist_generate_ic_preset(&$type, &$data = array()) {
+  module_load_include('inc', 'gallery_assist_ic', 'gallery_assist_ic_presets');
+
+  return gallery_assist_presets_maker($type, $data);
+
+}

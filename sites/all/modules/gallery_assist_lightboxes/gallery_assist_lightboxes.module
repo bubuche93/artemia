@@ -1,0 +1,1440 @@
+<?php
+// $Id: gallery_assist_lightboxes.module,v 1.1.2.12 2010/04/06 00:58:41 jcmc Exp $exp $
+
+/**
+ * @file
+ * A module that allow gallery assist to work with the differents lightbox variants.
+ */
+
+/**
+ * Implementation of hook_init.
+ */
+function gallery_assist_lightboxes_init() {
+
+}
+
+/**
+ * Implementation of hook_perm().
+ */
+function gallery_assist_lightboxes_perm() {
+  // Access data for the gallery_assist conten type.
+  $access = array(
+    'administer gallery_assist_lightboxes',
+  );
+
+  return $access;
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+function gallery_assist_lightboxes_menu() {
+  $item = array();
+
+  // gallery_assist_lightboxes ahah callback test.
+  $items['gallery_assist_lightboxes/make/testform/js'] = array(
+    'page callback' => 'gallery_assist_lightbox_build_settingsform_js',
+    'access arguments' => array('administer gallery_assist_lightboxes'),
+    'type' => MENU_CALLBACK,
+  ); 
+
+  $items['admin/settings/gallery_assist/lightboxes_info'] = array(
+    'title' => t('Gallery Assist Lightboxes Info'),
+    'page callback' => 'gallery_assist_lightboxes_info',
+    'access arguments' => array('administer gallery_assist'),
+    'type' => MENU_CALLBACK,
+  );
+
+  return $items;
+}
+
+/**
+ * Save the selected lightbox variant settings.
+ */
+function gallery_assist_lightboxes_settings_submit(&$form, $form_state) {
+
+  if ($form_state['values']['lightboxes_select_one'] == 'none') {
+    variable_set('gallery_assist_lightbox_data', FALSE);
+  }
+  else {
+    global $base_path;
+    foreach ($form_state['values'] as $key => $value) {
+      if (preg_match('/lightbox_conf/', $key)) {
+        $k = preg_replace('/lightbox_conf_/', '', $key);
+        
+        $data[$k] = $value;
+      }
+    }
+
+    if ($form_state['values']['lightboxes_select_one'] == 'highslide') {
+      $data['the_path'] = $base_path . drupal_get_path('module', 'gallery_assist_lightboxes') .'/lightboxes/highslide';
+    }
+    else {
+      if (!empty($data['the_path'])) {
+        unset($data['the_path']);
+      }
+    }
+
+    if (count($data) > 0) {
+      variable_set('gallery_assist_lightbox_data', $data);
+    }
+    
+    $help_with_case = variable_get('gallery_assist_lightbox', FALSE);
+    $hilfo = array(
+      'lightbox' => $help_with_case,
+      'data' => array(
+        'css' => $form_state['values']['css_files'],
+        'js' => $form_state['values']['js_files'],
+        'selector' => $form_state['values']['selectors_files'],
+      ),
+    );
+    variable_set('gallery_assist_lightboxes_files', $hilfo);
+  }
+}
+
+/**
+ * Implementation of hook_nodeapi().
+ */
+function gallery_assist_lightboxes_nodeapi(&$node, $op, $teaser, $page) {
+
+  if ($op == 'view' && variable_get('gallery_assist_lightbox', 'none') != 'none'  
+      && variable_get('gallery_assist_'. $node->type, 0) == 1 && count($node->gallitems) > 0) {
+
+    // Set the jQuery.extend Drupal.settings only once in teaser lists.
+    $lightbox_conf = drupal_get_js();
+    if (!preg_match("/lightbox_conf/", $lightbox_conf)) {
+      $data = variable_get('gallery_assist_lightbox_data', FALSE);
+      //$data['the_path'] = 'node/'. $node->nid .'/'.  $data['the_path'];
+      $js_settings = array(
+        'lightbox_conf' => array(
+          variable_get('gallery_assist_lightbox', 'none') => $data,
+        ),
+      );
+
+      drupal_add_js($js_settings, 'setting');
+    }
+  }
+
+}
+
+/**
+ * Implementation of hook_form_alter().
+ */
+function gallery_assist_lightboxes_form_alter(&$form, &$form_state, $form_id) {
+
+  if ($form_id == 'gallery_assist_settings_extras') {
+    drupal_add_css(drupal_get_path('module', 'gallery_assist') .'/css/galery_assist.css', 'module', 'all', FALSE);
+    $form['#submit'][] = 'gallery_assist_lightboxes_settings_submit';
+    $form['gallery_assist_extras'] += _gallery_assist_lightboxes_settings_form();
+  }
+
+}
+
+/**
+ * Form to select a lightbox variante and to read the simple help and credits.
+ */
+function _gallery_assist_lightboxes_settings_form() {
+  $form = array();
+
+  $form['00001'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Lightboxes for Gallery Assist'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#description' => t('Get Gallery Assist Lightboxes <a href="@link">Info-Table</a>.', array('@link' => url('admin/settings/gallery_assist/lightboxes_info'))),
+  );
+
+  $lightboxes_dir = drupal_get_path('module', 'gallery_assist_lightboxes') .'/lightboxes';
+  $scan = file_scan_directory($lightboxes_dir, '.', $nomask = array('.', '..', 'README.txt'), 0, FALSE);
+  $options = array(
+    'none' => t('none'),
+  );
+  foreach ($scan as $k => $v) {
+    $options[$v->basename] = $v->basename;
+    if ($v->basename == 'lytebox') {
+      $options['lyteshow'] = 'lyteshow';
+    }
+    if (module_exists('lightbox2')) {
+      // Remove the original lightbox2 if the module with the same name exists and is active.
+      if (array_key_exists('lightbox', $options)) {
+        unset($options['lightbox']);
+      }
+      $options['lightbox'] = 'lightbox';
+    }
+  }
+
+  $form['00001']['lightboxes_select_one'] = array(
+    '#type' => 'select',
+    '#title' => 'Lightboxes',
+    '#default_value' => variable_get('gallery_assist_lightbox', 'none'),
+    '#options' => $options,
+    '#ahah' => array(
+      'path' => 'gallery_assist_lightboxes/make/testform/js',
+      'wrapper' => 'mytest-fieldset-wrapper',
+      'progress' => array('type' => 'throbber'),
+    ),
+  );
+
+  $variante_name = variable_get('gallery_assist_lightbox', 'none') == 'none' ? 'Info' : t('@lightbox_variant settings', array('@lightbox_variant' => variable_get('gallery_assist_lightbox', 'none')));
+  $form['00001']['lightbox_conf'] = array(
+    '#type' => 'fieldset',
+    '#title' =>  $variante_name,
+    '#prefix' => '<div class="clear-block"></div><div class="clear-block" id="mytest-fieldset-wrapper">',
+    '#suffix' => '</div>',
+  );
+
+  $form['00001']['lb_list'] = array(
+    '#type' => 'hidden',
+    '#value' => count($options) - 1,
+  );
+
+  $form['00001']['lightbox_conf']['data'] = _gallery_assist_lightbox_settings_form(variable_get('gallery_assist_lightbox', 'none'), count($options) - 1);
+
+  return $form;
+}
+
+/**
+ * Ahah callback.
+ * Prepare the settings form for the selected lightbox variante.
+ */
+function gallery_assist_lightbox_build_settingsform_js() {
+  $cached_form_state = array();
+  $items = array();
+  $form = array();
+
+  // Load the form from the Form API cache.
+  if (!($cached_form = form_get_cache($_POST['form_build_id'], $cached_form_state)) || !isset($cached_form['gallery_assist_extras'])) {
+    form_set_error('form_token', t('Validation error, please try again. If this error persists, please contact the site administrator.'));
+    $output = theme('status_messages');
+    print drupal_to_js(array('status' => TRUE, 'data' => $output));
+    exit();
+  }
+
+  $form_state = array('values' => $_POST);
+  $form_state += $_FILES;
+
+  if ($form_state['values']['lightboxes_select_one'] == 'prettyphoto') {
+    $form_state['values']['lightboxes_select_one'] = 'prettyPhoto';
+  }
+
+  variable_set('gallery_assist_lightbox', $form_state['values']['lightboxes_select_one']);
+  variable_del('gallery_assist_lightbox_data');
+
+  $form['lightbox_conf'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('@lightboxes settings', array('@lightboxes' => $form_state['values']['lightboxes_select_one'])),
+    '#description' => '<div class="warning">* '. t('You have changed the lightbox for Gallery Assist. The configuration data are stored only by pressing the button save.') .'</div>',
+  );
+
+  $form['lightbox_conf']['data'] = _gallery_assist_lightbox_settings_form($form_state['values']['lightboxes_select_one'], $form_state['values']['lb_list']);
+
+  unset($cached_form['gallery_assist_extras']['00001']['lightbox_conf']);
+
+  $cached_form['gallery_assist_extras']['00001']['lightboxes_select_one']['#default_value'] = $form_state['values']['lightboxes_select_one'];
+  $cached_form['gallery_assist_extras']['00001']['lb_list']['#default_value'] = $form_state['values']['lb_list'];
+
+  $cached_form['gallery_assist_extras']['00001'] += $form;
+
+  form_set_cache($_POST['form_build_id'], $cached_form, $cached_form_state);
+
+  $form += array(
+    '#post' => $_POST,
+    '#programmed' => FALSE,
+    '#tree' => FALSE,
+    '#parents' => array(),
+  );
+
+  // Render the form for output.
+  drupal_alter('form', $form, array(), 'gallery_assist_lightbox_build_settingsform_js');
+  $form_state = array('submitted' => FALSE);
+  $form = form_builder('gallery_assist_lightbox_build_settingsform_js', $form, $form_state);
+  $output = theme('status_messages') . drupal_render($form);
+
+  print drupal_to_js(array('status' => TRUE, 'data' => $output));
+  exit();
+}
+
+/**
+ * Build the settings forms for each supported lightbox variante.
+ */
+function _gallery_assist_lightbox_settings_form($lb = 'none', $lb_list) {
+  $form = array();
+  $data = variable_get('gallery_assist_lightbox_data', FALSE);
+
+  switch ($lb) {
+    case 'none':
+      if ($lb_list === 0) {
+        $markup_value = gallery_assist_lightboxes_info();
+
+        $form['none'] = array(
+          '#type' => 'markup',
+          '#value' => $markup_value,
+        );
+      }
+      else {
+        $markup_value  = t('@lb_count lightbox modifications are available to use on this Drupal installation.', array('@lb_count' => $lb_list));
+        $form['none'] = array(
+          '#type' => 'markup',
+          '#value' => $markup_value,
+        );
+      }
+      break;
+
+    case 'prettyphoto':
+    case 'prettyPhoto':
+      $form['tcs'] = _gallery_assist_lightboxes_tcs(3, $data);
+      $form['lightbox_conf_theme'] = array(
+        '#type' => 'select',
+        '#title' => 'Appearance',
+        '#default_value' => $data['theme'] == '' ? 'dark_rounded' : $data['theme'],
+        '#options' => array(
+          'facebook'  => t('Facebook'),
+          'dark_rounded'  => t('Dark rounded'),
+          'dark_square'   => t('Dark square'),
+          'light_rounded' => t('Light rounded'),
+          'light_square'  => t('Light square'),
+        ),
+        '#prefix' => '<div class="gallery-assist-settings-left">',
+      );
+
+      $form['lightbox_conf_animationSpeed'] = array(
+        '#type' => 'select',
+        '#title' => t('Animation speed'),
+        '#default_value' => $data['animationSpeed'],
+        '#options' => array(
+          'normal' => 'Normal',
+          'fast'  => 'Fast',
+          'slow'   => 'Slow',
+        ),
+        '#suffix' => '</div>'
+      );
+
+      $form['lightbox_conf_opacity'] = array(
+        '#type' => 'select',
+        '#title' => t('Opacity'),
+        '#default_value' => $data['opacity'] == '' ? '0.9' : $data['opacity'],
+        '#options' => array(
+          '0.1'  => '0.1',
+          '0.2'  => '0.2',
+          '0.3'  => '0.3',
+          '0.4'  => '0.4',
+          '0.5'  => '0.5',
+          '0.6'  => '0.6',
+          '0.7'  => '0.7',
+          '0.8'  => '0.8',
+          '0.9'  => '0.9',
+          '1.0'  => '1.0',
+        ),
+        '#prefix' => '<div class="gallery-assist-settings-left">',
+      );
+
+      $form['lightbox_conf_counter_separator_label'] = array(
+        '#type' => 'select',
+        '#title' => t('Counter separator label'),
+        '#default_value' => $data['counter_separator_label'],
+        '#options' => array(
+          '/'  => '/',
+          '|'   => '|',
+          '-'  => '-',
+        ),
+        '#suffix' => '</div>'
+      );
+
+      /* Muss investigate or not more implemented.
+      $form['lightbox_conf_padding'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Padding'),
+        '#default_value' => $data['padding'] == '' ? 40 : $data['padding'],
+        '#size' => 4,
+      );*/
+
+      $form['lightbox_conf_showTitle'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Show title'),
+        '#default_value' => $data['showTitle'] == '' ? FALSE : $data['showTitle'],
+        '#prefix' => '<div class="gallery-assist-settings-left">',
+      );
+
+      $form['lightbox_conf_allowresize'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Allow resize'),
+        '#default_value' => $data['allowresize'] == '' ? FALSE : $data['allowresize'],
+      );
+
+      $form['lightbox_conf_modal'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Close mode'),
+        '#default_value' => $data['modal'] == '' ? FALSE : $data['modal'],
+        '#suffix' => '</div>'
+      );
+      break;
+
+    case 'lytebox':
+      $form['tcs'] = _gallery_assist_lightboxes_tcs(1, $data);
+      $form['lytebox'] = array(
+        '#type' => 'markup',
+      );
+      break;
+
+    case 'lyteshow':
+      $form['tcs'] = _gallery_assist_lightboxes_tcs(1, $data);
+      $form['lytebox'] = array(
+        '#type' => 'markup',
+      );
+      break;
+
+    case 'lightbox':
+      if (module_exists('lightbox2')) { 
+        $form['tcs'] = _gallery_assist_lightboxes_tcs(3, $data);
+        $form['files'] = array();
+        $form['lightbox_conf_lightbox2_method'] = array(
+          '#type' => 'select',
+          '#title' => t('Lightbox2 method'),
+          '#default_value' => $data['lightbox2_method'] == '' ? '0.9' : $data['lightbox2_method'],
+          '#options' => array(
+            'lightbox'  => 'Lightbox',
+            'lightshow'  => 'Lightshow',
+          ),
+        );
+      }
+      else {
+        $form['tcs'] = _gallery_assist_lightboxes_tcs(3, $data);
+        $form['files'] = array();
+      }
+      break;
+
+    case 'thickbox':
+      $form['tcs'] = _gallery_assist_lightboxes_tcs(1, $data);
+      $form['thickbox'] = array(
+        '#type' => 'markup',
+        '#value' => gallery_assist_lightboxes($lb),
+      );
+      break;
+
+    case 'fancybox':
+      $form['files'] = array();
+      $form['tcs'] = _gallery_assist_lightboxes_tcs(1, $data);
+      $form['files'] = gallery_assist_lightboxes_get_files_form();
+      $form['fb_form'] = _gallery_assist_lightboxes_fb_sform();
+      break;
+
+    case 'slimbox':
+      $form['files'] = array();
+      $form['tcs'] = _gallery_assist_lightboxes_tcs(3, $data);
+      $form['files'] = gallery_assist_lightboxes_get_files_form();
+      $form['slimbox_form'] = _gallery_assist_lightboxes_slim_sform();
+      break;
+
+    case 'colorbox':
+      $form['files'] = array();
+      $form['tcs'] = _gallery_assist_lightboxes_tcs(1, $data);
+      $form['files'] = gallery_assist_lightboxes_get_files_form(); 
+      $form['colorbox_form'] = _gallery_assist_lightboxes_cb_sform();
+      break;
+
+    case 'shadowbox':
+      $form['files'] = array();
+      $form['tcs'] = _gallery_assist_lightboxes_tcs(1, $data);
+      $form['tcs']['lightbox_conf_show_title'] = array(
+        '#type' => 'checkbox',
+        '#title' => 'Show title',
+        '#default_value' => $data['show_title'],
+      );
+      $form['files'] = gallery_assist_lightboxes_get_files_form();
+      break;
+
+    case 'milkbox':
+      $form['files'] = array();
+      $form['tcs'] = _gallery_assist_lightboxes_tcs(1, $data);
+      $form['files'] = gallery_assist_lightboxes_get_files_form();
+      break;
+
+    case 'MultiBox':
+      $form['tcs'] = _gallery_assist_lightboxes_tcs(1, $data);
+      $form['files'] = array();
+      break;
+
+    case 'highslide':
+      $form['tcs'] = _gallery_assist_lightboxes_tcs(3, $data);
+      $form['files'] = array();
+      $form['files'] = gallery_assist_lightboxes_get_files_form();
+      $form['lightbox_conf_dimmingOpacity'] = array(
+        '#type' => 'select',
+        '#title' => t('Opacity'),
+        '#default_value' => $data['dimmingOpacity'] == '' ? '0.9' : $data['dimmingOpacity'],
+        '#options' => array(
+          '0.1'  => '0.1',
+          '0.2'  => '0.2',
+          '0.3'  => '0.3',
+          '0.4'  => '0.4',
+          '0.5'  => '0.5',
+          '0.6'  => '0.6',
+          '0.7'  => '0.7',
+          '0.8'  => '0.8',
+          '0.9'  => '0.9',
+          '1.0'  => '1.0',
+        ),
+      );
+
+      $form['lightbox_conf_width'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Box width'),
+        '#default_value' => $data['width'] == '' ? 600 : $data['width'],
+        '#size' => 4,
+      );
+
+      $form['lightbox_conf_height'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Box height'),
+        '#default_value' => $data['height'] == '' ? 400 : $data['height'],
+        '#size' => 4,
+      );
+
+      $form['lightbox_conf_credits'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Show credits'),
+        '#default_value' => $data['credits'],
+        '#description' => t('By enabled display the Highslide credits with hyperlink to the Highslide homepage.'),
+      );
+
+      break;
+
+    case 'interface':
+      $form['files'] = array();
+      $form['tcs'] = _gallery_assist_lightboxes_tcs(1, $data);
+      break;
+
+  }
+
+  return $form;
+}
+
+/**
+ * Scan the lightboxes directories for css and js files.
+ */
+function gallery_assist_lightboxes_get_files_form($fcss = 'checkboxes', $fjs = 'checkboxes') {
+  $form = array();
+  $hilfo = variable_get('gallery_assist_lightboxes_files', FALSE);
+  
+  $form['lists'] = array(
+    '#type' => 'fieldset',
+    '#title' => 'Files to include',
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#description' => ('Please, visit the webpage from the lightbox you are choosed and read wich files are to be included in the respective version and their order.<br />Read the readme.txt file of the Lightbox for more informations.'),
+  );
+  
+  $css = file_scan_directory(drupal_get_path('module', 'gallery_assist_lightboxes') .'/lightboxes/'. variable_get('gallery_assist_lightbox', FALSE), '.css', array(), 0, TRUE);
+
+  foreach ($css as $css_v) {
+    $css_options[$css_v->filename] = $css_v->basename;
+  }
+  $form['lists']['css_files'] = array(
+    '#type' => $fcss,
+    '#title' => 'CSS files',
+    '#default_value' => !empty($hilfo['data']['css']) ? $hilfo['data']['css'] : array(),
+    '#options' => $css_options,
+  );
+  
+  $js = file_scan_directory(drupal_get_path('module', 'gallery_assist_lightboxes') .'/lightboxes/'. variable_get('gallery_assist_lightbox', FALSE), '.js', array(), 0, TRUE);
+
+  foreach ($js as $js_v) {
+    $js_options[$js_v->filename] = $js_v->basename;
+    
+  }
+
+  $form['lists']['js_files'] = array(
+    '#type' => $fjs,
+    '#title' => 'JS files',
+    '#default_value' => !empty($hilfo['data']['js']) ? $hilfo['data']['js'] : array(),
+    '#options' => $js_options,
+  );
+
+  if (variable_get('gallery_assist_lightbox', 'none') == 'highslide') {
+  $selectors = file_scan_directory(drupal_get_path('module', 'gallery_assist_lightboxes') .'/js', '.js', array(), 0, TRUE);
+
+    foreach ($selectors as $selectors_v) {
+      $myl = variable_get('gallery_assist_lightbox', 'none');
+      if (preg_match("/gallery_assist\.$myl/", $selectors_v->filename)) {
+        $selectors_options[$selectors_v->filename] = $selectors_v->basename;
+      }
+    }
+
+    $form['lists']['selectors_files'] = array(
+      '#type' => 'checkboxes',
+      '#title' => 'Selectors files',
+      '#default_value' => !empty($hilfo['data']['selector']) ? $hilfo['data']['selector'] : array(),
+      '#options' => $selectors_options,
+    );
+  }
+  
+  $form['lists']['lightbox'] = array(
+    '#type' => 'value',
+    '#value' => variable_get('gallery_assist_lightbox', FALSE),
+  );
+
+  $form['#submit'][] = 'hilfo_get_files_form_submit';
+
+  return $form;
+}
+
+/**
+ * Advice wich Lightbox was selected and if necessary extra infos.
+ */
+function gallery_assist_lightboxes($lb = '') {
+  $output  = t('You have just selected the <strong>@lightbox</strong>. It work with default settings.', array('@lightbox' => $lb)) .'<br />';
+  $output .= t('Gallery Assist Lightboxes not support currently the administration of this lightbox through a user interface.') .'<br />';
+  $output .= t('If you need to change the settings, do it directly in the js file.');
+    
+  return $output;
+}
+
+
+/**
+ * Slimbox settings subform.
+ */
+function _gallery_assist_lightboxes_slim_sform() {
+  $form = array();
+  $default = array(
+    'loop' => FALSE,
+    'overlayOpacity' => '0.8',
+    'overlayFadeDuration' => '400',
+    'resizeDuration' => '400',
+    'resizeEasing' => 'swing',
+    'initialWidth' => '250',
+    'initialHeight' => '250',
+    'imageFadeDuration' => '400',
+    'captionAnimationDuration' => '400',
+    'counterText' => "Image {x} of {y}",
+    'closeKeys' => '[27, 88, 67]',
+    'previousKeys' => '[37, 80]',
+    'nextKeys' => '[39, 78]',
+  );
+  
+  $data = variable_get('gallery_assist_lightbox_data', FALSE);
+  /*if ($data['loop'] == 1) {
+    $data['loop'] = TRUE;
+  }*/
+  $form['lightbox_conf_loop'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Loop'),
+    '#default_value' => $data['loop'] ? $data['loop'] : $default['loop'],
+    '#description' => t('Boolean; if set to true, allows the user to navigate between the first and last images of a Slimbox gallery, when there is more than one image to display. Default is false.'),
+  );
+  $form['lightbox_conf_overlayOpacity'] = array(
+    '#type' => 'select',
+    '#title' => t('Overlay opacity'),
+    '#default_value' => $data['overlayOpacity'] ? $data['overlayOpacity'] : $default['overlayOpacity'],
+    '#options' => drupal_map_assoc(array(0, '0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9')),
+    '#description' => t('The level of opacity of the background overlay. 1 Is opaque, 0 is completely transparent. You can change the color in the CSS file. Default is 0.8.'),
+  );
+  
+  $form['lightbox_conf_overlayFadeDuration'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Overlay fade duration'),
+    '#default_value' => $data['overlayFadeDuration'] ? (int)$data['overlayFadeDuration'] : $default['overlayFadeDuration'],
+    '#size' => 8,
+    '#description' => t('The duration of the overlay fade-in and fade-out animations, in milliseconds. Set it to 1 to disable the overlay fade effects. Default is 400. The value should be numeric.'),
+  );
+
+  $form['lightbox_conf_resizeDuration'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Resize duration'),
+    '#default_value' => $data['resizeDuration'] ? (int)$data['resizeDuration']:  $default['resizeDuration'],
+    '#size' => 8,
+    '#description' => t('The duration of the resize animation for width and height, in milliseconds. Set it to 1 to disable resize animations. Default is 400. The value should be numeric.'),
+  );
+  
+  $form['lightbox_conf_resizeEasing'] = array(
+    '#type' => 'select',
+    '#title' => t('Resize easing'),
+    '#default_value' => $data['resizeEasing'] ? $data['resizeEasing'] : $default['resizeEasing'],
+    '#options' => array('swing' => 'swing', 'easeOutBack' => 'easeOutBack', 'easeInBack' => 'easeInBack'),
+    '#description' => t('The name of the easing effect that you want to use for the resize animation (jQuery Easing Plugin required). Many easings require a longer execution time to look good, so you should adjust the resizeDuration option above as well. Default is jQuery’s built-in default easing, "swing".'),
+  );
+  
+  $form['lightbox_conf_initialWidth'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Initial width'),
+    '#default_value' => $data['initialWidth'] ? (int)$data['initialWidth'] : $default['initialWidth'],
+    '#size' => 8,
+    '#description' => t('The initial width of the box, in pixels. Default is 250. The value should be numeric.'),
+  );
+  
+  $form['lightbox_conf_initialHeight'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Initial height'),
+    '#default_value' => $data['initialHeight'] ? (int)$data['initialHeight'] : $default['initialHeight'],
+    '#size' => 8,
+    '#description' => t('The initial height of the box, in pixels. Default is 250 and. The value should be numeric.'),
+  );
+  
+  $form['lightbox_conf_imageFadeDuration'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Image fade duration'),
+    '#default_value' => $data['imageFadeDuration'] ? (int)$data['imageFadeDuration'] : $default['imageFadeDuration'],
+    '#size' => 8,
+    '#description' => t('The duration of the image fade-in animation, in milliseconds. Set it to 1 to disable this effect and make the image appear instantly. Default is 400. The value should be numeric.'),
+  );
+  
+  $form['lightbox_conf_captionAnimationDuration'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Caption animation duration'),
+    '#default_value' => $data['captionAnimationDuration'] ? (int)$data['captionAnimationDuration'] : $default['captionAnimationDuration'],
+    '#size' => 8,
+    '#description' => t('The duration of the caption animation, in milliseconds. Set it to 1 to disable it and make the caption appear instantly. Default is 400. The value should be numeric.'),
+  );
+
+  return $form;
+}
+
+
+/**
+ * Fancybox settings subform.
+ */
+function _gallery_assist_lightboxes_fb_sform() {
+  $form = array();
+  $data = variable_get('gallery_assist_lightbox_data', FALSE);
+
+  //padding  	Padding around content
+  $form['lightbox_conf_padding'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Padding around content'),
+    '#default_value' => $data['padding'],
+    '#size' => 8,
+  );
+  
+  //imageScale 	If true, images are scaled to fit in viewport
+  $form['lightbox_conf_imageScale'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Image scale'),
+    '#default_value' => $data['imageScale'] ? $data['imageScale'] : TRUE,
+    '#description' => t('If true, images are scaled to fit in viewport.'),
+  );
+
+  //zoomOpacity 	If true, changes content transparency when animating
+  $form['lightbox_conf_zoomOpacity'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Zoom opacity'),
+    '#default_value' => $data['zoomOpacity'] ? $data['zoomOpacity'] : TRUE,
+    '#description' => t('If true, changes content transparency when animating.'),
+  );
+
+  //zoomSpeedIn 	Speed in miliseconds of the zooming-in animation
+  $form['lightbox_conf_zoomSpeedIn'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Zoom speed in'),
+    '#default_value' => $data['zoomSpeedIn'] ? $data['zoomSpeedIn'] : 0,
+    '#size' => 8,
+    '#description' => t('Speed in miliseconds of the zooming-in animation (no animation if 0).'),
+  );
+  
+  //zoomSpeedOut 	Speed in miliseconds of the zooming-out animation (no animation if 0)
+  $form['lightbox_conf_zoomSpeedOut'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Zoom speed out'),
+    '#default_value' => $data['zoomSpeedOut'] ? $data['zoomSpeedOut'] : 0,
+    '#size' => 8,
+    '#description' => t('Speed in miliseconds of the zooming-out animation (no animation if 0).'),
+  );
+  
+  //zoomSpeedChange 	Speed in miliseconds of the animation when changing gallery items (no animation if 0)
+  $form['lightbox_conf_zoomSpeedChange'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Zoom speed change'),
+    '#default_value' => $data['zoomSpeedChange'] ? $data['zoomSpeedChange'] : 300,
+    '#size' => 8,
+    '#description' => t('Speed in miliseconds of the animation when changing gallery items (no animation if 0). The value should be numeric.'),
+  );
+  
+  //easingIn, easingOut, easingChange 	Easing used for animations
+  $form['lightbox_conf_easingIn'] = array(
+    '#type' => 'select',
+    '#title' => t('easingIn'),
+    '#default_value' => $data['easingIn'] ? $data['easingIn'] : 'swing',
+    '#options' => array('swing' => 'swing', 'easeOutBack' => 'easeOutBack', 'easeInBack' => 'easeInBack'),
+    '#description' => t('Easing used for animations (recomended: easeOutBack).'),
+  );
+  
+  //easingIn, easingOut, easingChange 	Easing used for animations
+  $form['lightbox_conf_easingOut'] = array(
+    '#type' => 'select',
+    '#title' => t('easingOut'),
+    '#default_value' => $data['easingOut'] ? $data['easingOut'] : 'swing',
+    '#options' => array('swing' => 'swing', 'easeOutBack' => 'easeOutBack', 'easeInBack' => 'easeInBack'),
+    '#description' => t('Easing used for animations (recomended: easeInBack).'),
+  );
+  
+  //easingIn, easingOut, easingChange 	Easing used for animations
+  $form['lightbox_conf_easingChange'] = array(
+    '#type' => 'select',
+    '#title' => t('easingChange'),
+    '#default_value' => $data['easingChange'] ? $data['easingChange'] : 'swing',
+    '#options' => array('swing' => 'swing', 'easeOutBack' => 'easeOutBack', 'easeInBack' => 'easeInBack'),
+    '#description' => t('Easing used for animations.'),
+  );  
+
+  //frameWidth 	Default width for iframed and inline content
+  $form['lightbox_conf_frameWidth'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Frame width'),
+    '#default_value' => $data['frameWidth'] ? (int)$data['frameWidth'] : 560,
+    '#size' => 8,
+    '#description' => t('Default width for iframed and inline content. The value should be numeric.'),
+  );
+  
+  //frameHeight 	Default height for iframed and inline content
+  $form['lightbox_conf_frameHeight'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Frame height'),
+    '#default_value' => $data['frameHeight'] ? (int)$data['frameHeight'] : 340,
+    '#size' => 8,
+    '#description' => t('Default height for iframed and inline content. The value should be numeric.'),
+  );
+  
+  //overlayShow 	If true, shows the overlay (false by default)
+  $form['lightbox_conf_overlayShow'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Overlay show'),
+    '#default_value' => $data['overlayShow'] ? $data['overlayShow'] : 0,
+    '#description' => t('If true, shows the overlay (false by default).'),
+  );
+  
+  //overlayColor 	Color of overlay (default - #666)
+  $form['lightbox_conf_overlayColor'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Overlay color'),
+    '#default_value' => $data['overlayColor'] ? $data['overlayColor'] : '#666',
+    '#size' => 8,
+    '#description' => t('Color of overlay (default - #666).'),
+  );
+
+  //overlayOpacity 	Opacity of overlay (from 0 to 1; default - 0.3)
+  $form['lightbox_conf_overlayOpacity'] = array(
+    '#type' => 'select',
+    '#title' => t('Overlay opacity'),
+    '#default_value' => $data['overlayOpacity'] ? $data['overlayOpacity'] : '0.3',
+    '#options' => drupal_map_assoc(array(0, '0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9', 1)),
+    '#description' => t('Opacity of overlay (from 0 to 1; default - 0.3).'),
+  );
+  
+  //enableEscapeButton 	Hides FancyBox when clicked on "Esc" button
+  $form['lightbox_conf_enableEscapeButton'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Enable escape button'),
+    '#default_value' => $data['enableEscapeButton'] ? $data['enableEscapeButton'] : 0,
+    '#description' => t('Hides FancyBox when clicked on "Esc" button.'),
+  );
+  
+  //showCloseButton 	Option to show/hide close button
+  $form['lightbox_conf_showCloseButton'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('show/close Button'),
+    '#default_value' => $data['showCloseButton'] ? $data['showCloseButton'] : 0,
+    '#description' => t('Option to show/hide close button.'),
+  );
+  
+  //hideOnOverlayClick 	Hides FancyBox when clicked on overlay
+  $form['lightbox_conf_hideOnOverlayClick'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Hide on overlay click'),
+    '#default_value' => $data['hideOnOverlayClick'] ? $data['hideOnOverlayClick'] : 0,
+    '#description' => t('Hides FancyBox when clicked on overlay.'),
+  );
+  
+  //hideOnContentClick 	Hides FancyBox when clicked on opened item
+  $form['lightbox_conf_hideOnContentClick'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Hide on content click'),
+    '#default_value' => $data['hideOnContentClick'] ? $data['hideOnContentClick'] : 0,
+    '#description' => t('Hides FancyBox when clicked on opened item.'),
+  );
+  
+  //centerOnScroll 	If true, content is centered when user scrolls page
+  $form['lightbox_conf_centerOnScroll'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Center on scroll'),
+    '#default_value' => $data['centerOnScroll'] ? $data['centerOnScroll'] : '0',
+    '#description' => t('If true, content is centered when user scrolls page.'),
+  );
+  
+  //itemArray 	Optional, can set custom item array
+  //callbackOnStart 	Optional, called on start
+  //callbackOnShow 	Optional, called on displaying content
+  //callbackOnClose 	Optional, called on close
+  
+  return $form;
+}
+
+/**
+ * Build the form checkboxes to allow admins to choose wich captions parameters (title, copyright, description) should be displayed.
+ * The fields will be displayed depending on which lightbox is selected and what fields it supports.
+ */
+function _gallery_assist_lightboxes_tcs($i, $data) {
+  $form = array();
+
+  $form['lightbox_conf_show_copy'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Show copyright'),
+    '#default_value' => $data['show_copy'] == '' ? (int)0 : $data['show_copy'],
+    '#size' => 4,
+  );
+  if ($i == 1) {
+    return $form;
+  }
+  $form['lightbox_conf_show_pdesc'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Show description'),
+    '#default_value' => $data['show_pdesc'] == '' ? (int)0 : $data['show_pdesc'],
+    '#size' => 4,
+  );
+  
+  return $form;  
+}
+
+/**
+ * Colorbox settings subform.
+ */
+function _gallery_assist_lightboxes_cb_sform() {
+  
+  $form = array();
+  
+  $data = variable_get('gallery_assist_lightbox_data', FALSE);
+
+  $default = array(
+    'transition' => 'elastic',
+    'speed' => '350',
+    'href' => '',
+    'title' => '',
+    'rel' => '',
+    'width' => '',
+    'height' => '',
+    'innerWidth' => '',
+    'innerHeight' => '',
+    'initialWidth' => '300',
+    'initialHeight' => '100',
+    'maxWidth' => '',
+    'maxHeight' => '',
+    'scalePhotos' => TRUE,
+    'scrolling' => TRUE,
+    'iframe' => 0,
+    'inline' => 0,
+    'html' => '',
+    'photo' => 0,
+    'opacity' => '0.85',
+    'open' => 0,
+    'preloading' => TRUE,
+    'slideshow' => FALSE,
+    'slideshowSpeed' => '2500',
+    'slideshowAuto' => TRUE,
+    'slideshowStart' => 'start slideshow',
+    'slideshowStop' => 'stop slideshow',
+    'current' => '{current} of {total}',
+    'previous' => 'previous',
+    'next' => 'next',
+    'close' => 'close',
+    'overlayClose' => TRUE,
+  );
+
+  $form['primary'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Primary settings'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+
+  $form['slide'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Slideshow settings'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+
+  $form['sizes'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Sizes settings'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+
+  $form['advanced'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Advanced settings'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+
+  $form['not'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Not supported'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+
+  $form['primary']['lightbox_conf_transition'] = array(
+    '#type' => 'select',
+    '#title' => t('transition'),
+    '#description' => t('Specifies the transition type. Can be set to "elastic", "fade", or "none".'),
+    '#default_value' => $data['transition'] ? $data['transition'] : $default['transition'],
+    '#options' => array(
+      'none' => 'none',
+      'elastic' => 'elastic',
+      'fade' => 'fade',
+    ),
+    '#weight' => 0,
+    '#prefix' => '',
+    '#suffix' => '',
+  );
+
+  $form['primary']['lightbox_conf_speed'] = array(
+    '#type' => 'textfield',
+    '#title' => t('speed'),
+    '#description' => t('Sets the speed of the fade and elastic transitions, in milliseconds.'),
+    '#default_value' => $data['speed'] ? $data['speed'] : $default['speed'],
+    '#size' => '8',
+    '#weight' => 3,
+    '#prefix' => '',
+    '#suffix' => '',
+  );
+
+  $form['not']['lightbox_conf_href'] = array(
+    '#type' => 'textfield',
+    '#title' => t('href'),
+    '#description' => t('This can be used as an alternative anchor URL or to associate a URL for non-anchor elements such as images or form buttons. Example: $("h1").colorbox({href:"welcome.html"})'),
+    '#default_value' => $data['href'] ? $data['href'] : $default['href'],
+    '#size' => '20%',
+    '#prefix' => '',
+    '#suffix' => '',
+  );
+
+  $form['primary']['lightbox_conf_title'] = array(
+    '#type' => 'textfield',
+    '#title' => t('title'),
+    '#description' => t('This can be used as an anchor title alternative for ColorBox.'),
+    '#default_value' => $data['title'] ? $data['title'] : $default['title'],
+    '#size' => '45%',
+    '#weight' => 6,
+    '#prefix' => '',
+    '#suffix' => '',
+  );
+
+  $form['advanced']['lightbox_conf_rel'] = array(
+    '#type' => 'textfield',
+    '#title' => t('rel'),
+    '#description' => t('This can be used as an anchor rel alternative for ColorBox. This allows the user to group any combination of elements together for a gallery, or to override an existing rel so elements are not grouped together. Example: $("#example a").colorbox({rel:"group1"})'),
+    '#default_value' => $data['rel'] ? $data['rel'] : $default['rel'],
+    '#size' => '20%',
+    '#prefix' => '',
+    '#suffix' => '',
+  );
+
+  $form['sizes']['lightbox_conf_width'] = array(
+    '#type' => 'textfield',
+    '#title' => t('width'),
+    '#description' => t('Set a fixed total width. This includes borders and buttons. Example: "100%", "500px", or 500'),
+    '#default_value' => $data['width'] ? $data['width'] : $default['width'],
+    '#size' => '8',
+    '#prefix' => '',
+    '#suffix' => '',
+  );
+
+  $form['sizes']['lightbox_conf_height'] = array(
+    '#type' => 'textfield',
+    '#title' => t('height'),
+    '#description' => t('Set a fixed total height. This includes borders and buttons. Example: "100%", "500px", or 500'),
+    '#default_value' => $data['height'] ? $data['height'] : $default['height'],
+    '#size' => '8',
+    '#prefix' => '',
+    '#suffix' => '',
+  );
+
+  $form['sizes']['lightbox_conf_innerWidth'] = array(
+    '#type' => 'textfield',
+    '#title' => t('innerWidth'),
+    '#description' => t('This is an alternative to "width" used to set a fixed inner width. This excludes borders and buttons. Example: "50%", "500px", or 500'),
+    '#default_value' => $data['innerWidth'] ? $data['innerWidth'] : $default['innerWidth'],
+    '#size' => '8',
+    '#prefix' => '',
+    '#suffix' => '',
+  );
+
+  $form['sizes']['lightbox_conf_innerHeight'] = array(
+    '#type' => 'textfield',
+    '#title' => t('innerHeight'),
+    '#description' => t('This is an alternative to "height" used to set a fixed inner height. This excludes borders and buttons. Example: "50%", "500px", or 500'),
+    '#default_value' => $data['innerHeight'] ? $data['innerHeight'] : $default['innerHeight'],
+    '#size' => '8',
+    '#prefix' => '',
+    '#suffix' => '',
+  );
+
+  $form['sizes']['lightbox_conf_initialWidth'] = array(
+    '#type' => 'textfield',
+    '#title' => t('initialWidth'),
+    '#description' => t('Set the initial width, prior to any content being loaded.'),
+    '#default_value' => $data['initialWidth'] ? $data['initialWidth'] : $default['initialWidth'],
+    '#size' => '8',
+    '#prefix' => '',
+    '#suffix' => '',
+  );
+
+  $form['sizes']['lightbox_conf_initialHeight'] = array(
+    '#type' => 'textfield',
+    '#title' => t('initialHeight'),
+    '#description' => t('Set the initial height, prior to any content being loaded.'),
+    '#default_value' => $data['initialHeight'] ? $data['initialHeight'] : $default['initialHeight'],
+    '#size' => '8',
+    '#prefix' => '',
+    '#suffix' => '',
+  );
+
+  $form['sizes']['lightbox_conf_maxWidth'] = array(
+    '#type' => 'textfield',
+    '#title' => t('maxWidth'),
+    '#description' => t('Set a maximum width for loaded content. Example: "100%", 500, "500px"'),
+    '#default_value' => $data['maxWidth'] ? $data['maxWidth'] : $default['maxWidth'],
+    '#size' => '8',
+    '#prefix' => '',
+    '#suffix' => '',
+  );
+
+  $form['sizes']['lightbox_conf_maxHeight'] = array(
+    '#type' => 'textfield',
+    '#title' => t('maxHeight'),
+    '#description' => t('Set a maximum height for loaded content. Example: "100%", 500, "500px"'),
+    '#default_value' => $data['maxHeight'] ? $data['maxHeight'] : $default['maxHeight'],
+    '#size' => '8',
+    '#prefix' => '',
+    '#suffix' => '',
+  );
+
+  $form['primary']['lightbox_conf_scalePhotos'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('scalePhotos'),
+    '#description' => t('If "true" and if maxWidth, maxHeight, innerWidth, innerHeight, width, or height have been defined, ColorBox will scale photos to fit within the those values.'),
+    '#default_value' => empty($data['scalePhotos']) ? (int)0 : $default['scalePhotos'],
+    '#weight' => 4,
+    '#prefix' => '',
+    '#suffix' => '',
+  );
+
+  $form['primary']['lightbox_conf_scrolling'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('scrolling'),
+    '#description' => t('If "false" ColorBox will hide scrollbars for overflowing content. This could be used on conjunction with the resize method (see below) for a smoother transition if you are appending content to an already open instance of ColorBox.'),
+    '#default_value' => empty($data['scrolling']) ? (int)0 : $default['scrolling'],
+    '#weight' => 5,
+    '#prefix' => '',
+    '#suffix' => '',
+  );
+
+  $form['not']['lightbox_conf_iframe'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('iframe'),
+    '#description' => t('If "true" specifies that content should be displayed in an iFrame.'),
+    '#default_value' => empty($data['iframe']) ? (int)0 : $default['iframe'],
+    '#prefix' => '',
+    '#suffix' => '',
+  );
+
+  $form['not']['lightbox_conf_inline'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('inline'),
+    '#description' => t('If "true" a jQuery selector can be used to display content from the current page. Example: $("#inline").colorbox({inline:true, href:"#myForm"});'),
+    '#default_value' => empty($data['inline']) ? (int)0 : $default['inline'],
+    '#prefix' => '',
+    '#suffix' => '',
+  );
+
+  $form['not']['lightbox_conf_html'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('html'),
+    '#description' => t('This allows an HTML string to be used directly instead of pulling content from another source (ajax, inline, or iframe). Example: $.fn.colorbox({html:"Hello", open:true});'),
+    '#default_value' => $data['html'] ? $data['html'] : $default['html'],
+    '#prefix' => '',
+    '#suffix' => '',
+  );
+
+  $form['advanced']['lightbox_conf_photo'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('photo'),
+    '#description' => t('If true, this setting forces ColorBox to display a link as a photo. Use this when automatic photo detection fails (such as using a url like "photo.php" instead of "photo.jpg", "photo.jpg#1", or "photo.jpg?pic=1")'),
+    '#default_value' => empty($data['photo']) ? (int)0 : $default['photo'],
+    '#prefix' => '',
+    '#suffix' => '',
+  );
+
+  $form['primary']['lightbox_conf_opacity'] = array(
+    '#type' => 'select',
+    '#title' => t('opacity'),
+    '#description' => t('The overlay opacity level. Range: 0 to 1.'),
+    '#default_value' => $data['opacity'] ? $data['opacity'] : $default['opacity'],
+    '#options' => drupal_map_assoc(array(0, '0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9', 1)),
+    '#weight' => 2,
+    '#prefix' => '',
+    '#suffix' => '',
+  );
+
+  $form['advanced']['lightbox_conf_open'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('open'),
+    '#description' => t('If true, the lightbox will automatically open with no input from the visitor.'),
+    '#default_value' => $data['open'] ? $data['open'] : $default['open'],
+    '#prefix' => '',
+    '#suffix' => '',
+  );
+
+  $form['advanced']['lightbox_conf_preloading'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('preloading'),
+    '#description' => t('Allows for preloading of "Next" and "Previous" content in a shared relation group (same values for the "rel" attribute), after the current content has finished loading. Set to "false" to disable.'),
+    '#default_value' => empty($data['preloading']) ? (int)0 : $default['preloading'],
+    '#prefix' => '',
+    '#suffix' => '',
+  );
+
+  $form['slide']['lightbox_conf_slideshow'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('slideshow'),
+    '#description' => t('If true, adds an automatic slideshow to a content group / gallery.'),
+    '#default_value' => $data['slideshow'] ? $data['slideshow'] : $default['slideshow'],
+    '#prefix' => '',
+    '#suffix' => '',
+  );
+
+  $form['slide']['lightbox_conf_slideshowSpeed'] = array(
+    '#type' => 'textfield',
+    '#title' => t('slideshowSpeed'),
+    '#description' => t('Sets the speed of the slideshow, in milliseconds.'),
+    '#default_value' => $data['slideshowSpeed'] ? $data['slideshowSpeed'] : $default['slideshowSpeed'],
+    '#size' => '8',
+    '#prefix' => '',
+    '#suffix' => '',
+  );
+
+  $form['slide']['lightbox_conf_slideshowAuto'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('slideshowAuto'),
+    '#description' => t('If true, the slideshow will automatically start to play.'),
+    '#default_value' => empty($data['slideshowAuto']) ? (int)0 : $default['slideshowAuto'],
+    '#prefix' => '',
+    '#suffix' => '',
+  );
+
+  $form['slide']['lightbox_conf_slideshowStart'] = array(
+    '#type' => 'textfield',
+    '#title' => t('slideshowStart'),
+    '#description' => t('Text for the slideshow start button.'),
+    '#default_value' => $data['slideshowStart'] ? $data['slideshowStart'] : $default['slideshowStart'],
+    '#size' => '15',
+    '#prefix' => '',
+    '#suffix' => '',
+  );
+
+  $form['slide']['lightbox_conf_slideshowStop'] = array(
+    '#type' => 'textfield',
+    '#title' => t('slideshowStop'),
+    '#description' => t('Text for the slideshow stop button'),
+    '#default_value' => $data['slideshowStop'] ? $data['slideshowStop'] : $default['slideshowStop'],
+    '#size' => '15',
+    '#prefix' => '',
+    '#suffix' => '',
+  );
+
+  $form['advanced']['lightbox_conf_current'] = array(
+    '#type' => 'textfield',
+    '#title' => t('current'),
+    '#description' => t('Text format for the content group / gallery count. {current} and {total} are detected and replaced with actual numbers while ColorBox runs.'),
+    '#default_value' => $data['current'] ? $data['current'] : $default['current'],
+    '#size' => '15',
+    '#prefix' => '',
+    '#suffix' => '',
+  );
+
+  $form['advanced']['lightbox_conf_previous'] = array(
+    '#type' => 'textfield',
+    '#title' => t('previous'),
+    '#description' => t('Text for the previous button in a shared relation group (same values for "rel" attribute).'),
+    '#default_value' => $data['previous'] ? $data['previous'] : $default['previous'],
+    '#size' => '8',
+    '#prefix' => '',
+    '#suffix' => '',
+  );
+
+  $form['advanced']['lightbox_conf_next'] = array(
+    '#type' => 'textfield',
+    '#title' => t('next'),
+    '#description' => t('Text for the next button in a shared relation group (same values for "rel" attribute).'),
+    '#default_value' => $data['next'] ? $data['next'] : $default['next'],
+    '#size' => '8',
+    '#prefix' => '',
+    '#suffix' => '',
+  );
+
+  $form['advanced']['lightbox_conf_overlayClose'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('overlayClose'),
+    '#description' => t('If true, enables closing ColorBox by clicking on the background overlay.'),
+    '#default_value' => empty($data['overlayClose']) ? (int)0 : $default['overlayClose'],
+    '#prefix' => '',
+    '#suffix' => '',
+  );
+  
+  return $form;
+}
+
+function gallery_assist_lightboxes_info() {
+  global $base_path;
+  $breadcrumb = drupal_get_breadcrumb();
+  $breadcrumb[] = l('Extras', 'admin/settings/gallery_assist/extras');
+  drupal_set_breadcrumb($breadcrumb);
+  
+  $lb = variable_get('gallery_assist_lightbox', FALSE);
+  $lightboxes_dir = drupal_get_path('module', 'gallery_assist_lightboxes') .'/lightboxes';
+  $supported = array(
+    'Lightbox2' => array(
+        'name' => 'Lightbox2', 
+        'version' => '1.1.4.37', 
+        'jquery' => '1.2.6', 
+        'hp' => 'http://www.drupal.org/project/lightbox2',
+        'support_status' => 'minimal',
+        'needed_files' => 'files included',
+        'docu' => 'coming soon...',
+    ),
+    'lightbox' => array(
+        'name' => 'Lightbox', 
+        'version' => '2.04', 
+        'jquery' => '1.2.6', 
+        'hp' => 'http://www.huddletogether.com/projects/lightbox2',
+        'support_status' => 'minimal',
+        'needed_files' => 'files included',
+        'docu' => 'coming soon...',
+    ),
+    'lytebox' => array(
+        'name' => 'Lytebox', 
+        'version' => '3.22', 
+        'jquery' => '1.2.6', 
+        'hp' => 'http://www.dolem.com/lytebox',
+        'support_status' => 'minimal',
+        'needed_files' => 'files included',
+        'docu' => 'coming soon...',
+    ),
+    'fancybox' => array(
+        'name' => 'Fancybox', 
+        'version' => '1.3.1', 
+        'jquery' => '1.3+',
+
+        'hp' => 'http://fancybox.net',
+        'support_status' => 'full',
+        'needed_files' => 'choos manualy',
+        'docu' => 'coming soon...',
+    ),
+    'highslide' => array(
+        'name' => 'Highslide', 
+        'version' => '4.1.8', 
+        'jquery' => '1.2.6', 
+        'hp' => 'http://highslide.com',
+        'support_status' => 'minimal',
+        'needed_files' => 'choos manualy',
+        'docu' => 'coming soon...',
+    ),
+    'colorbox' => array(
+        'name' => 'Colorbox', 
+        'version' => '1.3.6', 
+        'jquery' => '1.3+', 
+        'hp' => 'http://colorpowered.com/colorbox',
+        'support_status' => 'full',
+        'needed_files' => 'choos manualy',
+        'docu' => 'coming soon...',
+    ),
+    'shadowbox' => array(
+        'name' => 'Shadowbox', 
+        'version' => '3.0.3', 
+        'jquery' => '1.2.6', 
+        'hp' => 'http://www.shadowbox-js.com',
+        'support_status' => 'minimal',
+        'needed_files' => 'choos manualy',
+        'docu' => 'coming soon...',
+    ),
+    'slimbox' => array(
+        'name' => 'Slimbox', 
+        'version' => '2.03', 
+        'jquery' => '1.2.6', 
+        'hp' => 'http://www.digitalia.be/software/slimbox2',
+        'support_status' => 'full',
+        'needed_files' => 'choos manualy',
+        'docu' => 'coming soon...',
+    ),
+    'interface' => array(
+        'name' => 'Interface', 
+        'version' => 'nV', 
+        'jquery' => '1.2.6', 
+        'hp' => 'http://interface.eyecon.ro',
+        'support_status' => 'medium',
+        'needed_files' => 'choos manualy',
+        'docu' => 'coming soon...',
+    ),
+    'prettyPhoto' => array(
+        'name' => 'PrettyPhoto', 
+        'version' => '2.5.6', 
+        'jquery' => '1.3+', 
+        'hp' => 'http://www.no-margin-for-errors.com/projects/prettyphoto-jquery-lightbox-clone',
+        'support_status' => 'full',
+        'needed_files' => 'files included',
+        'docu' => 'coming soon...',
+    ),
+  );
+
+  $scan = file_scan_directory($lightboxes_dir, '.', array('.', '..', 'README.txt'), 0, FALSE, 'basename');
+  if (module_exists('lightbox2')) {
+    $scan['Lightbox2']->lb2 = TRUE;
+  }
+  $head = array(
+    array('data' => ''), 
+    array('data' => ''), 
+    array('data' => 'Lightboxes'), 
+    array('data' => 'Supported LB-Version', 'style' => 'text-align:center;'), 
+    array('data' => 'needed JQuery', 'style' => 'text-align:center;'), 
+    array('data' => 'Support', 'style' => 'text-align:center;'), 
+    array('data' => ''), 
+  );
+
+  $i = 0;
+  foreach ($supported as $k => $v) {
+    $present = array_key_exists($k, $scan) ? '+' : '-';
+    $active = $k == $lb ? '>' : '';
+    if (module_exists('lightbox2')) {
+      if ($k == 'Lightbox2' && $lb == 'lightbox') {
+        $active = '>';
+      }
+      if ($k == 'lightbox') {
+        continue;
+      }
+    }
+    $rows[$i] = array(
+      array('data' => $active, 'style' => 'text-align:center;'),
+      array('data' => $present, 'style' => 'text-align:center;'),
+      array('data' => l($k, $supported[$k]['hp'], array(
+          'attributes' => array(
+            'title' => 'Visit the '. $supported[$k]['name'] .' homepage',
+            'target' => '_blank',
+          ),
+        )),
+      ),
+      array('data' => $supported[$k]['version'], 'style' => 'text-align:center;'),
+      array('data' => $supported[$k]['jquery'], 'style' => 'text-align:center;'),
+      array('data' => $supported[$k]['support_status'], 'style' => 'white-space:nowrap;'),
+      array('data' => $supported[$k]['needed_files'], 'style' => 'white-space:nowrap;'),
+      array('data' => '', 'style' => 'width:100%;'),
+    );
+
+    ++$i;
+  }
+
+  $output = theme('table', $head, $rows);
+  $output .= '<div><sub>[+] - Installed LB variant.</sub></div>';
+  $output .= '<div><sub>[>] - Active LB variant.</sub></div>';
+  $output .= '<div><sub>In case the module Lightbox2 is activated, the variations Lightbox, Slimbox, Litebox can not be used.</sub></div>';
+  
+  return $output;
+}
