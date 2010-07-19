@@ -31,11 +31,11 @@
 
 
 <div id="carrousel">
-
+<?php print $carrousel ?>
 </div>
 
 <div id="main">
-
+<?php print $center ?>
 </div>
 
 <?php include 'page.footer.inc'; ?>
