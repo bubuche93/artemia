@@ -11,5 +11,3 @@
 <body<?php print phptemplate_body_attributes($is_front, $layout); ?>>
 
 <?php if (!empty($admin)) print $admin ?>
-
-

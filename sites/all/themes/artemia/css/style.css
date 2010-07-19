@@ -1,50 +1,75 @@
-body {
-background-color:#004487;
+/* html body
+*******************************************************************************/
+body
+{
+   background-color:#e9ddd0;
+   font-family:sans-serif;
 }
 
-/* expand
-*******************************************************************************/
-.js .expand .exp
+
+/* Header
+**************************************/
+#header
 {
-   display:none;
+	background-color:#ededee;
 }
-.expand h2
+
+/* Carrousel
+**************************************/
+#carrousel
 {
-   background-image:url(../img/bg/expand.png);
-   background-position:-548px 0;
-   background-repeat:no-repeat;
-   padding:0.45em 0 0.45em 40px;
-   font-size:1.25em;
-   font-weight:bold;
-   color:#004487;
-   zoom:1;
-   
-   text-shadow:0 0 2px #FFF;
-   -moz-text-shadow:0 0 2px #FFF;
-   -webkit-text-shadow:0 0 2px #FFF;
+	background-color:#ededee;
 }
-.mac .expand h2
+
+
+/* Main
+**************************************/
+#main
 {
-	font-weight:normal;
+	background-color:#e9ddd0;
 }
-.js .expand h2
+
+/* Footer
+**************************************/
+#footer
 {
-   background-position:0 38%;
+	background-color:#0e3750;
 }
-.js .on h2
+
+
+
+/* Commun
+**************************************/
+.container
 {
-   background-position:-548px 38%;
+	width:950px;
+	margin:0 auto;
 }
-.js .off h2
+
+div.block
 {
-   background-position:0 38%;
+	margin-bottom:0;
 }
-.expand h2 a
+
+div.container
 {
-   display:block;
-   text-decoration:none;
-   color:#004487!important;
+	margin:0 auto;
+	padding:1.5em 0 3em;
 }
+
+.hide
+{
+	position:absolute;
+	left:-9999px;
+}
+
+ul li, ul.menu li,
+.item-list ul li,
+li.leaf
+{
+	list-style-image:none;
+}
+
 
 
 /* menu
@@ -80,8 +105,6 @@ background-color:#004487;
 }
 #block-menu-primary-links
 {
-	background-image:url(../img/bg/nav.png);
-	background-position:-1000px 50%;
    border-right:1px solid #56a5db;
 }
 #block-menu-primary-links li a
@@ -94,7 +117,6 @@ background-color:#004487;
    font-weight:bold;
    text-transform:uppercase;
    text-decoration:none;
-   background-image:url(../img/bg/nav.png);
    background-position:0 50%;
 }
 
@@ -164,8 +186,6 @@ background-color:#004487;
 {
    border:none;
    padding:0 10px 0 20px!important;
-   background-image:url(../img/bg/puce.png);
-   background-position:10px 0.575em!important;
    font-weight:normal;
    text-transform:none;
 }

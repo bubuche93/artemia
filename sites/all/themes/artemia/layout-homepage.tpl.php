@@ -1,40 +1,41 @@
 <?php include 'page.header.inc'; ?>
 
-<div id='branding' class='clear-block'>
-  <?php if ($admin_link): ?><div class="admin-link"><?php print $admin_link; ?></div><?php endif; ?>
-  <?php if ($site_name): ?><h1 class='site-name'><?php print $site_name ?></h1><?php endif; ?>
-  <?php if ($site_slogan): ?><div class='site-slogan'><?php print $site_slogan ?></div><?php endif; ?>
-  <div class="help-link"><?php if ($help_link) print $help_link; ?></div>
+<?php if ($help_link): ?>
+<div id="helper" class="clear-block">
+	  <div class="help-link"><?php if ($help_link) print $help_link; ?></div>
 </div>
+<? endif; ?>
 
-<?php if ($header): ?>
-	<div id="header">
-		
-		<?php if ($logo): ?>
-			<div class="logo">
-				<?php print $logo ?>
-			</div>
-		<?php endif; ?>
-		
-		<?php if ($search): ?>
-			<div class="search">
-				<?php print $search ?>
-			</div>
-		<?php endif; ?>
-		
-		<?php print $header ?>
-	</div>
-<?php endif; ?>
+<div id="header">
 
-	<div id="menu-firstlevel">
+	<?php if ($logo): ?>
+		<div class="logo" class="clear-block">
+			<?php print $logo ?>
+		</div>
+	<?php endif; ?>
+		
+	<?php if ($search): ?>
+		<div class="search" class="clear-block">
+			<?php print $search ?>
+		</div>
+	<?php endif; ?>
+		
+	<?php print $header ?>
+
+
+	<div id="menu-firstlevel" class="clearfix">
 		<?php print($menu) ?>
 	</div>
 
-	<div id="main">
-		<div id="center" class="clear-block">
-			
-		</div>
-	</div>
+</div>
 
+
+<div id="carrousel">
+
+</div>
+
+<div id="main">
+
+</div>
 
 <?php include 'page.footer.inc'; ?>
