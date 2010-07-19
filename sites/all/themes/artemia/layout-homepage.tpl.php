@@ -7,7 +7,7 @@
 <? endif; ?>
 
 <div id="header">
-
+	<div class="container">
 	<?php if ($logo): ?>
 		<div class="logo" class="clear-block">
 			<?php print $logo ?>
@@ -28,16 +28,20 @@
 	<div id="menu-firstlevel" class="clearfix">
 		<?php print($menu) ?>
 	</div>
-
+	</div>
 </div>
 
 
 <div id="carrousel">
+<div class="container">
 <?php print $carrousel ?>
+</div>
 </div>
 
 <div id="main">
+<div class="container">
 <?php print $center ?>
+</div>
 </div>
 
 <?php include 'page.footer.inc'; ?>

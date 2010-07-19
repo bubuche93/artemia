@@ -1,5 +1,7 @@
 <div id="footer" class='clear-block'>
+<div class="container">
   <div class='footer-message'><?php print $footer_message ?></div>
+</div>
 </div>
 
 <?php if ($help): ?>
