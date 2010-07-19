@@ -19,8 +19,10 @@
 			<?php print $search ?>
 		</div>
 	<?php endif; ?>
-		
-	<?php print $header ?>
+
+		<div class="search" class="clear-block">
+	<?php print $infocontact ?>
+		</div>
 
 
 	<div id="menu-firstlevel" class="clearfix">
