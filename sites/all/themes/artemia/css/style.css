@@ -24,12 +24,12 @@ body
 #carrousel
 {
 	background-color:#ededee;
-	height: 300px;
 }
 
 .carrousel
 {
 	background-color:#d13069;
+	height: 300px;
 }
 
 
@@ -40,6 +40,12 @@ body
 	background-color:#e9ddd0;
 }
 
+.main
+{
+	background-color:#ffbc2d;
+	height: 300px;
+}
+
 /* Footer
 **************************************/
 #footer
@@ -47,6 +53,11 @@ body
 	background-color:#0e3750;
 }
 
+.footer
+{
+	background-color:#97f06b;
+	height: 300px;
+}
 
 
 /* Commun
