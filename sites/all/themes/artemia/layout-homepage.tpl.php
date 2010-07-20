@@ -9,15 +9,15 @@
 <div id="header">
 	<div class="container header">
 	
-		<div class="logo clearfix">
+		<div class="logo clearfix span-4">
 			<img src="<?php print $logo ?>">
 		</div>
 		
-		<div class="search clearfix">
+		<div class="search clearfix prepend-14 span-6 last">
 			<?php print $search ?>
 		</div>
 
-		<div class="infocontact clearfix">
+		<div class="infocontact clearfix prepend-14 span-6 last">
 			<?php print $infocontact ?>
 		</div>
 
