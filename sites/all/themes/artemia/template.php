@@ -36,4 +36,19 @@ function phptemplate_body_attributes($is_front = false, $layout = 'none') {
   return " id=\"$body_id\" class=\"$body_class $sidebar_class\"";
 }
 
+
+function template_search_block_form($form) {
+$form['search_block_form_keys']['#attributes'] =
+array(
+'onselect' => value='\'\'',
+'onclick' => value='\'\''
+);
+$form['search_block_form_keys']['#value'] =
+'rechercher ...';
+$form['submit']['#type'] = 'hidden';
+$output = form_render($form);
+return $output;
+}
+
+
 ?>
