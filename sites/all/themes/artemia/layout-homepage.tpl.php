@@ -8,26 +8,26 @@
 
 <div id="header">
 	<div class="container header">
-	<?php if ($logo): ?>
-		<div class="logo clear-block">
-			<img src="<?php print $logo ?>">
-		</div>
-	<?php endif; ?>
+	
+		<?php if ($logo): ?>
+			<div class="logo clearfix">
+				<img src="<?php print $logo ?>">
+			</div>
+		<?php endif; ?>
 		
-	<?php if ($search): ?>
-		<div class="search" class="clear-block">
-			<?php print $search ?>
+		<?php if ($search): ?>
+			<div class="search clearfix">
+				<?php print $search ?>
+			</div>
+		<?php endif; ?>
+
+		<div class="infocontact clearfix">
+			<?php print $infocontact ?>
 		</div>
-	<?php endif; ?>
 
-		<div class="search" class="clear-block">
-	<?php print $infocontact ?>
+		<div id="menu-firstlevel" class="clearfix">
+			<?php print($menu) ?>
 		</div>
-
-
-	<div id="menu-firstlevel" class="clearfix">
-		<?php print($menu) ?>
-	</div>
 	</div>
 </div>
 
