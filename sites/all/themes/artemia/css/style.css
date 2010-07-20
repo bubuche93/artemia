@@ -19,6 +19,14 @@ body
 	background-color:#e9ddd0;
 }
 
+
+#menu-firstlevel
+{
+	background: url("images/menu/nav.png") transparent top left no-repeat;
+	height: 143px;
+	width: 151px;
+}
+
 /* Carrousel
 **************************************/
 #carrousel
