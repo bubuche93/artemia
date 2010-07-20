@@ -42,6 +42,12 @@ body
 	-moz-border-radius: 10px 10px 10px 10px;
 }
 
+#search-block-form input
+{
+height: 30px;
+width: 150px;
+}
+
 .infocontact
 {
 }
