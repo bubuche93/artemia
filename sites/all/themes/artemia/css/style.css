@@ -174,7 +174,7 @@ li.leaf
 #block-menu-primary-links li a:focus
 {
    -moz-border-radius: 4px 4px 4px 4px;
-   opacity:0.9;
+   opacity:0.3;
    text-decoration:underline;
    background-color: #FFFFFF;
    color:#56A5DB;
