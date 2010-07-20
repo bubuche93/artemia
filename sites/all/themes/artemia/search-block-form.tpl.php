@@ -1,10 +1,6 @@
 <?php
 
-function phptemplate_form_element($element, $value) {
-  if ($element['#title'] == t('Search this site')) {
-    unset($element['#title']);
-  }
-}
+
 
 function phptemplate_form_element($element, $value) {
   if ($element['#title'] == t('Chercher dans ce site')) {
