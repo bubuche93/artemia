@@ -13,7 +13,7 @@
 			<img src="<?php print $logo ?>">
 		</div>
 		
-		<div class="search clearfix prepend-14 span-6 last">
+		<div class="search clearfix prepend-11 span-9 last">
 			<?php print $search ?>
 		</div>
 
