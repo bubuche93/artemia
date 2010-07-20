@@ -14,3 +14,4 @@ $search["search_block_form"]= str_replace('</div>', "", $search["search_block_fo
 
 
 ?>
+</div>
