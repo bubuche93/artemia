@@ -65,6 +65,9 @@ body
 	height: 31px;
 	width: 94px;
 	margin-left:-11px;
+	font-family: Tahoma,Arial,Helvetica,sans-serif;
+	font-size: 10px;
+	text-shadow:0 -1px 0 rgba(0, 0, 0, 0.3);
 }
 
 #edit-search-block-form-1-wrapper
