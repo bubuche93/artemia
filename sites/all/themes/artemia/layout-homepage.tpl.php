@@ -14,7 +14,7 @@
 		</div>
 		
 		<div class="search clearfix">
-			
+			<?php print $search ?>
 		</div>
 
 		<div class="infocontact clearfix">
