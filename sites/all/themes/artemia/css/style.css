@@ -33,11 +33,14 @@ body
 }
 
 .search
+{}
+
+
+#block-search-0
 {
 	background: url("../images/bg/transparent-bg.png") transparent;
-	-moz-border-radius: 8px 8px 8px 8px;
+	-moz-border-radius: 10px 10px 10px 10px;
 }
-
 
 .infocontact
 {
