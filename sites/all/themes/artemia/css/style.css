@@ -23,6 +23,7 @@ body
 #menu-firstlevel
 {
 	background: url("../images/menu/nav.png") transparent top left no-repeat;
+	height: 43px;
 
 }
 
@@ -89,7 +90,6 @@ div.block
 div.container
 {
 	margin:0 auto;
-	padding:1.5em 0 3em;
 }
 
 .hide
