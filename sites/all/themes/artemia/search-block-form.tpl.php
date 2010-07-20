@@ -1,3 +1,1 @@
-<?php
-echo 'blehhhhhhh'
-?>
+<?php echo "Bonjour le monde";?>
