@@ -1,5 +1,16 @@
 <?php
 
-$search["search_theme_form"]=str_replace('value=""', 'value="Search..." onblur="setTimeout(\'closeResults()\',2000); if (this.value == \'\') {this.value = \'\';}"  onfocus="if (this.value == \'Search...\') {this.value = \'\';}" ', $search["search_theme_form"]);
+
+  //    * Remove "Search this site: "  *    ////
+  $search["search_theme_form"]= str_replace("Chercher dans ce site : ", "", $search["search_theme_form"]);
+ 
+ 
+  //    * "Search" button with "Go!" *      ////
+  $search["submit"]=str_replace('value="Recherche"', 'value="Go!"', $search["submit"]);
+
+  print $search["search_theme_form"];
+  print $search["submit"];
+  print $search["hidden"];
+
 
 ?>
