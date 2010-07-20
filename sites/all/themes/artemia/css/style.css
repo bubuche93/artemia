@@ -49,7 +49,7 @@ body
 	padding: 0;
 	margin: 0;
 	border: none;
-	vertical-align:baseline;
+	vertical-align:middle;
 }
 
 #search-block-form .form-submit
