@@ -37,4 +37,12 @@ function phptemplate_body_attributes($is_front = false, $layout = 'none') {
 }
 
 
+function phptemplate_preprocess_search_theme_form(&$variables) {
+  unset($variables['form']['search_theme_form']['#title']);
+  unset($variables['form']['search_theme_form']['#printed']);
+  $variables['search']['search_theme_form'] = drupal_render($variables['form']['search_theme_form']);
+  $variables['search_form'] = implode($variables['search']);
+}
+
+
 ?>
