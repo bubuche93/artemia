@@ -144,8 +144,8 @@ li.leaf
 }
 #block-menu-primary-links li a
 {
-   border-right:1px solid #56a5db;
-   padding:0 20px 0 40px;
+   margin: 2px 15px 0 15px;
+   padding: 0 10px 0 10px;
    background-repeat:no-repeat;
    display:block;
    color:#FFF;
@@ -158,16 +158,6 @@ li.leaf
 #block-menu-primary-links li.last a
 {
    border:none!important;
-}
-.mac #block-menu-primary-links li a
-{
-	font-weight:normal;
-	padding:0 30px 0 42px;
-}
-
-.ie #block-menu-primary-links li a
-{
-   padding:0 25px 0 40px;
 }
 
 #block-menu-primary-links li a:hover,
