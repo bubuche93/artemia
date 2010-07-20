@@ -144,8 +144,8 @@ li.leaf
 }
 #block-menu-primary-links li a
 {
-   margin: 2px 15px 0 15px;
-   padding: 0 10px 0 10px;
+   margin: 2px 20px 0 20px;
+   padding: 0 15px 0 15px;
    background-repeat:no-repeat;
    display:block;
    color:#FFF;
@@ -157,7 +157,7 @@ li.leaf
 
 #block-menu-primary-links li.first a
 {
-	margin-left: 50px;
+	margin-left: 80px;
 }
 
 
