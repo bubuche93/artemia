@@ -37,17 +37,13 @@ function phptemplate_body_attributes($is_front = false, $layout = 'none') {
 }
 
 
-function template_search_block_form($form) {
-$form['search_block_form_keys']['#attributes'] =
-array(
-'onselect' => value='\'\'',
-'onclick' => value='\'\''
-);
-$form['search_block_form_keys']['#value'] =
-'rechercher ...';
-$form['submit']['#type'] = 'hidden';
-$output = form_render($form);
-return $output;
+function phptemplate_search_block_form($form) {
+  /**
+   * This snippet catches the default searchbox and looks for
+   * search-block-form.tpl.php file in the same folder
+   * which has the new layout.
+   */
+  return _phptemplate_callback('search-block-form', array('form' => $form));
 }
 
 
