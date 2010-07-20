@@ -7,7 +7,7 @@
 <? endif; ?>
 
 <div id="header">
-	<div class="container">
+	<div class="container header">
 	<?php if ($logo): ?>
 		<div class="logo" class="clear-block">
 			<?php print $logo ?>
@@ -33,13 +33,13 @@
 
 
 <div id="carrousel">
-<div class="container">
+<div class="container carrousel">
 <?php print $carrousel ?>
 </div>
 </div>
 
 <div id="main">
-<div class="container">
+<div class="container main">
 <?php print $center ?>
 </div>
 </div>

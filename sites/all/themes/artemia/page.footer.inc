@@ -1,5 +1,5 @@
 <div id="footer" class='clear-block'>
-<div class="container">
+<div class="container footer">
   <div class='footer-message'><?php print $footer_message ?></div>
 </div>
 </div>
