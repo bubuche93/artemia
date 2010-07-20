@@ -9,17 +9,13 @@
 <div id="header">
 	<div class="container header">
 	
-		<?php if ($logo): ?>
-			<div class="logo clearfix">
-				<img src="<?php print $logo ?>">
-			</div>
-		<?php endif; ?>
+		<div class="logo clearfix">
+			<img src="<?php print $logo ?>">
+		</div>
 		
-		<?php if ($search): ?>
-			<div class="search clearfix">
-				<?php print $search ?>
-			</div>
-		<?php endif; ?>
+		<div class="search clearfix">
+			
+		</div>
 
 		<div class="infocontact clearfix">
 			<?php print $infocontact ?>
