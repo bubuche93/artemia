@@ -9,8 +9,8 @@
 <div id="header">
 	<div class="container header">
 	<?php if ($logo): ?>
-		<div class="logo" class="clear-block">
-			<?php print $logo ?>
+		<div class="logo clear-block">
+			<img src="<?php print $logo ?>">
 		</div>
 	<?php endif; ?>
 		
