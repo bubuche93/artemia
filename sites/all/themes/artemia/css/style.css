@@ -46,6 +46,7 @@ body
 
 #search-block-form input
 {
+	-moz-border-radius: 10px 10px 0 0;
 	height: 31px;
 	width: 215px;
 	padding: 0;
@@ -57,6 +58,7 @@ body
 #search-block-form .form-submit
 {
 	background: url("../images/bg/search_submit.png") transparent no-repeat;
+	-moz-border-radius: 0 0 10px 10px;
 	border: none;
 	height: 31px;
 	width: 94px;
