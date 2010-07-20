@@ -37,14 +37,4 @@ function phptemplate_body_attributes($is_front = false, $layout = 'none') {
 }
 
 
-function phptemplate_search_block_form($form) {
-  /**
-   * This snippet catches the default searchbox and looks for
-   * search-block-form.tpl.php file in the same folder
-   * which has the new layout.
-   */
-  return _phptemplate_callback('search-block-form', array('form' => $form));
-}
-
-
 ?>
