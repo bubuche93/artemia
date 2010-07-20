@@ -173,11 +173,10 @@ li.leaf
 #block-menu-primary-links li a:hover,
 #block-menu-primary-links li a:focus
 {
-   -moz-border-radius: 4px 4px 4px 4px;
-   opacity:0.3;
+   -moz-border-radius: 4px 4px 0 0;
    text-decoration:underline;
-   background-color: #FFFFFF;
-   color:#56A5DB;
+   background-color: #e4e4e4;
+   color:#9f3f29;
 }
 #block-menu-primary-links li.active-trail a
 {
