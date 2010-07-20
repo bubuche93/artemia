@@ -155,9 +155,15 @@ li.leaf
    background-position:0 50%;
 }
 
+#block-menu-primary-links li.first a
+{
+	margin-left: 50px;
+}
+
+
 #block-menu-primary-links li.last a
 {
-   border:none!important;
+
 }
 
 #block-menu-primary-links li a:hover,
