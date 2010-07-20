@@ -34,7 +34,8 @@ body
 
 .search
 {
-
+	background: url("../images/bg/transparent-bg.png") transparent;
+	-moz-border-radius: 8px 8px 8px 8px;
 }
 
 
