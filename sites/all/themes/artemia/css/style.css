@@ -57,6 +57,12 @@ body
 	vertical-align:middle;
 }
 
+#search-block-form input:focus
+{
+	background-color: #eadbd7;
+	border: none;
+}
+
 #search-block-form .form-submit
 {
 	background: url("../images/bg/search_submit.png") transparent no-repeat;
