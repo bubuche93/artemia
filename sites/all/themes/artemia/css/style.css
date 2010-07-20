@@ -51,10 +51,12 @@ body
 	-moz-border-radius: 10px 0 0 10px;
 	height: 31px;
 	width: 240px;
-	padding: 0;
+	padding: 0 0 0 10px;
 	margin: 0;
 	border: none;
 	vertical-align:middle;
+	font-family: Tahoma,Arial,Helvetica,sans-serif;
+	
 }
 
 #search-block-form input:focus
