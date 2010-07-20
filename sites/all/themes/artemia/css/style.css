@@ -51,6 +51,7 @@ width: 215px;
 #search-block-form .form-submit
 {
 	background: url("../images/bg/search_submit.png") transparent no-repeat;
+	border: none;
 	height: 31px;
 	width: 72px;
 }
