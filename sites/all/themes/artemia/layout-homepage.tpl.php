@@ -21,7 +21,7 @@
 			<?php print $infocontact ?>
 		</div>
 
-		<div id="menu-firstlevel" class="clearfix">
+		<div id="menu-firstlevel" class="clearfix span-24">
 			<?php print($menu) ?>
 		</div>
 	</div>

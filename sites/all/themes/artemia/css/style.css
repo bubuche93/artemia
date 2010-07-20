@@ -120,26 +120,15 @@ li.leaf
 *******************************************************************************/
 #block-menu-primary-links
 {
-   margin-bottom:1.5em;
    zoom:1;
 }
-.ie6 #block-menu-primary-links
-{
-	position:relative;
-	top:-1.5em;
-	margin-bottom:0;
-}
+
 #block-menu-primary-links ul
 {
    padding:0;
    margin:0;
 }
-#block-menu-primary-links ul .menu
-{
-   font-size:0.8em;
-   line-height:1.875em;
-   margin-bottom:1.875em;
-}
+
 #block-menu-primary-links li
 {
    line-height:3;
