@@ -24,6 +24,12 @@ body
 #carrousel
 {
 	background-color:#ededee;
+	height: 300px;
+}
+
+.carrousel
+{
+	background-color:#d13069;
 }
 
 
