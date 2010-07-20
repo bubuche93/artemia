@@ -29,6 +29,7 @@ body
 
 .logo
 {
+	float: left;
 	height: 143px;
 	width: 151px;
 }
