@@ -48,9 +48,9 @@ height: 31px;
 width: 215px;
 }
 
-#search-block-form input .form-submit
+#search-block-form .form-submit
 {
-	background: url("../images/bg/search_submit.png") transparent;
+	background: url("../images/bg/search_submit.png") transparent no-repeat;
 	height: 31px;
 	width: 72px;
 }
