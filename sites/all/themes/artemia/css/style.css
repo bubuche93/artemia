@@ -60,6 +60,7 @@ body
 	border: none;
 	vertical-align:middle;
 	font-family: Tahoma,Arial,Helvetica,sans-serif;
+	color: #ededee;
 	
 }
 
@@ -67,6 +68,7 @@ body
 {
 	background-color: #f1ecea;
 	border: none;
+	color: #000000;
 }
 
 #search-block-form .form-submit
