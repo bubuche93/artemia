@@ -40,6 +40,8 @@ body
 {
 	background: url("../images/bg/transparent-bg.png") transparent;
 	-moz-border-radius: 10px 10px 10px 10px;
+	-webkit-border-radius: 10px 10px 10px 10px;
+	border-radius: 10px 10px 10px 10px;
 	margin-left:28px;
 	margin-top:10px;
 	padding:8px;
@@ -49,6 +51,8 @@ body
 #search-block-form input
 {
 	-moz-border-radius: 10px 0 0 10px;
+	-webkit-border-radius: 10px 0 0 10px;
+	border-radius: 10px 0 0 10px;
 	height: 31px;
 	width: 220px;
 	padding: 0 10px 0 10px;
@@ -69,6 +73,8 @@ body
 {
 	background: url("../images/bg/search_submit.png") transparent no-repeat;
 	-moz-border-radius: 0 10px 10px 0;
+	-webkit-border-radius: 0 10px 10px 0;
+	border-radius: 0 10px 10px 0;
 	border: none;
 	height: 31px;
 	width: 80px;
