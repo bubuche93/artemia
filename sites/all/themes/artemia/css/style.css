@@ -92,7 +92,7 @@ body
 
 #search-block-form .form-submit:hover
 {
-	margin-left: -20px;
+	background: url("../images/bg/search_submit_on.png") transparent no-repeat;
 }
 
 #edit-search-block-form-1-wrapper
