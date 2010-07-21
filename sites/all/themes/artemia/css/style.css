@@ -270,8 +270,8 @@ li.leaf
 	-webkit-border-radius: 4px 4px 0 0;
 	border-radius: 4px 4px 0 0;
 	margin-top: 4px;
-	background-color: #e4e4e4;
 	background: url("../images/menu/home_on.png") no-repeat transparent 10px 3px;
+	background-color: #e4e4e4;
 }
 
 #block-menu-primary-links li a.active
