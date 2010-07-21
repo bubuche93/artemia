@@ -264,7 +264,7 @@ li.leaf
 }
 
 
-#block-menu-primary-links .fist a.active
+#block-menu-primary-links li.first a.active
 {
 	-moz-border-radius: 4px 4px 0 0;
 	-webkit-border-radius: 4px 4px 0 0;
