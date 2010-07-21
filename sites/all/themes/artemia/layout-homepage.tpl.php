@@ -18,8 +18,11 @@
 		</div>
 
 		<div class="infocontact clearfix prepend-14 span-6 last">
-			<?php print $infocontact ?>
-			<?php  if ($account->picture) { print theme('user_picture', $account); } ?>
+			<div class="boxcontactgris">
+				<div class="boxcontactblanc">
+					<?php print $infocontact ?>
+				</div>
+			</div>
 		</div>
 
 		<div id="menu-firstlevel" class="clearfix span-24">

@@ -107,6 +107,25 @@ padding: 0;
 {
 }
 
+.boxcontactgris
+{
+	background: url("../images/bg/transparent-bg.png") transparent;
+	-moz-border-radius: 10px 10px 10px 10px;
+	-webkit-border-radius: 10px 10px 10px 10px;
+	border-radius: 10px 10px 10px 10px;
+	margin-left:28px;
+	margin-top:5px;
+	padding:8px;
+	width:313px;
+}
+
+
+.boxcontactblanc
+{
+	background-color: #FFFFFF;
+	height: 90px;
+}
+
 /* Carrousel
 **************************************/
 #carrousel
