@@ -37,6 +37,29 @@ function phptemplate_body_attributes($is_front = false, $layout = 'none') {
 }
 
 
+/**
+* Override or insert PHPTemplate variables into the search_theme_form template.
+*
+* @param $vars
+*   A sequential array of variables to pass to the theme template.
+* @param $hook
+*   The name of the theme function being called (not used in this case.)
+*/
+function artemia_preprocess_search_theme_form(&$vars, $hook) {
+  // Note that in order to theme a search block you should rename this function
+  // to yourthemename_preprocess_search_block_form and use
+  // 'search_block_form' instead of 'search_theme_form' in the customizations
+  // bellow.
+ 
+  // Add a custom class and placeholder text to the search box
+  $vars['form']['search_block_form']['#attributes'] = array('class' => 'NormalTextBox txtSearch',
+                                                              'onfocus' => "if (this.value == 'Search this Site') {this.value = '';}",
+                                                              'onblur' => "if (this.value == '') {this.value = 'Search this Site';}");
+ 
+
+  // Collect all form elements to make it easier to print the whole form.
+  $vars['search_form'] = implode($vars['search']);
+}
 
 
 ?>
