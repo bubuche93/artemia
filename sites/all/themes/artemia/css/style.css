@@ -264,6 +264,16 @@ li.leaf
 }
 
 
+#block-menu-primary-links li.fist a.active
+{
+	-moz-border-radius: 4px 4px 0 0;
+	-webkit-border-radius: 4px 4px 0 0;
+	border-radius: 4px 4px 0 0;
+	margin-top: 4px;
+	background-color: #e4e4e4;
+	background: url("../images/menu/home_on.png") no-repeat transparent 10px 3px;
+}
+
 #block-menu-primary-links li a.active
 {
 	-moz-border-radius: 4px 4px 0 0;
@@ -271,6 +281,7 @@ li.leaf
 	border-radius: 4px 4px 0 0;
 	margin-top: 4px;
 	background-color: #e4e4e4;
+	color:#9f3f29;
 }
 
 #block-menu-primary-links li.last a
