@@ -249,6 +249,7 @@ li.leaf
 {
 	background: url("../images/menu/home.png") no-repeat transparent;
 	margin-left: 80px;
+	padding-top: 3px;
 	
 }
 
@@ -268,21 +269,9 @@ li.leaf
    background-color: #e4e4e4;
    color:#9f3f29;
 }
-#block-menu-primary-links li.active-trail a
-{
-   border-color:#aed253;
-   background-position:-318px 50%;
-   text-decoration:none;
-}
-#block-menu-primary-links li.active-trail.last a
-{
-   border-right:1px solid #56A5DB;	
-}
-#block-menu-primary-links li.active-trail li a:focus,
-#block-menu-primary-links li.active-trail li a:hover
-{
-   text-decoration:underline;
-}
+
+
+
 #block-menu-primary-links li ul
 {
    position:absolute;
