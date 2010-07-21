@@ -20,7 +20,7 @@ scripts[] = scripts/behavior.js
 ; Theme Regions ======================================================
 
 regions[header] = "Header"
-regions[logo] = "Logo header"
+regions[logoheader] = "Logo header"
 regions[search] = "Page search"
 regions[infocontact] = "Contact informations"
 regions[menu] = "Menu"
@@ -48,7 +48,7 @@ layouts[homepage][name] = "Homepage"
 layouts[homepage][description] = "Standard homepage."
 layouts[homepage][template] = "layout-homepage"
 layouts[homepage][regions][] = "header"
-layouts[homepage][regions][] = "logo"
+layouts[homepage][regions][] = "logoheader"
 layouts[homepage][regions][] = "search"
 layouts[homepage][regions][] = "infocontact"
 layouts[homepage][regions][] = "menu"

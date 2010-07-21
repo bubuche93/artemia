@@ -10,7 +10,7 @@
 	<div class="container header">
 	
 		<div class="logo clearfix span-4">
-			<img src="<?php print $logo ?>">
+			<?php print $logoheader ?>
 		</div>
 		
 		<div class="search clearfix prepend-11 span-9 last">
