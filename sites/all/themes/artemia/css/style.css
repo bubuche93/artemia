@@ -247,8 +247,13 @@ li.leaf
 
 #block-menu-primary-links li.first a
 {
-	background: url("../images/menu/home.png") no-repeat transparent 6px 3px;
+	background: url("../images/menu/home.png") no-repeat transparent 10px 3px;
 	margin-left: 80px;
+}
+
+#block-menu-primary-links li.first a:hover
+{
+	background: url("../images/menu/home.png") no-repeat transparent 10px 25px;
 }
 
 
