@@ -17,7 +17,7 @@
 			<?php print $search ?>
 		</div>
 
-		<div class="infocontact clearfix prepend-14 span-6 last">
+		<div class="infocontact clearfix prepend-11 span-9 last">
 			<div class="boxcontactgris">
 				<div class="boxcontactblanc">
 					<?php print $infocontact ?>
