@@ -22,17 +22,10 @@ body
 
 }
 
-
-#menu-firstlevel
-{
-	background: url("../images/menu/nav.png") transparent top left no-repeat;
-	height: 43px;
-
-}
-
 .logo
 {
 	width: 143px;
+	margin-top: 5px;
 }
 
 .search
@@ -138,13 +131,16 @@ margin-bottom: 10px;
 **************************************/
 #carrousel
 {
-	background-color:#ededee;
+	background: url("../images/bg/bg_carrousel.png") transparent top center no-repeat;
+	height: 247px;
 }
 
 .carrousel
 {
-	background-color:#d13069;
-	height: 300px;
+	background-color:#b13f2d;
+	height: 245px;
+	border-bottom: 1px solid #8a2211;
+	border-top: 1px solid #8a2211;
 }
 
 
@@ -210,6 +206,13 @@ li.leaf
 
 /* menu
 *******************************************************************************/
+#menu-firstlevel
+{
+	background: url("../images/menu/nav.png") transparent top left no-repeat;
+	height: 43px;
+
+}
+
 #block-menu-primary-links
 {
    zoom:1;
