@@ -37,28 +37,21 @@ function phptemplate_body_attributes($is_front = false, $layout = 'none') {
 }
 
 
-function artemia_id_safe($string) {
-  // Replace with dashes anything that isn't A-Z, numbers, dashes, or underscores.
-  $string = strtolower(preg_replace('/[^a-zA-Z0-9_-]+/', '-', $string));
-  // If the first character is not a-z, add 'n' in front.
-  if (!ctype_lower($string{0})) { // Don't use ctype_alpha since its locale aware.
-    $string = 'id'. $string;
-  }
-  return $string;
-}
 
-
-function artemia_menu_item($link, $has_children, $menu = '', $in_active_trail = FALSE, $extra_class = NULL) {
-    $class = ($menu ? 'expanded' : ($has_children ? 'collapsed' : 'leaf'));
-    if (!empty($extra_class)) {
-        $class .= ' '. $extra_class;
+<?php
+function phptemplate_menu_item_link($item, $link_item) {
+    /* Allow HTML if the menu text is an image tag: call l() with 7th argument set to TRUE
+     * See <a href="http://api.drupal.org/api/4.7/function/l
+" title="http://api.drupal.org/api/4.7/function/l
+" rel="nofollow">http://api.drupal.org/api/4.7/function/l
+</a>     */
+    if( strpos($item['title'], '<img') === 0) {
+      return l($item['title'], $link_item['path'], !empty($item['description']) ? array('title' => $item['description']) : array(), NULL, NULL, FALSE, TRUE);
     }
-    if ($in_active_trail) {
-        $class .= ' active-trail';
-    }
-    #New line added to get unique classes for each menu item
-    $css_class = artemia_id_safe(str_replace(' ', '_', strip_tags($link)));
-    return '<li class="'. $class . ' ' . $css_class . '">' . $link . $menu ."</li>\n";
+   
+  return l($item['title'], $link_item['path'], !empty($item['description']) ? array('title' => $item['description']) : array());
 }
+?>
+
 
 ?>
