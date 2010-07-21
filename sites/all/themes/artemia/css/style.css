@@ -90,6 +90,11 @@ body
 	cursor: pointer;
 }
 
+#search-block-form .form-submit:hover
+{
+	margin-left: -20px;
+}
+
 #edit-search-block-form-1-wrapper
 {
 margin: 0;
