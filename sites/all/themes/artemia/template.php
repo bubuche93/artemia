@@ -37,21 +37,22 @@ function phptemplate_body_attributes($is_front = false, $layout = 'none') {
 }
 
 
+function artemia_menu_item_link($link) {
+  if (empty($link['localized_options'])) {
+    $link['localized_options'] = array();
+  }
 
-<?php
-function phptemplate_menu_item_link($item, $link_item) {
-    /* Allow HTML if the menu text is an image tag: call l() with 7th argument set to TRUE
-     * See <a href="http://api.drupal.org/api/4.7/function/l
-" title="http://api.drupal.org/api/4.7/function/l
-" rel="nofollow">http://api.drupal.org/api/4.7/function/l
-</a>     */
-    if( strpos($item['title'], '<img') === 0) {
-      return l($item['title'], $link_item['path'], !empty($item['description']) ? array('title' => $item['description']) : array(), NULL, NULL, FALSE, TRUE);
-    }
-   
-  return l($item['title'], $link_item['path'], !empty($item['description']) ? array('title' => $item['description']) : array());
+  if(strpos($link['localized_options']['attributes']['title'], '<img') === 0) {
+    // Allow HTML if the menu description is an image tag:
+    $link['localized_options']['html'] = TRUE;
+    // exchange description with title
+    $tmp = $link['localized_options']['attributes']['title'];
+    $link['localized_options']['attributes']['title'] = $link['title'];
+    $link['title'] = $tmp;
+  }
+
+  return l($link['title'], $link['href'], $link['localized_options']);
 }
-?>
 
 
 ?>
