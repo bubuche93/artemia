@@ -137,6 +137,7 @@ margin-bottom: 10px;
 
 .carrousel
 {
+	background: url("../images/bg/bg_main_carrousel.png") transparent top left no-repeat;
 	background-color:#b13f2d;
 	height: 245px;
 	border-bottom: 1px solid #8a2211;
