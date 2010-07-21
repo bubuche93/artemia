@@ -53,9 +53,9 @@ body
 
 #search-block-form input
 {
-	-moz-border-radius: 10px 0 0 10px;
-	-webkit-border-radius: 10px 0 0 10px;
-	border-radius: 10px 0 0 10px;
+	-moz-border-radius: 7px 0 0 7px;
+	-webkit-border-radius: 7px 0 0 7px;
+	border-radius: 7px 0 0 7px;
 	height: 31px;
 	width: 220px;
 	padding: 0 10px 0 10px;
@@ -77,9 +77,9 @@ body
 #search-block-form .form-submit
 {
 	background: url("../images/bg/search_submit.png") transparent no-repeat;
-	-moz-border-radius: 0 10px 10px 0;
-	-webkit-border-radius: 0 10px 10px 0;
-	border-radius: 0 10px 10px 0;
+	-moz-border-radius: 0 7px 7px 0;
+	-webkit-border-radius: 0 7px 7px 0;
+	border-radius: 0 7px 7px 0;
 	border: none;
 	height: 31px;
 	width: 80px;
@@ -126,9 +126,9 @@ margin-bottom: 10px;
 
 .boxcontactblanc
 {
-	-moz-border-radius: 10px 0 0 10px;
-	-webkit-border-radius: 10px 0 0 10px;
-	border-radius: 10px 0 0 10px;
+	-moz-border-radius: 7px 7px 7px 7px;
+	-webkit-border-radius: 7px 7px 7px 7px;
+	border-radius: 7px 7px 7px 7px;
 	margin: 0;
 	background-color: #FFFFFF;
 	height: 90px;
