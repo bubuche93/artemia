@@ -224,6 +224,8 @@ li.leaf
 #block-menu-primary-links li a:focus
 {
    -moz-border-radius: 4px 4px 0 0;
+   -webkit-border-radius: 4px 4px 0 0;
+   border-radius: 4px 4px 0 0;
    text-decoration:underline;
    background-color: #e4e4e4;
    color:#9f3f29;
