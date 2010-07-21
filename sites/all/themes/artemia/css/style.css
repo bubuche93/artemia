@@ -4,6 +4,8 @@ body
 {
    background-color:#e9ddd0;
    font-family:sans-serif;
+   background: url("../images/bg/bg.png") transparent top center no-repeat;
+   background-color: #ededee;
 }
 
 
@@ -11,13 +13,13 @@ body
 **************************************/
 #header
 {
-	background-color:#ededee;
+
 	margin-bottom: 10px;
 }
 
 .header
 {
-	background-color:#ededee;
+
 }
 
 
