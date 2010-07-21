@@ -13,7 +13,7 @@ $search["search_block_form"]= str_replace('<div id="edit-search-block-form-1-wra
 
 $search["search_block_form"]= str_replace('</div>', "", $search["search_block_form"]);
 
-$search["search_block_form"]= str_replace('id="edit-search-block-form-1"', 'id="edit-search-block-form-1" class="inputtextsearch"', $search["search_block_form"]);
+$search["search_block_form"]= str_replace('id="edit-search-block-form-1"', 'id="edit-search-block-form-1" class="inputtextsearch" onfocus="if (this.value == 'Search this Site') {this.value = '';}"', $search["search_block_form"]);
 
   print $search["search_block_form"];
   print $search["submit"];
