@@ -279,7 +279,6 @@ li.leaf
 	margin-top: 4px;
 	background: url("../images/menu/home_on.png") no-repeat transparent 10px 3px;
 	background-color: #e4e4e4;
-	text-shadow: none;
 }
 
 #block-menu-primary-links li a.active
@@ -290,6 +289,7 @@ li.leaf
 	margin-top: 4px;
 	background-color: #e4e4e4;
 	color:#9f3f29;
+	text-shadow: none;
 }
 
 #block-menu-primary-links li.last a
@@ -307,6 +307,7 @@ li.leaf
    text-decoration:underline;
    background-color: #e4e4e4;
    color:#9f3f29;
+   text-shadow: none;
 }
 
 
