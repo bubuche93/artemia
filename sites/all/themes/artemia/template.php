@@ -45,7 +45,7 @@ function phptemplate_body_attributes($is_front = false, $layout = 'none') {
 * @param $hook
 *   The name of the theme function being called (not used in this case.)
 */
-function artemia_preprocess_search_theme_form(&$vars, $hook) {
+function artemia_preprocess_search_block_form(&$vars, $hook) {
   // Note that in order to theme a search block you should rename this function
   // to yourthemename_preprocess_search_block_form and use
   // 'search_block_form' instead of 'search_theme_form' in the customizations
