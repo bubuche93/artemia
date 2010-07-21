@@ -37,29 +37,28 @@ function phptemplate_body_attributes($is_front = false, $layout = 'none') {
 }
 
 
-/**
-* Override or insert PHPTemplate variables into the search_theme_form template.
-*
-* @param $vars
-*   A sequential array of variables to pass to the theme template.
-* @param $hook
-*   The name of the theme function being called (not used in this case.)
-*/
-function artemia_preprocess_search_block_form(&$vars, $hook) {
-  // Note that in order to theme a search block you should rename this function
-  // to yourthemename_preprocess_search_block_form and use
-  // 'search_block_form' instead of 'search_theme_form' in the customizations
-  // bellow.
- 
-  // Add a custom class and placeholder text to the search box
-  $vars['form']['search_block_form']['#attributes'] = array('class' => 'NormalTextBox txtSearch',
-                                                              'onfocus' => "if (this.value == 'Search this Site') {this.value = '';}",
-                                                              'onblur' => "if (this.value == '') {this.value = 'Search this Site';}");
- 
-
-  // Collect all form elements to make it easier to print the whole form.
-  $vars['search_form'] = implode($vars['search']);
+function artemia_id_safe($string) {
+  // Replace with dashes anything that isn't A-Z, numbers, dashes, or underscores.
+  $string = strtolower(preg_replace('/[^a-zA-Z0-9_-]+/', '-', $string));
+  // If the first character is not a-z, add 'n' in front.
+  if (!ctype_lower($string{0})) { // Don't use ctype_alpha since its locale aware.
+    $string = 'id'. $string;
+  }
+  return $string;
 }
 
+
+function artemia_menu_item($link, $has_children, $menu = '', $in_active_trail = FALSE, $extra_class = NULL) {
+    $class = ($menu ? 'expanded' : ($has_children ? 'collapsed' : 'leaf'));
+    if (!empty($extra_class)) {
+        $class .= ' '. $extra_class;
+    }
+    if ($in_active_trail) {
+        $class .= ' active-trail';
+    }
+    #New line added to get unique classes for each menu item
+    $css_class = artemia_id_safe(str_replace(' ', '_', strip_tags($link)));
+    return '<li class="'. $class . ' ' . $css_class . '">' . $link . $menu ."</li>\n";
+}
 
 ?>
