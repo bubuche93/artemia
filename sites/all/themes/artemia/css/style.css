@@ -66,7 +66,7 @@ body
 #search-block-form input:focus
 {
 	background-color: #f1ecea;
-	border: 1px solid #8b2a18;
+	border: 1px solid #8b2a18 -moz-bg-inset;
 }
 
 #search-block-form .form-submit
