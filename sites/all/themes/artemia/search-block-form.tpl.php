@@ -16,7 +16,7 @@ $search["search_block_form"]= str_replace('</div>', "", $search["search_block_fo
 /**$search["search_block_form"]= str_replace('id="edit-search-block-form-1"', 'id="edit-search-block-form-1" class="inputtextsearch" onfocus="if (this.value == 'Search this Site') {this.value = '';}"', $search["search_block_form"]);
 */
 
-$search['search_block_form']['#attributes'] = array('onblur' => "if (this.value == '') {this.value = 'search';}", 'onfocus' => "if (this.value == 'search') {this.value = '';}" );
+$search['search_block_form'] = array('onblur' => "if (this.value == '') {this.value = 'search';}", 'onfocus' => "if (this.value == 'search') {this.value = '';}" );
 
   print $search["search_block_form"];
   print $search["submit"];
