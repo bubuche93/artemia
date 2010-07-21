@@ -246,7 +246,7 @@ li.leaf
    font-family: Arial,Helvetica,sans-serif;
    font-size: 15px;
    font-weight:bold;
-   text-shadow: #8f3b2f 0 1px;
+   text-shadow: #6a291f 0 -1px;
    text-transform:uppercase;
    text-decoration:none;
    background-position:0 50%;
@@ -267,6 +267,7 @@ li.leaf
 	margin-top: 4px;
 	background: url("../images/menu/home_on.png") no-repeat transparent 10px 3px;
 	background-color: #e4e4e4;
+	text-shadow: none;
 
 }
 
