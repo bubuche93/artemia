@@ -247,7 +247,9 @@ li.leaf
 
 #block-menu-primary-links li.first a
 {
+	background: url("../images/menu/home.png") no-repeat transparent;
 	margin-left: 80px;
+	
 }
 
 
