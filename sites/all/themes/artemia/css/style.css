@@ -253,10 +253,12 @@ li.leaf
 
 #block-menu-primary-links li.first a:hover
 {
-	background: url("../images/menu/home_on.png") no-repeat transparent 10px 3px #e4e4e4;
 	-moz-border-radius: 4px 4px 0 0;
 	-webkit-border-radius: 4px 4px 0 0;
 	border-radius: 4px 4px 0 0;
+	background: url("../images/menu/home_on.png") no-repeat transparent 10px 3px;
+	background-color: #e4e4e4;
+
 }
 
 
