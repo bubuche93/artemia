@@ -22,6 +22,9 @@
 
 <div id="main">
 	<div class="container main">
+		<?php if ($show_messages && $messages): ?>
+			<div class='growl'><?php print $messages; ?></div>
+		<?php endif; ?>
 		<?php print $center ?>
 	</div>
 </div>
