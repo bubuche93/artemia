@@ -11,7 +11,7 @@
 * @return
 *   string The rendered id and class attributes.
 */
-function phptemplate_body_attributes($is_front = false, $layout = 'template_files') {
+function phptemplate_body_attributes($is_front = false, $layout = 'none') {
 
   if ($is_front) {
     $body_id = $body_class = 'homepage';
@@ -31,7 +31,7 @@ function phptemplate_body_attributes($is_front = false, $layout = 'template_file
   $body_class = 'section-'. $body_class;
 
   // Use the same sidebar classes as Garland.
-  $sidebar_class = ($layout == 'template_files') ? 'sidebars' : "sidebar-$layout";
+  $sidebar_class = ($layout == 'both') ? 'sidebars' : "sidebar-$layout";
 
   return " id=\"$body_id\" class=\"$body_class $sidebar_class\"";
 
@@ -93,6 +93,10 @@ function artemia_menu_item_link($link) {
   return l($link['title'], $link['href'], $link['localized_options']);
 }
 
+
+/**
+ * Add custom login block
+ */
 
 function artemia_theme() {
 	return array(
