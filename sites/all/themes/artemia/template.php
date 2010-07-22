@@ -37,6 +37,43 @@ function phptemplate_body_attributes($is_front = false, $layout = 'none') {
 }
 
 
+/**
+ * Preprocessor for theme('node').
+ */
+function artemia_preprocess_node(&$vars) {
+  $vars['layout'] = FALSE;
+
+  // Don't show node title on page views
+  if (menu_get_object() === $vars['node']) {
+    if (!isset($_GET['print'])) {
+      unset($vars['title']);
+    }
+    $vars['attr']['class'] .= ' node-page';
+  }
+  else {
+    $vars['attr']['class'] .= ' node-teaser';
+  }
+  // We don't want the print friendly header on individual nodes.
+  if (isset($vars['pre_object'])) {
+    unset($vars['pre_object']);
+  }
+}
+
+/**
+ * Preprocessor for theme('page').
+ */
+ 
+function artemia_preprocess_page(&$vars) {
+  // Site name
+  $vars['site_name'] = theme('site_name');
+}
+
+
+
+/**
+ * Add picture in a menu
+ */
+ 
 function artemia_menu_item_link($link) {
   if (empty($link['localized_options'])) {
     $link['localized_options'] = array();

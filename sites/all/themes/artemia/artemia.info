@@ -14,7 +14,6 @@ stylesheets[screen][] = "css/openlayers.css"
 
 ; Theme Scripts ======================================================
 
-scripts[] = scripts/jquery.easing.1.3.js
 scripts[] = scripts/behavior.js
 
 ; Theme Regions ======================================================
@@ -60,7 +59,7 @@ layouts[sidebar-left][name] = "Single sidebar left"
 layouts[sidebar-left][description] = "Page with left sidebar."
 layouts[sidebar-left][template] = "layout-sidebar-left"
 layouts[sidebar-left][regions][] = "header"
-layouts[sidebar-left][regions][] = "logo"
+layouts[sidebar-left][regions][] = "logoheader"
 layouts[sidebar-left][regions][] = "search"
 layouts[sidebar-left][regions][] = "infocontact"
 layouts[sidebar-left][regions][] = "left"
@@ -72,7 +71,7 @@ layouts[sidebar-right][name] = "Single sidebar right"
 layouts[sidebar-right][description] = "Page with right sidebar."
 layouts[sidebar-right][template] = "layout-sidebar-right"
 layouts[sidebar-right][regions][] = "header"
-layouts[sidebar-right][regions][] = "logo"
+layouts[sidebar-right][regions][] = "logoheader"
 layouts[sidebar-right][regions][] = "search"
 layouts[sidebar-right][regions][] = "infocontact"
 layouts[sidebar-right][regions][] = "right"
@@ -84,7 +83,7 @@ layouts[sidebar-both][name] = "Two sidebar"
 layouts[sidebar-both][description] = "Page with both sidebar."
 layouts[sidebar-both][template] = "layout-sidebar-both"
 layouts[sidebar-both][regions][] = "header"
-layouts[sidebar-both][regions][] = "logo"
+layouts[sidebar-both][regions][] = "logoheader"
 layouts[sidebar-both][regions][] = "search"
 layouts[sidebar-both][regions][] = "infocontact"
 layouts[sidebar-both][regions][] = "right"
@@ -97,8 +96,7 @@ layouts[login][name] = "Login"
 layouts[login][description] = "Thin one column login page."
 layouts[login][template] = "layout-login"
 layouts[login][regions][] = "header"
-layouts[login][regions][] = "logo"
-layouts[login][regions][] = "menu"
+layouts[login][regions][] = "logoheader"
 layouts[login][regions][] = "center"
 
 ; Information added by drupal.org packaging script on 2010-05-07
