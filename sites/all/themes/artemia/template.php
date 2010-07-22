@@ -11,7 +11,7 @@
 * @return
 *   string The rendered id and class attributes.
 */
-function phptemplate_body_attributes($is_front = false, $layout = 'none') {
+function phptemplate_body_attributes($is_front = false, $layout = 'template_files') {
 
   if ($is_front) {
     $body_id = $body_class = 'homepage';
