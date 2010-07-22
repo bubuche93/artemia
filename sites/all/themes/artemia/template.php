@@ -31,11 +31,11 @@ function phptemplate_body_attributes($is_front = false, $layout = 'none') {
   $body_class = 'section-'. $body_class;
 
   // Use the same sidebar classes as Garland.
-  $sidebar_class = ($layout == 'both') ? 'sidebars' : "sidebar-$layout";
+  $sidebar_class = ($layout == 'template_files') ? 'sidebars' : "sidebar-$layout";
 
   return " id=\"$body_id\" class=\"$body_class $sidebar_class\"";
-  
-  $vars['attr']['class'] .= !empty($vars['template_files']) ? ' '. end($vars['template_files']) : '';
+
+
 }
 
 
