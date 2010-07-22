@@ -31,11 +31,10 @@ function phptemplate_body_attributes($is_front = false, $layout = 'none', $logge
   $body_class = 'section-'. $body_class;
 
   if ($logged_in) {
-$body_class .= ' user-in'; 
+	$body_class .= ' user-in'; 
   } else {
     $body_class .= ' user-out';
   }
-
 
   return " id=\"$body_id\" class=\"$body_class\"";
   

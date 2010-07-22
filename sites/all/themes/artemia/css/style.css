@@ -2,10 +2,14 @@
 *******************************************************************************/
 body
 {
-   background-color:#e9ddd0;
    font-family:sans-serif;
    background: url("../images/bg/bg.png") transparent top center no-repeat;
    background-color: #ededee;
+}
+
+body .user-out
+{
+	background: #ededee;
 }
 
 
@@ -149,12 +153,12 @@ margin-bottom: 10px;
 **************************************/
 #main
 {
-	background-color:#e9ddd0;
+
 }
 
 .main
 {
-	background-color:#ffbc2d;
+
 	height: 300px;
 }
 
@@ -162,12 +166,12 @@ margin-bottom: 10px;
 **************************************/
 #footer
 {
-	background-color:#0e3750;
+
 }
 
 .footer
 {
-	background-color:#97f06b;
+
 	height: 300px;
 }
 
