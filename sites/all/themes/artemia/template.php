@@ -92,4 +92,23 @@ function artemia_menu_item_link($link) {
 }
 
 
+function artemia_theme()
+{
+  return array(
+    'user_login_block' => array(
+      'template' => 'user-login',
+      'arguments' => array('form' => NULL),
+    ),
+
+    // other theme registration code...
+  );
+}
+
+function artemia_preprocess_user_login_block(&$variables)
+{
+  $variables['intro_text'] = t('This is my awesome login BLOCK');
+  $variables['rendered'] = drupal_render($variables['form']);
+}
+
+
 ?>
