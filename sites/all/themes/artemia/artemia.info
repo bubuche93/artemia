@@ -96,7 +96,6 @@ layouts[login][name] = "Login"
 layouts[login][description] = "Thin one column login page."
 layouts[login][template] = "layout-login"
 layouts[login][regions][] = "header"
-layouts[login][regions][] = "logoheader"
 layouts[login][regions][] = "center"
 
 ; Information added by drupal.org packaging script on 2010-05-07
