@@ -1,5 +1,5 @@
 <?php
-// $Id: feeds_ui.admin.inc,v 1.31 2010/07/06 15:16:33 alexb Exp $
+// $Id: feeds_ui.admin.inc,v 1.34 2010/07/10 23:30:19 alexb Exp $
 
 /**
  * @file
@@ -29,7 +29,7 @@ function feeds_ui_edit_help() {
     Imports can be <strong>refreshed periodically</strong> - see the minimum refresh period in the Basic settings.
     </li>
     <li>
-    Processors can have <strong>mappings</strong> in addition to settings. Mappings allow you to define what elements of a data feed should be mapped to what content fields on a granular level. For instance, you can specify that a feed\'s author should be mapped to a node\'s body.
+    Processors can have <strong>mappings</strong> in addition to settings. Mappings allow you to define what elements of a data feed should be mapped to what content fields on a granular level. For instance, you can specify that a feed item\'s author should be mapped to a node\'s body.
     </li>
     </ul>
     ', array('!import' => l(t('Import'), 'import')));
@@ -226,11 +226,19 @@ function feeds_ui_create_form_submit($form, &$form_state) {
 function feeds_ui_delete_form(&$form_state, $importer) {
   $form['#redirect'] = 'admin/build/feeds';
   $form['#importer'] = $importer;
+  if ($importer->export_type & EXPORT_IN_CODE) {
+    $title = t('Would you really like to revert the importer @importer?', array('@importer' => $importer->config['name']));
+    $button_label = t('Revert');
+  }
+  else {
+    $title = t('Would you really like to delete the importer @importer?', array('@importer' => $importer->config['name']));
+    $button_label = t('Delete');
+  }
   return confirm_form($form,
-    t('Would you really like to delete the configuration !id?', array('!id' => $importer->id)),
+    $title,
     $form['#redirect'],
     t('This action cannot be undone.'),
-    t('Delete')
+    $button_label
   );
 }
 
@@ -724,7 +732,11 @@ function theme_feeds_ui_container($container) {
   $output = '<div class="feeds-container'. $class .'"'. $id .'>';
 
   if (isset($container['actions']) && count($container['actions'])) {
-    $output .= theme('item_list', $container['actions'], NULL, 'ul', array('class' => 'container-actions'));
+    $output .= '<ul class="container-actions">';
+    foreach ($container['actions'] as $action) {
+      $output .= '<li>'. $action .'</li>';
+    }
+    $output .= '</ul>';
   }
 
   if (!empty($container['title'])) {

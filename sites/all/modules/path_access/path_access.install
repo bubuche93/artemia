@@ -1,0 +1,74 @@
+<?php
+// $Id: path_access.install,v 1.2.2.3 2009/12/26 21:22:59 budda Exp $
+
+function path_access_schema() {
+  $schema['path_access'] = array(
+    'fields' => array(
+      'pid' => array(
+        'type' => 'serial',
+        'not null' => TRUE,
+      ),
+      'rid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'pages' => array(
+        'type' => 'text',
+      ),
+      'visibility' => array(
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+    ),
+    'indexes' => array(
+      'rid' => array('rid'),
+    ),
+    'primary key' => array('pid'),
+  );
+  return $schema;
+}
+
+function path_access_install() {
+  $res = drupal_install_schema('path_access');
+  $success = TRUE;
+  foreach ($res as $v) {
+    if ($v['success'] !== TRUE) {
+      $success = FALSE;
+      break;
+    }
+  }
+  if ($success) {
+    drupal_set_message(t('Path Access module installed tables successfully.'));
+  }
+  else {
+    drupal_set_message(t('The installation of Path Access module was unsuccessful.'), 'error');
+  }
+}
+
+function path_access_uninstall() {
+  $res = drupal_uninstall_schema('path_access');
+  $success = TRUE;
+  foreach ($res as $v) {
+    if ($v['success'] !== TRUE) {
+      $success = FALSE;
+      break;
+    }
+  }
+  if ($success) {
+    drupal_set_message(t('Path Access module uninstalled tables successfully.'));
+  }
+  else {
+    drupal_set_message(t('The uninstallation of Path Access module was unsuccessful.'), 'error');
+  }
+}
+
+function path_access_update_6100() {
+  $ret = array();
+  
+  $ret[] = update_sql("ALTER TABLE {path_access} CHANGE pid pid SERIAL NOT NULL AUTO_INCREMENT");
+  
+  return $ret;
+}

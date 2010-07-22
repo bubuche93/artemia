@@ -1,0 +1,13 @@
+; $Id: path_access.info,v 1.2.2.1 2009/12/11 12:51:03 psynaptic Exp $
+name = Path Access
+description = Restrict access to any paths by user role
+package = Access control
+core = 6.x
+dependencies[] = path
+
+; Information added by drupal.org packaging script on 2010-07-11
+version = "6.x-1.x-dev"
+core = "6.x"
+project = "path_access"
+datestamp = "1278835259"
+

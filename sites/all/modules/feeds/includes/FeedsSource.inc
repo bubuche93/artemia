@@ -1,5 +1,5 @@
 <?php
-// $Id: FeedsSource.inc,v 1.13 2010/06/19 19:40:43 alexb Exp $
+// $Id: FeedsSource.inc,v 1.15 2010/07/11 13:53:17 alexb Exp $
 
 /**
  * @file
@@ -111,10 +111,22 @@ class FeedsSource extends FeedsConfigurable {
   }
 
   /**
-   * Import a feed: execute, fetching, parsing and processing stage.
+   * Preview = fetch and parse a feed.
    *
-   * Lock a source before importing by using FeedsSource::lock(), after
-   * importing, release with FeedsSource::release().
+   * @return
+   *   FeedsImportBatch object, fetched and parsed.
+   *
+   * @throws
+   *   Throws Exception if an error occurs when fetching or parsing.
+   */
+  public function preview() {
+    $batch = $this->importer->fetcher->fetch($this);
+    $this->importer->parser->parse($batch, $this);
+    return $batch;
+  }
+
+  /**
+   * Import a feed: execute fetching, parsing and processing stage.
    *
    * @return
    *   FEEDS_BATCH_COMPLETE if the import process finished. A decimal between

@@ -1,5 +1,5 @@
 <?php
-// $Id: FeedsUserProcessor.inc,v 1.12 2010/06/19 15:57:13 alexb Exp $
+// $Id: FeedsUserProcessor.inc,v 1.17 2010/07/18 19:47:37 alexb Exp $
 
 /**
  * @file
@@ -100,7 +100,7 @@ class FeedsUserProcessor extends FeedsProcessor {
     // Prepare term object.
     $target_account = new stdClass();
     $target_account->uid = 0;
-    $target_account->roles = $this->config['roles'];
+    $target_account->roles = array_filter($this->config['roles']);
     $target_account->status = $this->config['status'];
 
     // Have parent class do the iterating.
@@ -140,16 +140,16 @@ class FeedsUserProcessor extends FeedsProcessor {
       $form['roles'] = array(
         '#type' => 'checkboxes',
         '#title' => t('Additional roles'),
-        '#description' => t('Every user will be assigned the "autenticated user" role. Select additional roles here.'),
+        '#description' => t('Every user is assigned the "authenticated user" role. Select additional roles here.'),
         '#default_value' => $this->config['roles'],
         '#options' => $roles,
       );
     }
-
+    // @todo Implement true updating.
     $form['update_existing'] = array(
       '#type' => 'checkbox',
-      '#title' => t('Update existing users'),
-      '#description' => t('Check if existing users should be updated from imported data.'),
+      '#title' => t('Replace existing users'),
+      '#description' => t('If an existing user is found for an imported user, replace it. Existing users will be determined using mappings that are a "unique target".'),
       '#default_value' => $this->config['update_existing'],
     );
     return $form;

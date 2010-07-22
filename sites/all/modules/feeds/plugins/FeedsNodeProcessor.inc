@@ -1,5 +1,5 @@
 <?php
-// $Id: FeedsNodeProcessor.inc,v 1.40 2010/07/08 17:39:27 alexb Exp $
+// $Id: FeedsNodeProcessor.inc,v 1.45 2010/07/18 18:33:43 alexb Exp $
 
 /**
  * @file
@@ -9,7 +9,8 @@
 // Create or delete FEEDS_NODE_BATCH_SIZE at a time.
 define('FEEDS_NODE_BATCH_SIZE', 50);
 
-// Updating mode for existing nodes.
+// Deprecated. Use FEEDS_SKIPE_EXISTING, FEEDS_REPLACE_EXISTNG,
+// FEEDS_UPDATE_EXISTING instead.
 define('FEEDS_NODE_SKIP_EXISTING', 0);
 define('FEEDS_NODE_REPLACE_EXISTING', 1);
 define('FEEDS_NODE_UPDATE_EXISTING', 2);
@@ -30,7 +31,7 @@ class FeedsNodeProcessor extends FeedsProcessor {
     while ($item = $batch->shiftItem()) {
 
       // Create/update if item does not exist or update existing is enabled.
-      if (!($nid = $this->existingItemId($item, $source)) || ($this->config['update_existing'] != FEEDS_NODE_SKIP_EXISTING)) {
+      if (!($nid = $this->existingItemId($item, $source)) || ($this->config['update_existing'] != FEEDS_SKIP_EXISTING)) {
         $node = $this->buildNode($nid, $source->feed_nid);
 
         // Only proceed if item has actually changed.
@@ -147,7 +148,8 @@ class FeedsNodeProcessor extends FeedsProcessor {
     $type = isset($types['story']) ? 'story' : key($types);
     return array(
       'content_type' => $type,
-      'update_existing' => FEEDS_NODE_SKIP_EXISTING,
+      'input_format' => FILTER_FORMAT_DEFAULT,
+      'update_existing' => FEEDS_SKIP_EXISTING,
       'expire' => FEEDS_EXPIRE_NEVER,
       'mappings' => array(),
       'author' => 0,
@@ -163,15 +165,27 @@ class FeedsNodeProcessor extends FeedsProcessor {
     $form['content_type'] = array(
       '#type' => 'select',
       '#title' => t('Content type'),
-      '#description' => t('Choose node type to create from this feed. <strong>Note:</strong> Users with "import !feed_id feeds" permissions will be able to <strong>import</strong> nodes of the content type selected here regardless of the node level permissions. Further, users with "clear !feed_id permissions" will be able to <strong>delete</strong> imported nodes regardless of their node level permissions.', array('!feed_id' => $this->id)),
+      '#description' => t('Select the content type for the nodes to be created. <strong>Note:</strong> Users with "import !feed_id feeds" permissions will be able to <strong>import</strong> nodes of the content type selected here regardless of the node level permissions. Further, users with "clear !feed_id permissions" will be able to <strong>delete</strong> imported nodes regardless of their node level permissions.', array('!feed_id' => $this->id)),
       '#options' => $types,
       '#default_value' => $this->config['content_type'],
+    );
+    $format_options = array(FILTER_FORMAT_DEFAULT => t('Default format'));
+    $formats = filter_formats();
+      foreach ($formats as $format) {
+        $format_options[$format->format] = $format->name;
+      }
+    $form['input_format'] = array(
+      '#type' => 'select',
+      '#title' => t('Input format'),
+      '#description' => t('Select the input format for the body field of the nodes to be created.'),
+      '#options' => $format_options,
+      '#default_value' => $this->config['input_format'],
     );
     $author = user_load(array('uid' => $this->config['author']));
     $form['author'] = array(
       '#type' => 'textfield',
       '#title' => t('Author'),
-      '#description' => t('Author to be assigned to created nodes - leave empty to assign "anonymous".'),
+      '#description' => t('Select the author of the nodes to be created - leave empty to assign "anonymous".'),
       '#autocomplete_path' => 'user/autocomplete',
       '#default_value' => empty($author->name) ?  'anonymous' : check_plain($author->name),
     );
@@ -185,12 +199,12 @@ class FeedsNodeProcessor extends FeedsProcessor {
     );
     $form['update_existing'] = array(
       '#type' => 'radios',
-      '#title' => t('Update existing items'),
-      '#description' => t('Choose how existing items should be updated from the feed.'),
+      '#title' => t('Update existing nodes'),
+      '#description' => t('Select how existing nodes should be updated. Existing nodes will be determined using mappings that are a "unique target".'),
       '#options' => array(
-        FEEDS_NODE_SKIP_EXISTING => 'Do not update existing item nodes',
-        FEEDS_NODE_REPLACE_EXISTING => 'Replace existing item nodes',
-        FEEDS_NODE_UPDATE_EXISTING => 'Update existing item nodes (slower than replacing them)',
+        FEEDS_SKIP_EXISTING => 'Do not update existing nodes',
+        FEEDS_REPLACE_EXISTING => 'Replace existing nodes',
+        FEEDS_UPDATE_EXISTING => 'Update existing nodes (slower than replacing them)',
       ),
       '#default_value' => $this->config['update_existing'],
     );
@@ -245,6 +259,10 @@ class FeedsNodeProcessor extends FeedsProcessor {
       );
     }
     $targets += array(
+      'uid' => array(
+        'name' => t('User ID'),
+        'description' => t('The Drupal user ID of the node author.'),
+      ),
       'status' => array(
         'name' => t('Published status'),
         'description' => t('Whether a node is published or not. 1 stands for published, 0 for not published.'),
@@ -306,7 +324,7 @@ class FeedsNodeProcessor extends FeedsProcessor {
       $populate = TRUE;
     }
     else {
-      if ($this->config['update_existing'] == FEEDS_NODE_UPDATE_EXISTING) {
+      if ($this->config['update_existing'] == FEEDS_UPDATE_EXISTING) {
         $node = node_load($nid, NULL, TRUE);
       }
       else {
@@ -318,6 +336,7 @@ class FeedsNodeProcessor extends FeedsProcessor {
     if ($populate) {
       $node->type = $this->config['content_type'];
       $node->changed = FEEDS_REQUEST_TIME;
+      $node->format = $this->config['input_format'];
       $node->feeds_node_item = new stdClass();
       $node->feeds_node_item->id = $this->id;
       $node->feeds_node_item->imported = FEEDS_REQUEST_TIME;

@@ -1,0 +1,187 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * Restricts access to any Drupal path on a per-role basis.
+ *
+ * @author: Mike Carter <www.ixis.co.uk>
+ * @author: CSÉCSY László <boobaa.no@spam.kybest.hu>
+ * @usage: ?q=admin/user/pathaccess to configure path restrictions for each role.
+ */
+
+/**
+ * Implementation of hook_help().
+ */
+function path_access_help($path, $arg) {
+  switch ($path) {
+    case 'admin/user/pathaccess':
+      return t('Each user role can be granted or denied access to any url paths. This is a crude but straight forward way to restrict groups of nodes/pages to certain users using only the paths associated with the pages. Page access is not limited to node pages only, anything can be controlled using paths.');
+  }
+}
+
+/**
+ * Implementation of hook_init().
+ */
+function path_access_init() {
+  global $user;
+
+  _drupal_bootstrap(DRUPAL_BOOTSTRAP_PATH);
+
+  // User #1 has all privileges:
+  if ($user->uid == 1) {
+    return 1;
+  }
+  // This one does not work in D6 without the role_weights module, so the user's
+  // last role_id will be taken into account.
+  // $role = module_exists('role_weights') ? module_invoke('role_weights', 'get_highest', $user->roles) : array('name' => $user->roles);
+  foreach ($user->roles as $k => $v) {
+    $role = $k;
+  }
+
+  $result = db_query('SELECT pages, visibility FROM {path_access} WHERE rid = %d', $role);
+
+  $visibility = 1;
+  $pages = '';
+  while ($role = db_fetch_object($result)) {
+    $pages .= $role->pages . "\n";
+    $visibility = $role->visibility && $visibility;
+  }
+  $visibility = ($visibility > 0) ? TRUE : FALSE;
+
+  // Match path if necessary.
+  if ($pages) {
+    // The current page.
+    $path = drupal_get_path_alias(check_plain($_GET['q']));
+
+    $regexp = '/^(' . preg_replace(array('/(\r\n?|\n)/', '/\\\\\*/', '/(^|\|)\\\\<front\\\\>($|\|)/'), array('|', '.*', '\1' . variable_get('site_frontpage', 'node') . '\2'), preg_quote($pages, '/')) . ')$/';
+    $page_match = ($visibility xor preg_match($regexp, $path));
+  }
+  else {
+    $page_match = FALSE;
+  }
+
+  // Check that the current page is not a protected page before blocking user.
+  if ($page_match && !path_access_protected_pages($path)) {
+    drupal_access_denied();
+    exit;
+  }
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+function path_access_menu() {
+  $items = array();
+
+  $items['admin/user/pathaccess/edit'] = array(
+    'title' => t('configure role paths'),
+    'page callback' => 'path_access_admin_role_configure',
+    'access arguments' => array('administer url aliases'),
+    'type' => MENU_CALLBACK,
+  );
+  $items['admin/user/pathaccess'] = array(
+    'title' => t('Path Access'),
+    'description' => t('Define what paths a user role can access.'),
+    'page callback' => 'path_access_admin_roles',
+    'access arguments' => array('administer url aliases'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  return $items;
+}
+
+/**
+ * Menu callback; displays the block configuration form.
+ */
+function path_access_admin_roles() {
+  // Render the role overview.
+  $result = db_query('SELECT * FROM {role} ORDER BY name');
+
+  $header = array(t('User Role'), t('Operations'));
+  while ($role = db_fetch_object($result)) {
+    $rows[] = array($role->name, l(t('edit'), 'admin/user/pathaccess/edit/' . $role->rid));
+  }
+  $output = theme('table', $header, $rows);
+
+  return $output;
+}
+
+/**
+ * Menu callback; displays the configuration form.
+ */
+function path_access_admin_role_configure() {
+  $roleid = (integer) arg(4);
+
+  $settings = db_fetch_array(db_query('SELECT * FROM {path_access} pa INNER JOIN {role} r ON pa.rid = r.rid WHERE pa.rid = %d', $roleid));
+
+  // Obtain role name for the page if there is no existing path settings for this role id.
+  if (!$settings) {
+    $rolename = db_result(db_query('SELECT name FROM {role} WHERE rid = %d', $roleid));
+    db_query("INSERT INTO {path_access} (rid, pages, visibility) VALUES (%d, '', '')", $roleid);
+  }
+  else {
+    $rolename = $settings['name'];
+  }
+
+  drupal_set_title(t("Path access for '%role' role", array('%role' => $rolename)));
+
+  return drupal_get_form('path_access_admin_configure_form', $settings);
+}
+
+/**
+ * Define role access form.
+ */
+function path_access_admin_configure_form(&$form_state, $edit) {
+  $form['page_vis_settings'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Page specific visibility settings'),
+    '#collapsible' => FALSE,
+  );
+  $form['page_vis_settings']['visibility'] = array(
+    '#type' => 'radios',
+    '#title' => t('Allow users to view specific pages'),
+    '#options' => array(t('Access every page except the listed pages.'), t('Access only the listed pages.')),
+    '#default_value' => $edit['visibility'],
+  );
+  $form['page_vis_settings']['pages'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Pages'),
+    '#default_value' => $edit['pages'],
+    '#description' => t("Enter one page per line as a path. The '*' character is a wildcard. Example paths are '<em>blog</em>' for the blog page and '<em>blog/*</em>' for every personal blog. '<em>&lt;front&gt;</em>' is the front page."),
+  );
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save path access'),
+  );
+  $form['rid'] = array('#type' => 'value', '#value' => $edit['rid']);
+
+  return $form;
+}
+
+function path_access_admin_configure_form_validate($form_id, &$form_state) {
+  // Prevent the logout page from being listed.
+  $pages = explode("\n", $form_state['values']['pages']);
+
+  if (in_array('logout', $pages)) {
+    form_set_error('pages', t('You cannot block access to the %logout page.', array('%logout' => 'logout')));
+  }
+}
+
+/**
+ * Process role access form submission
+ */
+function path_access_admin_configure_form_submit($form_id, &$form_state) {
+  db_query("UPDATE {path_access} SET visibility = %d, pages = '%s' WHERE rid = %d", $form_state['values']['visibility'], $form_state['values']['pages'], $form_state['values']['rid']);
+
+  drupal_set_message(t('The path access configuration has been saved.'));
+  $form_state['redirect'] = 'admin/user/pathaccess';
+}
+
+/*
+ * Protected Pages can never be restricted using path_access.
+ */
+function path_access_protected_pages($page) {
+  $pages = array('logout');
+  return in_array($page, $pages);
+}

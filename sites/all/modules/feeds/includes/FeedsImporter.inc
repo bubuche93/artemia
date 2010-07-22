@@ -1,5 +1,5 @@
 <?php
-// $Id: FeedsImporter.inc,v 1.19 2010/06/19 19:40:43 alexb Exp $
+// $Id: FeedsImporter.inc,v 1.21 2010/07/13 20:18:55 alexb Exp $
 
 /**
  * @file
@@ -232,7 +232,7 @@ class FeedsImporter extends FeedsConfigurable {
       'processor' => array(
         'plugin_key' => 'FeedsNodeProcessor',
       ),
-      'content_type' => 'page',
+      'content_type' => '',
       'update' => 0,
       'import_period' => 1800, // Refresh every 30 minutes by default.
       'expire_period' => 3600, // Expire every hour by default, this is a hidden setting.
@@ -261,7 +261,7 @@ class FeedsImporter extends FeedsConfigurable {
     $form['content_type'] = array(
       '#type' => 'select',
       '#title' => t('Attach to content type'),
-      '#description' => t('If you attach a configuration to a node you can use nodes for creating feeds on your site.'),
+      '#description' => t('If an importer is attached to a content type, content is imported by creating a node. If the standalone form is selected, content is imported by using the standalone form under http://example.com/import.'),
       '#options' => array('' => t('Use standalone form')) + node_get_types('names'),
       '#default_value' => $this->config['content_type'],
     );

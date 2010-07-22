@@ -1,5 +1,11 @@
 <?php
-// $Id: FeedsProcessor.inc,v 1.12 2010/07/08 17:19:16 alexb Exp $
+// $Id: FeedsProcessor.inc,v 1.14 2010/07/18 18:33:43 alexb Exp $
+
+
+// Update mode for existing items.
+define('FEEDS_SKIP_EXISTING', 0);
+define('FEEDS_REPLACE_EXISTING', 1);
+define('FEEDS_UPDATE_EXISTING', 2);
 
 /**
  * Abstract class, defines interface for processors.
@@ -102,12 +108,12 @@ abstract class FeedsProcessor extends FeedsPlugin {
       $target_item = (object)$target_item;
       $convert_to_array = TRUE;
     }
-    foreach ($targets[$this->id] as $target_name => $target) {
-      if (isset($target['real_target']) && isset($target_item->$target['real_target'])) {
-        unset($target_item->$target['real_target']);
+    foreach ($this->config['mappings'] as $mapping) {
+      if (isset($targets[$mapping['target']]['real_target'])) {
+        unset($target_item->{$targets[$mapping['target']]['real_target']});
       }
-      else if (isset($target_item->$target_name)) {
-        unset($target_item->$target_name);
+      elseif (isset($target_item->{$mapping['target']})) {
+        unset($target_item->{$mapping['target']});
       }
     }
     if ($convert_to_array) {

@@ -1,0 +1,118 @@
+# $Id: path_access.pot,v 1.1 2008/08/10 16:42:29 boobaa Exp $
+#
+# LANGUAGE translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  path_access.module: n/a
+#  path_access.info,v 1.1.2.2 2007/04/24 13:11:43 budda
+#  path_access.install: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2008-08-10 18:34+0200\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: path_access.module:18
+msgid "Each user role can be granted or denied access to any url paths. This is a crude but straight forward way to restrict groups of nodes/pages to certain users using only the paths associated with the pages. Page access is not limited to node pages only, anything can be controlled using paths."
+msgstr ""
+
+#: path_access.module:75
+msgid "configure role paths"
+msgstr ""
+
+#: path_access.module:81 path_access.info:0
+msgid "Path Access"
+msgstr ""
+
+#: path_access.module:82
+msgid "Define what paths a user role can access."
+msgstr ""
+
+#: path_access.module:97
+msgid "User Role"
+msgstr ""
+
+#: path_access.module:97
+msgid "Operations"
+msgstr ""
+
+#: path_access.module:99
+msgid "edit"
+msgstr ""
+
+#: path_access.module:121
+msgid "Path access for '%role' role"
+msgstr ""
+
+#: path_access.module:132
+msgid "Page specific visibility settings"
+msgstr ""
+
+#: path_access.module:137
+msgid "Allow users to view specific pages"
+msgstr ""
+
+#: path_access.module:138
+msgid "Access every page except the listed pages."
+msgstr ""
+
+#: path_access.module:138
+msgid "Access only the listed pages."
+msgstr ""
+
+#: path_access.module:143
+msgid "Pages"
+msgstr ""
+
+#: path_access.module:145
+msgid "Enter one page per line as a path. The '*' character is a wildcard. Example paths are '<em>blog</em>' for the blog page and '<em>blog/*</em>' for every personal blog. '<em>&lt;front&gt;</em>' is the front page."
+msgstr ""
+
+#: path_access.module:149
+msgid "Save path access"
+msgstr ""
+
+#: path_access.module:161
+msgid "You cannot block access to the %logout page."
+msgstr ""
+
+#: path_access.module:171
+msgid "The path access configuration has been saved."
+msgstr ""
+
+#: path_access.module:0
+msgid "path_access"
+msgstr ""
+
+#: path_access.install:44
+msgid "Path Access module installed tables successfully."
+msgstr ""
+
+#: path_access.install:47
+msgid "The installation of Path Access module was unsuccessful."
+msgstr ""
+
+#: path_access.install:61
+msgid "Path Access module uninstalled tables successfully."
+msgstr ""
+
+#: path_access.install:64
+msgid "The uninstallation of Path Access module was unsuccessful."
+msgstr ""
+
+#: path_access.info:0
+msgid "Restrict access to any paths by user role"
+msgstr ""
+
+#: path_access.info:0
+msgid "Access control"
+msgstr ""
+
