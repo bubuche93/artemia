@@ -34,6 +34,8 @@ function phptemplate_body_attributes($is_front = false, $layout = 'none') {
   $sidebar_class = ($layout == 'both') ? 'sidebars' : "sidebar-$layout";
 
   return " id=\"$body_id\" class=\"$body_class $sidebar_class\"";
+  
+  $vars['attr']['class'] .= !empty($vars['template_files']) ? ' '. end($vars['template_files']) : '';
 }
 
 
