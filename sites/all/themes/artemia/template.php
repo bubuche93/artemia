@@ -11,8 +11,7 @@
 * @return
 *   string The rendered id and class attributes.
 */
-function phptemplate_body_attributes($is_front = false, $layout = 'none') {
-
+function phptemplate_body_attributes($is_front = false, $layout = 'none', $logged_in = false) {
   if ($is_front) {
     $body_id = $body_class = 'homepage';
   }
@@ -27,17 +26,20 @@ function phptemplate_body_attributes($is_front = false, $layout = 'none') {
     // Construct the class name from the first part of the path only.
     list($body_class,) = explode('/', $path, 2);
   }
+ 
   $body_id = 'page-'. $body_id;
   $body_class = 'section-'. $body_class;
 
-  // Use the same sidebar classes as Garland.
-  $sidebar_class = ($layout == 'both') ? 'sidebars' : "sidebar-$layout";
+  if ($logged_in) {
+$body_class .= ' user-in'; 
+  } else {
+    $body_class .= ' user-out';
+  }
 
-  return " id=\"$body_id\" class=\"$body_class $sidebar_class\"";
 
-
+  return " id=\"$body_id\" class=\"$body_class\"";
+  
 }
-
 
 /**
  * Preprocessor for theme('node').

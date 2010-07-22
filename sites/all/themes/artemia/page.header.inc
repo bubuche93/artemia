@@ -8,6 +8,6 @@
 <title><?php print $head_title ?></title>
 </head>
 
-<body<?php print phptemplate_body_attributes($is_front, $layout); ?>>
+<body <?php print phptemplate_body_attributes($is_front, $layout, $logged_in); ?>>
 
 <?php if (!empty($admin)) print $admin ?>
